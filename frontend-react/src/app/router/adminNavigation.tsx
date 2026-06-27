@@ -140,6 +140,13 @@ export const adminModules: AdminModuleNavigation[] = [
     icon: <CalculatorOutlined />,
     description: "Custos, margens e parametros de formacao de preco.",
     section: "mais",
+    topbarItems: [
+      { key: "visao-geral", label: "Visao geral", path: "/admin/precificacao", accent: "primary" },
+      { key: "produtos-com-receita", label: "Produtos com receita", path: "/admin/precificacao/produtos-com-receita" },
+      { key: "produtos-incompletos", label: "Produtos incompletos", path: "/admin/precificacao/produtos-incompletos" },
+      { key: "parametros", label: "Parametros", path: "/admin/precificacao/parametros" },
+      { key: "simulacao", label: "Simulacao", path: "/admin/precificacao/simulacao" },
+    ],
   },
   {
     key: "pedidos",
