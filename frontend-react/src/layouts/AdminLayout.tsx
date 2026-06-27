@@ -1,24 +1,22 @@
-import { BellOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Avatar, Button, Breadcrumb, Layout, Menu, Space, Tag, Typography } from "antd";
-import { useMemo, useState } from "react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Layout } from "antd";
+import { useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 
-import type { RouteMenuItem } from "@/types/navigation";
-import { getPageTitleFromPath } from "@/utils/navigation";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminTopbar } from "@/components/admin/AdminTopbar";
+import type { AdminModuleNavigation } from "@/types/navigation";
+import { getAdminModuleFromPath } from "@/utils/navigation";
 
 const { Header, Sider, Content } = Layout;
 
 type AdminLayoutProps = {
-  menuItems: RouteMenuItem[];
+  modules: AdminModuleNavigation[];
 };
 
-export function AdminLayout({ menuItems }: AdminLayoutProps) {
+export function AdminLayout({ modules }: AdminLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-
-  const pageTitle = getPageTitleFromPath(location.pathname, menuItems);
-  const selectedKeys = useMemo(() => [location.pathname], [location.pathname]);
+  const currentModule = getAdminModuleFromPath(location.pathname, modules);
 
   return (
     <Layout className="admin-shell">
@@ -28,65 +26,23 @@ export function AdminLayout({ menuItems }: AdminLayoutProps) {
         collapsedWidth={88}
         onCollapse={setCollapsed}
         theme="light"
-        width={252}
+        width={280}
         className="admin-sider"
       >
-        <div className="brand-block">
-          <span className="brand-mark">TR</span>
-          {!collapsed && (
-            <div>
-              <Typography.Title level={4} className="brand-title">
-                Terra Relva
-              </Typography.Title>
-              <Typography.Text className="brand-subtitle">
-                Novo frontend administrativo
-              </Typography.Text>
-            </div>
-          )}
-        </div>
-
-        <Menu
-          mode="inline"
-          selectedKeys={selectedKeys}
-          items={menuItems}
-          onClick={({ key }) => navigate(key)}
-          className="admin-menu"
-        />
+        <AdminSidebar collapsed={collapsed} currentPath={location.pathname} modules={modules} />
       </Sider>
 
-      <Layout>
-        <Header className="admin-header">
-          <Space size="middle">
-            <Button
-              type="text"
-              size="large"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed((current) => !current)}
-            />
-            <div>
-              <Typography.Text className="page-kicker">Area interna</Typography.Text>
-              <Typography.Title level={3} className="page-title">
-                {pageTitle}
-              </Typography.Title>
-            </div>
-          </Space>
-
-          <Space size="middle">
-            <Tag color="green-inverse">Fase 2</Tag>
-            <Button icon={<BellOutlined />} />
-            <Avatar style={{ backgroundColor: "#35513d" }}>TR</Avatar>
-          </Space>
+      <Layout className="admin-main-shell">
+        <Header className="admin-layout-header">
+          <AdminTopbar
+            collapsed={collapsed}
+            currentPath={location.pathname}
+            currentModule={currentModule}
+            onToggleSidebar={() => setCollapsed((current) => !current)}
+          />
         </Header>
-
         <Content className="admin-content">
           <div className="page-frame">
-            <Breadcrumb
-              items={[
-                { title: <Link to="/admin">Admin</Link> },
-                { title: pageTitle },
-              ]}
-              className="page-breadcrumb"
-            />
             <Outlet />
           </div>
         </Content>
