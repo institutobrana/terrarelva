@@ -14,6 +14,7 @@ import { EstoquePage } from "@/pages/admin/EstoquePage";
 import { PrecificacaoPage } from "@/pages/admin/PrecificacaoPage";
 import { ProducaoPage } from "@/pages/admin/ProducaoPage";
 import { ProdutosPage } from "@/pages/admin/ProdutosPage";
+import { PlanoContasPage } from "@/pages/admin/PlanoContasPage";
 import { UsuariosSistemaPage } from "@/pages/admin/UsuariosSistemaPage";
 import { VendasPage } from "@/pages/admin/VendasPage";
 import { AdminPlaceholderPage } from "@/pages/admin/AdminPlaceholderPage";
@@ -479,20 +480,7 @@ const adminRoutes = [
   },
   {
     path: "configuracoes/plano-contas",
-    element: (
-      <AdminPlaceholderPage
-        eyebrow="Configuracao interna"
-        title="Plano de contas"
-        description="Entrada futura para estruturar contas contabeis e classificacao financeira da operacao."
-        tag="Placeholder seguro"
-        metrics={[
-          { label: "Area", value: "Configuracao" },
-          { label: "Recorte", value: "Financeiro" },
-          { label: "Estado", value: "Sem escrita" },
-        ]}
-        bullets={["Prepara governanca financeira", "Sem criar modulo novo agora"]}
-      />
-    ),
+    element: <PlanoContasPage />,
   },
   {
     path: "configuracoes/agendas",
