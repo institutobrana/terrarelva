@@ -81,3 +81,8 @@ Essas acoes ja aparecem na barra operacional, dependem de selecao de linha e fic
 - O fundo da faixa passou a seguir continuo por toda a largura util, sem trecho neutro destacado no fim.
 - A altura da barra foi reduzida para uma leitura mais seca e mais proxima de toolbar operacional.
 - A linha inferior com `Filtro`, `Ativos`, `Inativos` e `Selecionado` foi removida completamente.
+
+## Acabamento visual dos comandos
+
+- Os comandos da faixa superior foram achatados para uma leitura mais de toolbar textual e menos de botao elevado.
+- Fundo, borda e sombra dos botoes foram removidos dentro da faixa, preservando apenas estados de hover, desabilitado e destaque principal mais discreto.

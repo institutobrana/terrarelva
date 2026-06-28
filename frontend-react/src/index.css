@@ -913,10 +913,59 @@ a {
 
 .users-shell-band-toolbar .ant-btn {
   height: 22px;
-  padding-inline: 8px;
-  border-radius: 4px;
-  font-weight: 600;
+  padding-inline: 6px;
+  border-radius: 2px;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  color: rgba(250, 252, 248, 0.96);
+  font-weight: 500;
   font-size: 0.78rem;
+}
+
+.users-shell-band-toolbar .ant-btn .ant-btn-icon {
+  font-size: 0.78rem;
+}
+
+.users-shell-band-toolbar .ant-btn.ant-btn-primary,
+.users-shell-band-toolbar .ant-btn.ant-btn-default,
+.users-shell-band-toolbar .ant-btn.ant-btn-dangerous {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.users-shell-band-toolbar .ant-btn.ant-btn-primary {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.users-shell-band-toolbar .ant-btn.ant-btn-primary::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 2px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.users-shell-band-toolbar .ant-btn.ant-btn-dangerous {
+  color: #ffe3de;
+}
+
+.users-shell-band-toolbar .ant-btn:not(:disabled):hover,
+.users-shell-band-toolbar .ant-btn:not(:disabled):focus {
+  color: #ffffff !important;
+  border-color: transparent !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+.users-shell-band-toolbar .ant-btn:disabled {
+  color: rgba(240, 244, 236, 0.42);
+  background: transparent;
+  border-color: transparent;
 }
 
 .users-shell-band-divider {
