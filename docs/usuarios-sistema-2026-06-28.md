@@ -81,6 +81,7 @@ Essas acoes ja aparecem na barra operacional, dependem de selecao de linha e fic
 - O fundo da faixa passou a seguir continuo por toda a largura util, sem trecho neutro destacado no fim.
 - A altura da barra foi reduzida para uma leitura mais seca e mais proxima de toolbar operacional.
 - A linha inferior com `Filtro`, `Ativos`, `Inativos` e `Selecionado` foi removida completamente.
+- A barra superior agora renderiza apenas a linha de comandos no slot do shell, sem segunda faixa textual abaixo.
 
 ## Acabamento visual dos comandos
 
