@@ -51,3 +51,9 @@ Essas acoes ja aparecem na barra operacional, dependem de selecao de linha e fic
 - A faixa superior recebeu a mesma familia de cor do rail esquerdo para parecer uma extensao do shell.
 - Foram reduzidos borda, arredondamento e sombra para remover a sensacao de card independente.
 - A logica visual foi alinhada ao shell do Brana Cloud como referencia estrutural de continuidade lateral para barra horizontal, sem copiar branding.
+
+## Refinamento estrutural do topo
+
+- O titulo deixou de ocupar uma faixa propria e passou a viver dentro da mesma barra operacional das acoes.
+- O bloco verde isolado da esquerda foi reduzido para uma emenda visual curta, evitando a leitura de duas pecas acopladas.
+- A tabela inferior permaneceu intacta; o ajuste ficou concentrado na arquitetura visual do topo.

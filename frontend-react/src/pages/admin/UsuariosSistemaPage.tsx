@@ -214,14 +214,11 @@ export function UsuariosSistemaPage() {
     <div className="module-page-shell users-admin-page">
       {messageContext}
       <section className="users-admin-topstrip">
-        <div className="users-admin-topstrip-title">
-          <div className="users-admin-topstrip-copy">
-            <Typography.Text className="users-admin-kicker">Gestao interna protegida</Typography.Text>
-            <Typography.Title level={3}>Usuarios do sistema</Typography.Title>
-          </div>
-        </div>
-
         <div className="users-admin-commandbar" role="toolbar" aria-label="Acoes da tela de usuarios">
+          <div className="users-admin-commandbar-heading">
+            <Typography.Text className="users-admin-kicker">Gestao interna protegida</Typography.Text>
+            <Typography.Text className="users-admin-commandbar-title">Usuarios do sistema</Typography.Text>
+          </div>
           <Button type="text" icon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
             Novo usuario
           </Button>
