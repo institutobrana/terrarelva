@@ -6,7 +6,7 @@ import {
   SettingOutlined,
   TagsOutlined,
 } from "@ant-design/icons";
-import { Alert, Button, Checkbox, Space, Table, Typography, message } from "antd";
+import { Button, Checkbox, Space, Table, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useMemo, useState } from "react";
 
@@ -142,13 +142,6 @@ export function PlanoContasPage() {
   return (
     <div className="module-page-shell users-admin-page">
       {messageContext}
-
-      <Alert
-        type="info"
-        showIcon
-        message="Plano de contas em estrutura operacional"
-        description="O shell, a barra do modulo e a grade principal ja estao prontos. O dominio de dados ainda esta preparado para conexao futura, por isso a listagem permanece vazia sem inventar registros."
-      />
 
       <ModuleSectionCard>
         <div className="module-table-shell">
