@@ -35,9 +35,9 @@ export function AdminContextPanel({
     >
       <div className="terra-context-panel-header">
         <div className="terra-context-panel-header-copy">
-          <Typography.Text className="terra-context-panel-kicker">Modulo</Typography.Text>
+          <Typography.Text className="terra-context-panel-kicker">{module.panelKicker ?? "Modulo"}</Typography.Text>
           <Typography.Title level={4} className="terra-context-panel-title">
-            {module.label}
+            {module.panelTitle ?? module.label}
           </Typography.Title>
           <Typography.Text className="terra-context-panel-description">{module.description}</Typography.Text>
         </div>

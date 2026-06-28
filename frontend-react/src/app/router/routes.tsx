@@ -422,6 +422,176 @@ const adminRoutes = [
     ),
   },
   { path: "configuracoes", element: <ConfiguracoesPage /> },
+  {
+    path: "configuracoes/usuarios-sistema",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Configuracao interna"
+        title="Usuarios do sistema"
+        description="Entrada preparada para a proxima etapa de gestao interna de usuarios, com base protegida dentro do shell."
+        tag="Proximo passo preparado"
+        metrics={[
+          { label: "Area", value: "Configuracao" },
+          { label: "Recorte", value: "Usuarios internos" },
+          { label: "Estado", value: "Placeholder navegavel" },
+        ]}
+        bullets={["Rota protegida pronta", "Base limpa para listar, criar e ativar usuarios"]}
+      />
+    ),
+  },
+  {
+    path: "configuracoes/perfis-usuario",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Configuracao interna"
+        title="Perfis de usuario"
+        description="Espaco reservado para permissoes, niveis de acesso e governanca da operacao."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Area", value: "Configuracao" },
+          { label: "Recorte", value: "Perfis" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Prepara regras por perfil", "Sem expandir auth nesta rodada"]}
+      />
+    ),
+  },
+  {
+    path: "configuracoes/tabelas-auxiliares",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Configuracao interna"
+        title="Tabelas auxiliares"
+        description="Area base para listas de apoio, classificacoes e estruturas parametrizadas do sistema."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Area", value: "Configuracao" },
+          { label: "Recorte", value: "Tabelas" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Casco pronto para cadastros auxiliares", "Mantem a navegacao estruturada"]}
+      />
+    ),
+  },
+  {
+    path: "configuracoes/plano-contas",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Configuracao interna"
+        title="Plano de contas"
+        description="Entrada futura para estruturar contas contabeis e classificacao financeira da operacao."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Area", value: "Configuracao" },
+          { label: "Recorte", value: "Financeiro" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Prepara governanca financeira", "Sem criar modulo novo agora"]}
+      />
+    ),
+  },
+  {
+    path: "configuracoes/agendas",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Configuracao interna"
+        title="Agendas"
+        description="Espaco futuro para parametrizacao de agendas, disponibilidade e regras de atendimento."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Area", value: "Configuracao" },
+          { label: "Recorte", value: "Agendas" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Conecta operacao e atendimento", "Base pronta para evolucao posterior"]}
+      />
+    ),
+  },
+  {
+    path: "configuracoes/questionarios-anamnese",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Configuracao interna"
+        title="Questionarios de anamnese"
+        description="Area reservada para formularios clinicos e estruturas de coleta de informacao."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Area", value: "Configuracao" },
+          { label: "Recorte", value: "Questionarios" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Base pronta para modelos de anamnese", "Sem ativar regra clinica agora"]}
+      />
+    ),
+  },
+  {
+    path: "configuracoes/unidades-atendimento",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Configuracao interna"
+        title="Unidades de atendimento"
+        description="Entrada futura para filiais, locais de atendimento e estruturas fisicas da operacao."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Area", value: "Configuracao" },
+          { label: "Recorte", value: "Unidades" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Prepara multiplas unidades", "Mantem o shell coerente"]}
+      />
+    ),
+  },
+  {
+    path: "configuracoes/campos-livres",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Configuracao interna"
+        title="Campos livres"
+        description="Espaco preparado para parametrizar campos adicionais sem refatorar o shell atual."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Area", value: "Configuracao" },
+          { label: "Recorte", value: "Customizacao" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Boa base para extensoes controladas", "Sem modelagem nova nesta rodada"]}
+      />
+    ),
+  },
+  {
+    path: "configuracoes/taxas-cobranca",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Configuracao interna"
+        title="Taxas de cobranca"
+        description="Area futura para definir taxas, comissoes e parametros de cobranca da operacao."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Area", value: "Configuracao" },
+          { label: "Recorte", value: "Taxas" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Prepara governanca de cobranca", "Sem regra financeira ativa agora"]}
+      />
+    ),
+  },
+  {
+    path: "configuracoes/contas-bancarias",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Configuracao interna"
+        title="Contas bancarias"
+        description="Entrada reservada para estruturar contas bancarias e apoio ao fluxo financeiro."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Area", value: "Configuracao" },
+          { label: "Recorte", value: "Bancos" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Base pronta para dados bancarios internos", "Sem integracao externa nesta etapa"]}
+      />
+    ),
+  },
 ];
 
 export const appRouter = createBrowserRouter([

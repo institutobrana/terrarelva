@@ -20,5 +20,7 @@ export type AdminModuleNavigation = {
   icon?: ReactNode;
   description: string;
   section: "principal" | "mais";
+  panelTitle?: string;
+  panelKicker?: string;
   topbarItems?: AdminSecondaryNavItem[];
 };
