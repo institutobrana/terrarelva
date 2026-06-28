@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import { adminModules } from "@/app/router/adminNavigation";
+import { ProtectedRoute } from "@/app/router/ProtectedRoute";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { StoreLayout } from "@/layouts/StoreLayout";
 import { CaixaPage } from "@/pages/admin/CaixaPage";
@@ -13,6 +14,7 @@ import { ProducaoPage } from "@/pages/admin/ProducaoPage";
 import { ProdutosPage } from "@/pages/admin/ProdutosPage";
 import { VendasPage } from "@/pages/admin/VendasPage";
 import { AdminPlaceholderPage } from "@/pages/admin/AdminPlaceholderPage";
+import { LoginPage } from "@/pages/auth/LoginPage";
 import { CatalogoPage } from "@/pages/loja/CatalogoPage";
 import { LojaHomePage } from "@/pages/loja/LojaHomePage";
 import type { RouteMenuItem } from "@/types/navigation";
@@ -428,9 +430,18 @@ export const appRouter = createBrowserRouter([
     element: <Navigate to="/admin" replace />,
   },
   {
-    path: "/admin",
-    element: <AdminLayout modules={adminModules} />,
-    children: adminRoutes,
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "/admin",
+        element: <AdminLayout modules={adminModules} />,
+        children: adminRoutes,
+      },
+    ],
+  },
+  {
+    path: "/auth/login",
+    element: <LoginPage />,
   },
   {
     path: "/loja",
