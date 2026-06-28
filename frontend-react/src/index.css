@@ -1055,6 +1055,12 @@ a {
   color: rgba(255, 255, 255, 0.8) !important;
 }
 
+.cashflow-shell-toolbar .ant-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .cashflow-tabs .ant-tabs-nav {
   margin-bottom: 8px;
 }

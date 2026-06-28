@@ -1,13 +1,16 @@
 import {
   CalendarOutlined,
   DeleteOutlined,
+  DownOutlined,
   EyeOutlined,
-  FilterOutlined,
+  ExportOutlined,
   PlusOutlined,
+  PrinterOutlined,
   SearchOutlined,
+  SettingOutlined,
   SwapOutlined,
 } from "@ant-design/icons";
-import { Button, DatePicker, Input, Select, Table, Tabs, Typography, message } from "antd";
+import { Button, DatePicker, Dropdown, Input, Select, Table, Tabs, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useMemo, useState } from "react";
 
@@ -86,13 +89,31 @@ export function FluxoCaixaPage() {
       <section className="users-shell-band cashflow-shell-band" aria-label="Barra operacional do fluxo de caixa">
         <div className="users-shell-band-toolbar cashflow-shell-toolbar" role="toolbar" aria-label="Acoes do modulo fluxo de caixa">
           <div className="cashflow-shell-toolbar-left">
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => apiMessage.info("Cadastro de nova movimentacao preparado para a proxima etapa.")}
+            <Dropdown
+              trigger={["click"]}
+              menu={{
+                items: [
+                  { key: "recebimento", label: "Recebimento", icon: <PlusOutlined /> },
+                  { key: "despesa", label: "Despesa", icon: <DeleteOutlined /> },
+                  { key: "transferencia", label: "Transferencia", icon: <SwapOutlined /> },
+                  { key: "saldo-inicial", label: "Saldo inicial", icon: <CalendarOutlined /> },
+                ],
+                onClick: ({ key }) => {
+                  const labels: Record<string, string> = {
+                    recebimento: "Recebimento",
+                    despesa: "Despesa",
+                    transferencia: "Transferencia",
+                    "saldo-inicial": "Saldo inicial",
+                  };
+                  apiMessage.info(`${labels[key] ?? "Opcao"} preparada para a proxima etapa.`);
+                },
+              }}
             >
-              Novo
-            </Button>
+              <Button type="primary" icon={<PlusOutlined />} iconPosition="start">
+                Novo
+                <DownOutlined />
+              </Button>
+            </Dropdown>
             <Button
               icon={<SwapOutlined />}
               disabled={disableSelectionActions}
@@ -149,8 +170,9 @@ export function FluxoCaixaPage() {
               placeholder="Pesquisar"
               className="cashflow-shell-search"
             />
-            <Button icon={<FilterOutlined />} onClick={() => apiMessage.info("Filtros adicionais preparados para a proxima etapa.")} />
-            <Button icon={<CalendarOutlined />} onClick={() => apiMessage.info("Atalhos de periodo preparados para a proxima etapa.")} />
+            <Button icon={<SettingOutlined />} onClick={() => apiMessage.info("Configuracoes do fluxo de caixa preparadas para a proxima etapa.")} />
+            <Button icon={<PrinterOutlined />} onClick={() => apiMessage.info("Impressao preparada para a proxima etapa.")} />
+            <Button icon={<ExportOutlined />} onClick={() => apiMessage.info("Exportacao preparada para a proxima etapa.")} />
           </div>
         </div>
       </section>,

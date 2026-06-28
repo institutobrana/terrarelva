@@ -8,7 +8,7 @@
 
 - O modulo usa a mesma faixa operacional `terra-shell-band` do shell admin.
 - Comandos entregues a esquerda:
-  - `Novo`
+  - `Novo` com menu dropdown
   - `Alterar`
   - `Excluir`
   - `Detalhes`
@@ -18,7 +18,18 @@
   - data inicial
   - data final
   - pesquisar
-  - icones auxiliares
+  - configuracoes
+  - imprimir
+  - exportar
+
+## Menu do botao Novo
+
+- O comando `Novo` agora abre menu com:
+  - `Recebimento`
+  - `Despesa`
+  - `Transferencia`
+  - `Saldo inicial`
+- Nesta etapa, cada item ficou funcional como placeholder controlado por mensagem.
 
 ## Grade principal
 
