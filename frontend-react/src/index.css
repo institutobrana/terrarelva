@@ -1070,6 +1070,31 @@ a {
   min-width: 116px;
 }
 
+.cashflow-shell-toolbar-right .cashflow-shell-period.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 144px;
+  padding-inline: 8px 6px;
+  border-color: rgba(255, 255, 255, 0.26) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.cashflow-shell-toolbar-right .cashflow-shell-period.ant-btn .ant-btn-icon {
+  order: 2;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.72rem;
+}
+
+.cashflow-shell-toolbar-right .cashflow-shell-period.ant-btn:hover,
+.cashflow-shell-toolbar-right .cashflow-shell-period.ant-btn:focus {
+  border-color: rgba(255, 255, 255, 0.34) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+}
+
 .cashflow-shell-search {
   width: 132px;
 }

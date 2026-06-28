@@ -36,6 +36,22 @@ type CashflowRow = {
 
 const preparedRows: CashflowRow[] = [];
 
+const periodOptions = [
+  { key: "mes-atual", label: "Mes atual" },
+  { key: "mes-anterior", label: "Mes anterior" },
+  { key: "proximo-mes", label: "Proximo mes" },
+  { key: "semana-atual", label: "Semana atual" },
+  { key: "semana-anterior", label: "Semana anterior" },
+  { key: "proxima-semana", label: "Proxima semana" },
+  { key: "ano-atual", label: "Ano atual" },
+  { key: "ultimos-12-meses", label: "Ultimos 12 meses" },
+  { key: "periodo-livre", label: "Periodo livre" },
+] as const;
+
+function getPeriodLabel(value: string) {
+  return periodOptions.find((option) => option.key === value)?.label ?? "Mes atual";
+}
+
 function formatCurrency(value: number | null) {
   if (value === null) {
     return "Preparado";
@@ -154,17 +170,23 @@ export function FluxoCaixaPage() {
               ]}
               className="cashflow-shell-control cashflow-shell-account"
             />
-            <Select
-              size="small"
-              value={selectedPeriod}
-              onChange={setSelectedPeriod}
-              options={[
-                { label: "Mes atual", value: "mes-atual" },
-                { label: "Ultimos 30 dias", value: "ultimos-30" },
-                { label: "Personalizado", value: "personalizado" },
-              ]}
-              className="cashflow-shell-control cashflow-shell-period"
-            />
+            <Dropdown
+              trigger={["click"]}
+              menu={{
+                selectedKeys: [selectedPeriod],
+                items: periodOptions.map((option) => ({
+                  key: option.key,
+                  label: option.label,
+                })),
+                onClick: ({ key }) => {
+                  setSelectedPeriod(key);
+                },
+              }}
+            >
+              <Button className="cashflow-shell-control cashflow-shell-period" icon={<DownOutlined />}>
+                {getPeriodLabel(selectedPeriod)}
+              </Button>
+            </Dropdown>
             <DatePicker size="small" format="DD/MM/YYYY" placeholder="Data inicial" className="cashflow-shell-control" />
             <DatePicker size="small" format="DD/MM/YYYY" placeholder="Data final" className="cashflow-shell-control" />
             <Input

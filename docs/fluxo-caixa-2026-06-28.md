@@ -14,13 +14,29 @@
   - `Detalhes`
 - Controles preparados a direita:
   - conta/caixa atual
-  - periodo
+  - periodo com seletor dropdown
   - data inicial
   - data final
   - pesquisar
   - configuracoes com menu dropdown
   - imprimir
   - exportar
+
+## Seletor de periodo
+
+- O controle `Mes atual` passou a abrir menu dropdown na propria barra.
+- Opcoes adicionadas:
+  - `Mes atual`
+  - `Mes anterior`
+  - `Proximo mes`
+  - `Semana atual`
+  - `Semana anterior`
+  - `Proxima semana`
+  - `Ano atual`
+  - `Ultimos 12 meses`
+  - `Periodo livre`
+- A selecao ja atualiza o rotulo visivel no React.
+- A filtragem real por periodo ainda ficou preparada para a proxima etapa.
 
 ## Menu do botao Novo
 
@@ -61,10 +77,12 @@
   - rota protegida real
   - barra operacional no shell
   - controles de topo
+  - seletor de periodo com estado visual
   - grade principal
   - estrutura de abas
   - rodape de totais
 - Preparado para evolucao:
   - leitura real de movimentacoes
+  - filtro real por periodo
   - persistencia
   - calculo de totais
