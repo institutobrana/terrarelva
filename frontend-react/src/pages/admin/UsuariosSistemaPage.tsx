@@ -209,8 +209,7 @@ export function UsuariosSistemaPage() {
 
   const disabledWithoutSelection = !selectedUser;
   const isAdminUser = user?.role === "admin";
-  const visibleActiveUsers = users.filter((entry) => entry.isActive).length;
-  const visibleInactiveUsers = users.filter((entry) => !entry.isActive).length;
+
   useEffect(() => {
     setShellBandContent(
       <section className="users-shell-band" aria-label="Barra operacional de usuarios">
@@ -249,13 +248,6 @@ export function UsuariosSistemaPage() {
             Atualizar grade
           </Button>
         </div>
-
-        <div className="users-shell-band-meta">
-          <Typography.Text>Filtro: {effectiveFilter}</Typography.Text>
-          <Typography.Text>Ativos: {visibleActiveUsers}</Typography.Text>
-          <Typography.Text>Inativos: {visibleInactiveUsers}</Typography.Text>
-          <Typography.Text>Selecionado: {selectedUser ? selectedUser.name : "Nenhum"}</Typography.Text>
-        </div>
       </section>,
     );
 
@@ -268,8 +260,6 @@ export function UsuariosSistemaPage() {
     isSubmitting,
     selectedUser,
     setShellBandContent,
-    visibleActiveUsers,
-    visibleInactiveUsers,
   ]);
 
   return (

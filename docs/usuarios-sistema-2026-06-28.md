@@ -75,3 +75,9 @@ Essas acoes ja aparecem na barra operacional, dependem de selecao de linha e fic
 - A barra de usuarios deixou de ser renderizada dentro da pagina e passou a ocupar o slot real `terra-shell-band` do `AdminLayout`.
 - A referencia estrutural usada foi o proprio shell do Dashboard, especialmente `AdminLayout.tsx` e `AdminActionTopbar.tsx`, onde a faixa superior nasce da lateral.
 - A tela de usuarios agora injeta apenas o conteudo operacional dessa faixa; a estrutura de encaixe com a lateral passou a ser a mesma do shell, nao mais uma simulacao local por CSS.
+
+## Ajuste fino final da faixa superior
+
+- O fundo da faixa passou a seguir continuo por toda a largura util, sem trecho neutro destacado no fim.
+- A altura da barra foi reduzida para uma leitura mais seca e mais proxima de toolbar operacional.
+- A linha inferior com `Filtro`, `Ativos`, `Inativos` e `Selecionado` foi removida completamente.

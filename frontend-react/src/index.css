@@ -136,10 +136,10 @@ a {
 }
 
 .terra-shell-band.has-content {
-  min-height: 54px;
+  min-height: 28px;
   display: flex;
   align-items: stretch;
-  background: linear-gradient(90deg, #5a7652, #779267);
+  background: linear-gradient(90deg, #5a7652, #6a845d 46%, #779267 100%);
 }
 
 .terra-shell-corner {
@@ -897,8 +897,8 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-  background: linear-gradient(90deg, rgba(90, 118, 82, 0.92), rgba(118, 145, 101, 0.92) 12%, rgba(241, 245, 237, 0.96) 12%, rgba(247, 249, 244, 0.96) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(90deg, rgba(90, 118, 82, 0.96), rgba(106, 132, 93, 0.95) 46%, rgba(119, 146, 103, 0.94) 100%);
 }
 
 .users-shell-band-toolbar {
@@ -906,38 +906,24 @@ a {
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  min-height: 48px;
-  padding: 7px 14px 7px 18px;
+  min-height: 26px;
+  padding: 3px 12px 3px 16px;
   background: transparent;
 }
 
 .users-shell-band-toolbar .ant-btn {
-  height: 32px;
-  border-radius: 6px;
+  height: 22px;
+  padding-inline: 8px;
+  border-radius: 4px;
   font-weight: 600;
+  font-size: 0.78rem;
 }
 
 .users-shell-band-divider {
   width: 1px;
-  height: 24px;
+  height: 16px;
   margin: 0 2px;
-  background: rgba(67, 98, 69, 0.2);
-}
-
-.users-shell-band-meta {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  min-height: 28px;
-  padding: 4px 14px 6px 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-  color: #667261;
-  font-size: 0.78rem;
-}
-
-.users-shell-band-meta .ant-typography {
-  color: inherit;
+  background: rgba(255, 255, 255, 0.24);
 }
 
 .users-grid-shell {
@@ -1181,11 +1167,6 @@ a {
   }
 
   .users-shell-band-toolbar {
-    padding-left: 12px;
-  }
-
-  .users-shell-band-meta {
-    gap: 8px 12px;
     padding-left: 12px;
   }
 }
