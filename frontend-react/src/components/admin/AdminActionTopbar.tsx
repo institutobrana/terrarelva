@@ -214,7 +214,7 @@ export function AdminActionTopbar({ userLabel, onToolbarAction, onLogout }: Admi
           </Form.Item>
 
           <Form.Item
-            label="Confirmacao"
+            label="Confirmação"
             name="confirmPassword"
             dependencies={["nextPassword"]}
             rules={[
@@ -230,7 +230,7 @@ export function AdminActionTopbar({ userLabel, onToolbarAction, onLogout }: Admi
               }),
             ]}
           >
-            <Input.Password placeholder="Confirmacao da nova senha" />
+            <Input.Password placeholder="Confirmação da nova senha" />
           </Form.Item>
 
           <div className="terra-password-modal-actions">

@@ -577,10 +577,8 @@ a {
 
 .terra-password-modal-header {
   padding: 18px 24px 14px;
-  border-bottom: 1px solid rgba(214, 202, 184, 0.72);
-  background:
-    linear-gradient(180deg, rgba(255, 254, 251, 0.98), rgba(241, 235, 225, 0.96)),
-    linear-gradient(90deg, rgba(67, 98, 69, 0.06), rgba(110, 135, 95, 0.04));
+  border-bottom: 0;
+  background: transparent;
 }
 
 .terra-password-modal-title.ant-typography {
