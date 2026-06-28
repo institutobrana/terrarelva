@@ -135,6 +135,13 @@ a {
   background: linear-gradient(90deg, #5a7652, #779267);
 }
 
+.terra-shell-band.has-content {
+  min-height: 54px;
+  display: flex;
+  align-items: stretch;
+  background: linear-gradient(90deg, #5a7652, #779267);
+}
+
 .terra-shell-corner {
   grid-column: 1;
   grid-row: 1;
@@ -885,53 +892,51 @@ a {
   gap: 14px;
 }
 
-.users-ops-strip {
+.users-shell-band {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-inline: -18px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1px solid rgba(96, 116, 84, 0.16);
-  background: linear-gradient(90deg, rgba(90, 118, 82, 0.95), rgba(110, 135, 95, 0.92) 14%, rgba(235, 240, 231, 0.95) 14%, rgba(244, 247, 240, 0.95) 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(90deg, rgba(90, 118, 82, 0.92), rgba(118, 145, 101, 0.92) 12%, rgba(241, 245, 237, 0.96) 12%, rgba(247, 249, 244, 0.96) 100%);
 }
 
-.users-ops-toolbar {
+.users-shell-band-toolbar {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
   min-height: 48px;
-  padding: 7px 14px 7px 22px;
+  padding: 7px 14px 7px 18px;
   background: transparent;
 }
 
-.users-ops-toolbar .ant-btn {
+.users-shell-band-toolbar .ant-btn {
   height: 32px;
   border-radius: 6px;
   font-weight: 600;
 }
 
-.users-ops-divider {
+.users-shell-band-divider {
   width: 1px;
   height: 24px;
   margin: 0 2px;
   background: rgba(67, 98, 69, 0.2);
 }
 
-.users-ops-meta {
+.users-shell-band-meta {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
   min-height: 28px;
-  padding: 4px 14px 6px 22px;
+  padding: 4px 14px 6px 18px;
   border-top: 1px solid rgba(255, 255, 255, 0.14);
   color: #667261;
   font-size: 0.78rem;
 }
 
-.users-ops-meta .ant-typography {
+.users-shell-band-meta .ant-typography {
   color: inherit;
 }
 
@@ -1175,15 +1180,11 @@ a {
     margin-right: 0;
   }
 
-  .users-ops-strip {
-    margin-inline: 0;
-  }
-
-  .users-ops-toolbar {
+  .users-shell-band-toolbar {
     padding-left: 12px;
   }
 
-  .users-ops-meta {
+  .users-shell-band-meta {
     gap: 8px 12px;
     padding-left: 12px;
   }

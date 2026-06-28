@@ -1,8 +1,9 @@
 import { useMemo, useRef, useState } from "react";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { AdminActionTopbar } from "@/components/admin/AdminActionTopbar";
+import { AdminShellBandContext } from "@/components/admin/AdminShellBandContext";
 import { AdminContextPanel } from "@/components/admin/AdminContextPanel";
 import { AdminIconRail } from "@/components/admin/AdminIconRail";
 import { AdminWorkspace } from "@/components/admin/AdminWorkspace";
@@ -24,8 +25,10 @@ export function AdminLayout({ modules }: AdminLayoutProps) {
   const principalModules = useMemo(() => modules.filter((module) => module.section === "principal"), [modules]);
   const currentModule = getAdminModuleFromPath(location.pathname, modules);
   const [panelModuleKey, setPanelModuleKey] = useState("");
+  const [shellBandContent, setShellBandContent] = useState<ReactNode | null>(null);
 
   const panelModule = principalModules.find((module) => module.key === panelModuleKey) ?? null;
+  const shouldRenderShellBand = currentModule?.key === "hoje" || Boolean(shellBandContent);
 
   const handleOpenModule = (moduleKey: string) => {
     if (panelCloseTimerRef.current) {
@@ -78,8 +81,10 @@ export function AdminLayout({ modules }: AdminLayoutProps) {
       </div>
 
       <div className={`terra-shell-body${panelModule ? " has-panel" : ""}`}>
-        {currentModule?.key === "hoje" ? <div className="terra-shell-corner" aria-hidden="true" /> : null}
-        {currentModule?.key === "hoje" ? <div className="terra-shell-band" aria-hidden="true" /> : null}
+        {shouldRenderShellBand ? <div className="terra-shell-corner" aria-hidden="true" /> : null}
+        {shouldRenderShellBand ? (
+          <div className={`terra-shell-band${shellBandContent ? " has-content" : ""}`}>{shellBandContent}</div>
+        ) : null}
 
         <AdminIconRail
           activeKey={currentModule?.key ?? "hoje"}
@@ -100,13 +105,15 @@ export function AdminLayout({ modules }: AdminLayoutProps) {
           onMouseLeave={handleContextRegionLeave}
         />
 
-        <AdminWorkspace>
-          <div className="terra-content">
-            <div className="page-frame">
-              <Outlet />
+        <AdminShellBandContext.Provider value={{ setShellBandContent }}>
+          <AdminWorkspace>
+            <div className="terra-content">
+              <div className="page-frame">
+                <Outlet />
+              </div>
             </div>
-          </div>
-        </AdminWorkspace>
+          </AdminWorkspace>
+        </AdminShellBandContext.Provider>
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ import type { ColumnsType } from "antd/es/table";
 import { useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { useAuth } from "@/app/hooks/useAuth";
+import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
 import {
   createInternalUserRequest,
@@ -70,6 +71,7 @@ function formatDate(value: string | null) {
 
 export function UsuariosSistemaPage() {
   const { user, clearInvalidSession } = useAuth();
+  const { setShellBandContent } = useAdminShellBand();
   const [form] = Form.useForm<CreateUserFormValues>();
   const [users, setUsers] = useState<InternalUser[]>([]);
   const [filter, setFilter] = useState<UsersFilter>("active");
@@ -178,7 +180,7 @@ export function UsuariosSistemaPage() {
     }
   }
 
-  async function handleAccessToggle(nextIsActive: boolean) {
+  const handleAccessToggle = useEffectEvent(async (nextIsActive: boolean) => {
     if (!selectedUser) {
       apiMessage.warning("Selecione um usuario para alterar o acesso.");
       return;
@@ -203,18 +205,16 @@ export function UsuariosSistemaPage() {
     } finally {
       setIsSubmitting(false);
     }
-  }
+  });
 
   const disabledWithoutSelection = !selectedUser;
   const isAdminUser = user?.role === "admin";
   const visibleActiveUsers = users.filter((entry) => entry.isActive).length;
   const visibleInactiveUsers = users.filter((entry) => !entry.isActive).length;
-
-  return (
-    <div className="module-page-shell users-admin-page">
-      {messageContext}
-      <section className="users-ops-strip" aria-label="Barra operacional de usuarios">
-        <div className="users-ops-toolbar" role="toolbar" aria-label="Acoes da tela de usuarios">
+  useEffect(() => {
+    setShellBandContent(
+      <section className="users-shell-band" aria-label="Barra operacional de usuarios">
+        <div className="users-shell-band-toolbar" role="toolbar" aria-label="Acoes da tela de usuarios">
           <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
             Novo usuario
           </Button>
@@ -244,19 +244,37 @@ export function UsuariosSistemaPage() {
           <Button icon={<KeyOutlined />} disabled={disabledWithoutSelection}>
             Permissoes especiais
           </Button>
-          <span className="users-ops-divider" aria-hidden="true" />
+          <span className="users-shell-band-divider" aria-hidden="true" />
           <Button icon={<ReloadOutlined />} onClick={() => void loadUsers(effectiveFilter)}>
             Atualizar grade
           </Button>
         </div>
 
-        <div className="users-ops-meta">
+        <div className="users-shell-band-meta">
           <Typography.Text>Filtro: {effectiveFilter}</Typography.Text>
           <Typography.Text>Ativos: {visibleActiveUsers}</Typography.Text>
           <Typography.Text>Inativos: {visibleInactiveUsers}</Typography.Text>
           <Typography.Text>Selecionado: {selectedUser ? selectedUser.name : "Nenhum"}</Typography.Text>
         </div>
-      </section>
+      </section>,
+    );
+
+    return () => {
+      setShellBandContent(null);
+    };
+  }, [
+    disabledWithoutSelection,
+    effectiveFilter,
+    isSubmitting,
+    selectedUser,
+    setShellBandContent,
+    visibleActiveUsers,
+    visibleInactiveUsers,
+  ]);
+
+  return (
+    <div className="module-page-shell users-admin-page">
+      {messageContext}
 
       {!isAdminUser ? (
         <Alert type="error" showIcon message="Acesso restrito" description="Somente administradores podem abrir esta tela." />

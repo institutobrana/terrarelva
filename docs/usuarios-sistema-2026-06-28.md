@@ -69,3 +69,9 @@ Essas acoes ja aparecem na barra operacional, dependem de selecao de linha e fic
 - O `PageHero` interno foi removido porque ainda criava um cabecalho de pagina grande, o que nao era desejado para uma tela operacional.
 - No lugar dele, a tela agora comeca em uma faixa horizontal unica de comandos, com metadados discretos na mesma regiao.
 - A grade de usuarios voltou a ser o elemento principal da tela, sem cards de resumo nem hero section acima.
+
+## Correcao estrutural definitiva do topo
+
+- A barra de usuarios deixou de ser renderizada dentro da pagina e passou a ocupar o slot real `terra-shell-band` do `AdminLayout`.
+- A referencia estrutural usada foi o proprio shell do Dashboard, especialmente `AdminLayout.tsx` e `AdminActionTopbar.tsx`, onde a faixa superior nasce da lateral.
+- A tela de usuarios agora injeta apenas o conteudo operacional dessa faixa; a estrutura de encaixe com a lateral passou a ser a mesma do shell, nao mais uma simulacao local por CSS.
