@@ -1,27 +1,27 @@
-# Cadastro lateral - etapa 2026-06-28
+# Cadastro lateral - correcao 2026-06-28
 
-## Item lateral
+## Correcao aplicada
 
-- Foi criado um novo item na barra lateral esquerda com o nome `Cadastro`.
-- O item foi definido em `frontend-react/src/app/router/adminNavigation.tsx`.
+- O item lateral `Cadastro` criado separadamente foi removido.
+- O modulo lateral que antes aparecia como `Clientes` passou a se chamar `Cadastro`.
 
 ## Painel lateral
 
-- O painel lateral reaproveita a estrutura real do shell admin ja existente:
+- O painel lateral continua reutilizando a estrutura real do shell admin:
   - titulo no topo
   - botao de fechar
   - lista vertical de itens
-- O modulo foi configurado com:
+- O modulo reaproveitado foi configurado com:
   - `panelTitle: Cadastro`
   - `panelKicker: Modulo`
 
-## Itens do submenu
+## Novo submenu
 
-- O submenu foi limitado exatamente a:
+- O submenu do modulo ficou limitado exatamente a:
   - `Clientes`
   - `Fornecedores`
 
 ## Navegacao
 
-- `Clientes` ficou ligado a rota real `/admin/clientes`
-- `Fornecedores` ficou ligado a rota real `/admin/fornecedores`
+- `Clientes` continua ligado a rota real `/admin/clientes`
+- `Fornecedores` continua ligado a rota real `/admin/fornecedores`
