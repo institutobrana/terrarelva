@@ -50,6 +50,11 @@
   - `Gravar cliente`
   - `Cancelar`
 - Nesta etapa, `Gravar cliente` faz validacao e submit controlado, sem persistencia real ainda.
+- Refinamento visual posterior:
+  - `Telefone 1` e `Telefone 2` foram reestruturados em `tipo`, `DDD`, `numero` e `ramal`
+  - `E-mail 1` foi reestruturado em `tipo` + `endereco`
+  - `Documento` foi mantido em `tipo` + `numero`
+  - o modal ficou menos arredondado, mais compacto e com cabecalho mais tecnico
 
 ## Tela de fornecedores
 
