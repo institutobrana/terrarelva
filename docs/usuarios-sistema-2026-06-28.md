@@ -39,3 +39,9 @@ Essas acoes ja aparecem na barra operacional, dependem de selecao de linha e fic
 - Alterar: fluxo de edicao com update de nome, email, role e talvez reset de senha.
 - Propriedades: painel de auditoria com datas, ultimo acesso e metadados adicionais.
 - Permissoes especiais: modelagem de permissoes granulares alem do `role` atual.
+
+## Ajuste visual pontual no topo
+
+- Removidos o header alto e os cards de resumo que estavam deixando o topo distante do print de referencia.
+- A barra de acoes passou a ser uma faixa continua, integrada ao shell e com comandos na mesma linha.
+- A tabela inferior, filtros do rodape e logica funcional de criar, habilitar e desabilitar usuario foram preservados.

@@ -24,11 +24,7 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useEffectEvent, useMemo, useState } from "react";
 
-import { ModuleActionBar } from "@/components/admin/ModuleActionBar";
-import { ModulePageHeader } from "@/components/admin/ModulePageHeader";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
-import { ModuleSummaryCard } from "@/components/admin/ModuleSummaryCard";
-import { ModuleSummaryRow } from "@/components/admin/ModuleSummaryRow";
 import { useAuth } from "@/app/hooks/useAuth";
 import {
   createInternalUserRequest,
@@ -211,100 +207,74 @@ export function UsuariosSistemaPage() {
 
   const disabledWithoutSelection = !selectedUser;
   const isAdminUser = user?.role === "admin";
+  const visibleActiveUsers = users.filter((entry) => entry.isActive).length;
+  const visibleInactiveUsers = users.filter((entry) => !entry.isActive).length;
 
   return (
     <div className="module-page-shell users-admin-page">
       {messageContext}
-      <ModulePageHeader
-        eyebrow="Gestao interna protegida"
-        title="Usuarios do sistema"
-        description="Tela administrativa inspirada em grade operacional: barra superior de acoes, selecao de registro, controle de acesso e leitura direta do PostgreSQL."
-        statusTag={isAdminUser ? "Area exclusiva de administrador" : "Acesso bloqueado"}
-        actions={
-          <>
-            <Button type="primary" size="large" icon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
-              Novo usuario
-            </Button>
-            <Button size="large" icon={<ReloadOutlined />} onClick={() => void loadUsers(effectiveFilter)}>
-              Atualizar grade
-            </Button>
-          </>
-        }
-      />
+      <section className="users-admin-topstrip">
+        <div className="users-admin-topstrip-title">
+          <Typography.Text className="users-admin-kicker">Gestao interna protegida</Typography.Text>
+          <Typography.Title level={3}>Usuarios do sistema</Typography.Title>
+        </div>
+
+        <div className="users-admin-commandbar" role="toolbar" aria-label="Acoes da tela de usuarios">
+          <Button type="text" icon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
+            Novo usuario
+          </Button>
+          <Button type="text" icon={<UserOutlined />} disabled={disabledWithoutSelection}>
+            Alterar
+          </Button>
+          <Button type="text" icon={<SettingOutlined />} disabled={disabledWithoutSelection}>
+            Propriedades
+          </Button>
+          <Button
+            type="text"
+            icon={<CheckCircleOutlined />}
+            disabled={disabledWithoutSelection || selectedUser?.isActive}
+            loading={isSubmitting}
+            onClick={() => void handleAccessToggle(true)}
+          >
+            Habilitar acesso
+          </Button>
+          <Button
+            type="text"
+            danger
+            icon={<StopOutlined />}
+            disabled={disabledWithoutSelection || !selectedUser?.isActive}
+            loading={isSubmitting}
+            onClick={() => void handleAccessToggle(false)}
+          >
+            Desabilitar acesso
+          </Button>
+          <Button type="text" icon={<KeyOutlined />} disabled={disabledWithoutSelection}>
+            Permissoes especiais
+          </Button>
+          <span className="users-admin-commandbar-divider" aria-hidden="true" />
+          <Button type="text" icon={<ReloadOutlined />} onClick={() => void loadUsers(effectiveFilter)}>
+            Atualizar grade
+          </Button>
+        </div>
+
+        <div className="users-admin-topmeta">
+          <Typography.Text>{isAdminUser ? "Area exclusiva de administrador" : "Acesso bloqueado"}</Typography.Text>
+          <Typography.Text>Filtro: {effectiveFilter}</Typography.Text>
+          <Typography.Text>Ativos visiveis: {visibleActiveUsers}</Typography.Text>
+          <Typography.Text>Inativos visiveis: {visibleInactiveUsers}</Typography.Text>
+          <Typography.Text>
+            Selecionado: {selectedUser ? `${selectedUser.name} · ${selectedUser.email}` : "nenhum registro"}
+          </Typography.Text>
+        </div>
+      </section>
 
       {!isAdminUser ? (
         <Alert type="error" showIcon message="Acesso restrito" description="Somente administradores podem abrir esta tela." />
       ) : null}
 
-      <ModuleSummaryRow>
-        <ModuleSummaryCard label="Registros visiveis" value={users.length} hint={`Filtro atual: ${effectiveFilter}`} />
-        <ModuleSummaryCard
-          label="Usuarios ativos"
-          value={users.filter((entry) => entry.isActive).length}
-          hint="Acesso liberado para autenticacao."
-          tone="success"
-        />
-        <ModuleSummaryCard
-          label="Usuarios inativos"
-          value={users.filter((entry) => !entry.isActive).length}
-          hint="Nao conseguem entrar no login."
-          tone="warning"
-        />
-        <ModuleSummaryCard
-          label="Selecionado"
-          value={selectedUser ? selectedUser.name : "Nenhum"}
-          hint={selectedUser ? selectedUser.email : "Escolha uma linha da grade para agir"}
-        />
-      </ModuleSummaryRow>
-
       <ModuleSectionCard>
         <div className="module-table-shell">
           <Space direction="vertical" size={18} style={{ width: "100%" }}>
-            <ModuleActionBar
-              title="Barra administrativa de usuarios"
-              description="Estrutura densa inspirada no print: acoes horizontais no topo, operacao por linha selecionada e filtros de atividade no rodape."
-              tags={
-                <>
-                  <Tag color="green">PostgreSQL real</Tag>
-                  <Tag color="blue">Selecao unica</Tag>
-                  <Tag color="gold">Somente admin</Tag>
-                </>
-              }
-              controls={
-                <Space wrap className="users-toolbar-actions">
-                  <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
-                    Novo usuario
-                  </Button>
-                  <Button icon={<UserOutlined />} disabled={disabledWithoutSelection}>
-                    Alterar
-                  </Button>
-                  <Button icon={<SettingOutlined />} disabled={disabledWithoutSelection}>
-                    Propriedades
-                  </Button>
-                  <Button
-                    icon={<CheckCircleOutlined />}
-                    disabled={disabledWithoutSelection || selectedUser?.isActive}
-                    loading={isSubmitting}
-                    onClick={() => void handleAccessToggle(true)}
-                  >
-                    Habilitar acesso
-                  </Button>
-                  <Button
-                    danger
-                    icon={<StopOutlined />}
-                    disabled={disabledWithoutSelection || !selectedUser?.isActive}
-                    loading={isSubmitting}
-                    onClick={() => void handleAccessToggle(false)}
-                  >
-                    Desabilitar acesso
-                  </Button>
-                  <Button icon={<KeyOutlined />} disabled={disabledWithoutSelection}>
-                    Permissoes especiais
-                  </Button>
-                </Space>
-              }
-            />
-
             {!selectedUser ? (
               <Alert
                 type="info"

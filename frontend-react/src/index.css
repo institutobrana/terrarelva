@@ -881,8 +881,87 @@ a {
   background: rgba(255, 253, 249, 0.98);
 }
 
-.users-toolbar-actions {
-  justify-content: flex-end;
+.users-admin-page {
+  gap: 16px;
+}
+
+.users-admin-topstrip {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-inline: -6px;
+  border: 1px solid rgba(142, 157, 131, 0.4);
+  border-radius: 0 0 20px 20px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(251, 249, 244, 0.98), rgba(241, 236, 227, 0.98));
+  box-shadow: 0 10px 24px rgba(56, 53, 41, 0.08);
+}
+
+.users-admin-topstrip-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 18px 8px;
+  border-bottom: 1px solid rgba(130, 144, 118, 0.18);
+  background: linear-gradient(180deg, rgba(248, 244, 237, 0.98), rgba(241, 236, 227, 0.98));
+}
+
+.users-admin-topstrip-title .ant-typography {
+  margin: 0;
+}
+
+.users-admin-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #76816a;
+}
+
+.users-admin-commandbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(130, 144, 118, 0.18);
+  background: linear-gradient(180deg, rgba(246, 242, 234, 0.98), rgba(238, 233, 223, 0.98));
+}
+
+.users-admin-commandbar .ant-btn {
+  height: 34px;
+  border-radius: 8px;
+  padding-inline: 10px;
+  color: #4d5b45;
+  font-weight: 600;
+}
+
+.users-admin-commandbar .ant-btn:not(:disabled):hover {
+  color: #3f5740;
+  background: rgba(90, 118, 82, 0.1);
+}
+
+.users-admin-commandbar-divider {
+  width: 1px;
+  align-self: stretch;
+  margin: 0 6px;
+  background: rgba(67, 98, 69, 0.16);
+}
+
+.users-admin-topmeta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 7px 16px 9px;
+  font-size: 0.82rem;
+  color: #6b7562;
+  background: rgba(251, 250, 247, 0.92);
+}
+
+.users-admin-topmeta .ant-typography {
+  color: inherit;
 }
 
 .users-grid-shell {
@@ -1101,6 +1180,22 @@ a {
   .users-grid-footer {
     width: 100%;
     justify-content: flex-start;
+  }
+
+  .users-admin-topstrip {
+    margin-inline: 0;
+  }
+
+  .users-admin-topstrip-title {
+    align-items: flex-start;
+  }
+
+  .users-admin-commandbar {
+    padding-inline: 8px;
+  }
+
+  .users-admin-topmeta {
+    gap: 8px 12px;
   }
 }
 
