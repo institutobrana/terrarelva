@@ -291,17 +291,17 @@ const adminRoutes = [
       />
     ),
   },
-  { path: "caixa", element: <CaixaPage /> },
+  { path: "financeiro", element: <CaixaPage /> },
   {
-    path: "caixa/saidas",
+    path: "financeiro/saidas",
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de caixa"
-        title="Caixa - Saidas"
+        title="Financeiro - Saidas"
         description="Recorte reservado para despesas, retiradas e compromissos financeiros."
         tag="Placeholder seguro"
         metrics={[
-          { label: "Modulo", value: "Caixa" },
+          { label: "Modulo", value: "Financeiro" },
           { label: "Recorte", value: "Saidas" },
           { label: "Estado", value: "Sem escrita" },
         ]}
@@ -310,15 +310,15 @@ const adminRoutes = [
     ),
   },
   {
-    path: "caixa/contas",
+    path: "financeiro/contas",
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de caixa"
-        title="Caixa - Contas"
+        title="Financeiro - Contas"
         description="Rota prevista para contas, centros financeiros e separacao por origem."
         tag="Placeholder seguro"
         metrics={[
-          { label: "Modulo", value: "Caixa" },
+          { label: "Modulo", value: "Financeiro" },
           { label: "Recorte", value: "Contas" },
           { label: "Estado", value: "Sem escrita" },
         ]}
@@ -327,15 +327,15 @@ const adminRoutes = [
     ),
   },
   {
-    path: "caixa/recebiveis",
+    path: "financeiro/recebiveis",
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de caixa"
-        title="Caixa - Recebiveis"
+        title="Financeiro - Recebiveis"
         description="Espaco pronto para acompanhar pendencias, parcelamentos e valores a receber."
         tag="Placeholder seguro"
         metrics={[
-          { label: "Modulo", value: "Caixa" },
+          { label: "Modulo", value: "Financeiro" },
           { label: "Recorte", value: "Recebiveis" },
           { label: "Estado", value: "Sem escrita" },
         ]}
@@ -344,15 +344,32 @@ const adminRoutes = [
     ),
   },
   {
-    path: "caixa/fechamento",
+    path: "financeiro/fluxo-de-caixa",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Subtela financeira"
+        title="Financeiro - Fluxo de caixa"
+        description="Entrada preparada para consolidar entradas, saidas e visao de fluxo financeiro da operacao."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Modulo", value: "Financeiro" },
+          { label: "Recorte", value: "Fluxo de caixa" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Nova rota ligada ao submenu", "Pronta para evolucao futura"]} 
+      />
+    ),
+  },
+  {
+    path: "financeiro/fechamento",
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de caixa"
-        title="Caixa - Fechamento"
+        title="Financeiro - Fechamento"
         description="Area contextual para conferencia de periodo e resumo financeiro consolidado."
         tag="Placeholder seguro"
         metrics={[
-          { label: "Modulo", value: "Caixa" },
+          { label: "Modulo", value: "Financeiro" },
           { label: "Recorte", value: "Fechamento" },
           { label: "Estado", value: "Sem escrita" },
         ]}
