@@ -98,8 +98,8 @@ export const adminModules: AdminModuleNavigation[] = [
     panelTitle: "Cadastro",
     panelKicker: "Modulo",
     topbarItems: [
-      { key: "clientes", label: "Clientes", path: "/admin/clientes", accent: "primary" },
-      { key: "fornecedores", label: "Fornecedores", path: "/admin/fornecedores" },
+      { key: "clientes", label: "Clientes", path: "/admin/cadastro/clientes", accent: "primary" },
+      { key: "fornecedores", label: "Fornecedores", path: "/admin/cadastro/fornecedores" },
     ],
   },
   {

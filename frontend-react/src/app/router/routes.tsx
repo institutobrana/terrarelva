@@ -7,6 +7,7 @@ import { AdminLayout } from "@/layouts/AdminLayout";
 import { StoreLayout } from "@/layouts/StoreLayout";
 import { useAuth } from "@/app/hooks/useAuth";
 import { CaixaPage } from "@/pages/admin/CaixaPage";
+import { CadastroFornecedoresPage } from "@/pages/admin/CadastroFornecedoresPage";
 import { ClientesPage } from "@/pages/admin/ClientesPage";
 import { ConfiguracoesPage } from "@/pages/admin/ConfiguracoesPage";
 import { ContasBancariasPage } from "@/pages/admin/ContasBancariasPage";
@@ -242,6 +243,8 @@ const adminRoutes = [
   { path: "producao/custos", element: <ProducaoPage view="costs" /> },
   { path: "producao/validades", element: <ProducaoPage view="expiry" /> },
   { path: "clientes", element: <ClientesPage /> },
+  { path: "cadastro/clientes", element: <ClientesPage /> },
+  { path: "cadastro/fornecedores", element: <CadastroFornecedoresPage /> },
   {
     path: "clientes/com-telefone",
     element: (
@@ -410,20 +413,7 @@ const adminRoutes = [
   },
   {
     path: "fornecedores",
-    element: (
-      <AdminPlaceholderPage
-        eyebrow="Modulo futuro"
-        title="Fornecedores"
-        description="Tela-base para abastecimento, compras e parceiros da operacao."
-        tag="Placeholder seguro"
-        metrics={[
-          { label: "Dependencias", value: "Estoque + compras" },
-          { label: "Escopo", value: "Fornecedores" },
-          { label: "Estado", value: "Sem escrita" },
-        ]}
-        bullets={["Ajuda a preparar compras estruturadas", "Mantem navegacao completa"]}
-      />
-    ),
+    element: <CadastroFornecedoresPage />,
   },
   {
     path: "relatorios",
