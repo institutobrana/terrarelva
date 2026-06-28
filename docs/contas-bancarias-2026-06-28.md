@@ -11,6 +11,43 @@
   - `Nova conta`
   - `Alterar`
   - `Detalhes`
+- O comando `Nova conta` agora abre um modal de formulario no fluxo real da tela.
+
+## Modal nova conta bancaria
+
+- O modal foi implementado com:
+  - titulo `Nova conta bancaria`
+  - botao `X` no canto superior direito
+  - botoes `Gravar conta` e `Cancelar` no rodape
+- Campos adicionados:
+  - `Nome da conta`
+  - `Prestador`
+  - `Banco`
+  - `Agencia`
+  - `Conta`
+  - `DV da conta`
+  - `Tipo da conta`
+  - `Nome do titular`
+  - `CPF/CNPJ do titular`
+- Organizacao aplicada:
+  - labels a esquerda e campos a direita
+  - `Banco` e `Tipo da conta` como selecao
+  - `Conta` e `DV da conta` lado a lado
+  - `Prestador` preparado para selecao/pesquisa
+
+## Validacoes
+
+- Validacoes minimas aplicadas:
+  - `Nome da conta` obrigatorio
+  - `Banco` obrigatorio
+  - `Agencia` obrigatoria
+  - `Conta` obrigatoria
+  - `Tipo da conta` obrigatorio
+- Campos opcionais nesta etapa:
+  - `Prestador`
+  - `DV da conta`
+  - `Nome do titular`
+  - `CPF/CNPJ do titular`
 
 ## Grade principal
 
@@ -35,8 +72,13 @@
   - barra operacional unida ao shell
   - grade principal
   - selecao de linha
-  - placeholders controlados para `Nova conta`, `Alterar` e `Detalhes`
+  - abertura real do modal em `Nova conta`
+  - validacao de formulario
+  - fechamento por `X` e `Cancelar`
+  - submit controlado em `Gravar conta`
+  - placeholders controlados para `Alterar` e `Detalhes`
 - Preparado para evolucao:
   - fonte real de contas bancarias
   - dados de banco, agencia, conta e prestador vindos do backend
-  - acoes reais de cadastro, edicao e detalhes
+  - persistencia real do cadastro
+  - acoes reais de edicao e detalhes

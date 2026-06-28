@@ -697,6 +697,46 @@ a {
   background: linear-gradient(180deg, rgba(255, 255, 252, 1), rgba(232, 240, 224, 0.9)) !important;
 }
 
+.bank-account-modal .ant-modal-content {
+  max-width: 760px;
+}
+
+.bank-account-form .ant-input,
+.bank-account-form .ant-select-selector {
+  min-height: 38px !important;
+  border-radius: 10px !important;
+  border-color: rgba(162, 178, 151, 0.72) !important;
+  background: rgba(255, 253, 248, 0.98) !important;
+  box-shadow: none !important;
+}
+
+.bank-account-form .ant-select-selection-placeholder,
+.bank-account-form .ant-input::placeholder {
+  color: rgba(96, 113, 100, 0.72);
+}
+
+.bank-account-form .ant-select-focused .ant-select-selector,
+.bank-account-form .ant-select-selector:focus,
+.bank-account-form .ant-input:focus {
+  border-color: var(--shell-brand) !important;
+  box-shadow: 0 0 0 3px rgba(67, 98, 69, 0.12) !important;
+}
+
+.bank-account-form-account-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 128px;
+  gap: 14px;
+}
+
+.bank-account-form-account-row .ant-form-item {
+  margin-bottom: 14px;
+}
+
+.bank-account-form-account-number,
+.bank-account-form-account-digit {
+  min-width: 0;
+}
+
 .terra-content {
   padding: 14px 16px 18px;
   max-width: 1700px;

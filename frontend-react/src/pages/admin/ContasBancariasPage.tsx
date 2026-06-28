@@ -1,9 +1,10 @@
 import {
+  CloseOutlined,
   FileTextOutlined,
   InfoCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Space, Table, Typography, message } from "antd";
+import { Button, Checkbox, Form, Input, Modal, Select, Space, Table, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useMemo, useState } from "react";
 
@@ -22,10 +23,44 @@ type BankAccountRow = {
 
 const preparedRows: BankAccountRow[] = [];
 
+type BankAccountFormValues = {
+  accountName: string;
+  provider: string | undefined;
+  bankName: string;
+  branch: string;
+  accountNumber: string;
+  accountDigit: string | undefined;
+  accountType: string;
+  holderName: string | undefined;
+  holderDocument: string | undefined;
+};
+
+const providerOptions = [
+  { label: "Selecionar depois", value: "placeholder-provider" },
+];
+
+const bankOptions = [
+  { label: "Banco do Brasil", value: "banco-do-brasil" },
+  { label: "Caixa Economica Federal", value: "caixa" },
+  { label: "Bradesco", value: "bradesco" },
+  { label: "Itau", value: "itau" },
+  { label: "Santander", value: "santander" },
+  { label: "Sicoob", value: "sicoob" },
+];
+
+const accountTypeOptions = [
+  { label: "Conta corrente", value: "corrente" },
+  { label: "Conta poupanca", value: "poupanca" },
+  { label: "Conta de pagamento", value: "pagamento" },
+];
+
 export function ContasBancariasPage() {
   const { setShellBandContent } = useAdminShellBand();
+  const [form] = Form.useForm<BankAccountFormValues>();
   const [showInactive, setShowInactive] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiMessage, messageContext] = message.useMessage();
 
   const visibleRows = useMemo(
@@ -75,6 +110,22 @@ export function ContasBancariasPage() {
     },
   ];
 
+  function handleCloseModal() {
+    setIsModalOpen(false);
+    form.resetFields();
+  }
+
+  async function handleCreateAccount() {
+    try {
+      const values = await form.validateFields();
+      setIsSubmitting(true);
+      apiMessage.success(`Conta "${values.accountName}" validada e preparada para gravacao na proxima etapa.`);
+      handleCloseModal();
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   useEffect(() => {
     setShellBandContent(
       <section className="users-shell-band" aria-label="Barra operacional de contas bancarias">
@@ -82,7 +133,7 @@ export function ContasBancariasPage() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => apiMessage.info("Cadastro de nova conta preparado para a proxima etapa.")}
+            onClick={() => setIsModalOpen(true)}
           >
             Nova conta
           </Button>
@@ -146,6 +197,103 @@ export function ContasBancariasPage() {
           </div>
         </div>
       </ModuleSectionCard>
+
+      <Modal
+        open={isModalOpen}
+        footer={null}
+        onCancel={handleCloseModal}
+        closeIcon={<CloseOutlined />}
+        centered
+        width={760}
+        destroyOnHidden
+        className="terra-password-modal bank-account-modal"
+      >
+        <div className="terra-password-modal-header">
+          <Typography.Title level={3} className="terra-password-modal-title">
+            Nova conta bancaria
+          </Typography.Title>
+        </div>
+
+        <Form<BankAccountFormValues>
+          form={form}
+          layout="vertical"
+          preserve={false}
+          className="terra-password-form bank-account-form"
+          onFinish={() => void handleCreateAccount()}
+        >
+          <Form.Item
+            name="accountName"
+            label="Nome da conta"
+            rules={[{ required: true, message: "Informe o nome da conta." }]}
+          >
+            <Input placeholder="Ex.: Caixa loja matriz" />
+          </Form.Item>
+
+          <Form.Item name="provider" label="Prestador">
+            <Select
+              showSearch
+              allowClear
+              placeholder="Selecionar prestador"
+              options={providerOptions}
+              optionFilterProp="label"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="bankName"
+            label="Banco"
+            rules={[{ required: true, message: "Selecione o banco." }]}
+          >
+            <Select placeholder="Selecionar banco" options={bankOptions} optionFilterProp="label" showSearch />
+          </Form.Item>
+
+          <Form.Item
+            name="branch"
+            label="Agencia"
+            rules={[{ required: true, message: "Informe a agencia." }]}
+          >
+            <Input placeholder="Numero da agencia" />
+          </Form.Item>
+
+          <div className="bank-account-form-account-row">
+            <Form.Item
+              name="accountNumber"
+              label="Conta"
+              rules={[{ required: true, message: "Informe a conta." }]}
+              className="bank-account-form-account-number"
+            >
+              <Input placeholder="Numero da conta" />
+            </Form.Item>
+
+            <Form.Item name="accountDigit" label="DV da conta" className="bank-account-form-account-digit">
+              <Input placeholder="DV" />
+            </Form.Item>
+          </div>
+
+          <Form.Item
+            name="accountType"
+            label="Tipo da conta"
+            rules={[{ required: true, message: "Selecione o tipo da conta." }]}
+          >
+            <Select placeholder="Selecionar tipo" options={accountTypeOptions} />
+          </Form.Item>
+
+          <Form.Item name="holderName" label="Nome do titular">
+            <Input placeholder="Nome do titular da conta" />
+          </Form.Item>
+
+          <Form.Item name="holderDocument" label="CPF/CNPJ do titular">
+            <Input placeholder="CPF ou CNPJ" />
+          </Form.Item>
+
+          <div className="terra-password-modal-actions">
+            <Button type="primary" htmlType="submit" loading={isSubmitting}>
+              Gravar conta
+            </Button>
+            <Button onClick={handleCloseModal}>Cancelar</Button>
+          </div>
+        </Form>
+      </Modal>
     </div>
   );
 }
