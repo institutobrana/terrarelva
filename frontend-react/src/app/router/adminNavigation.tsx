@@ -2,6 +2,7 @@ import {
   AppstoreOutlined,
   BarChartOutlined,
   CalculatorOutlined,
+  IdcardOutlined,
   DashboardOutlined,
   DollarCircleOutlined,
   ExperimentOutlined,
@@ -100,6 +101,20 @@ export const adminModules: AdminModuleNavigation[] = [
       { key: "com-telefone", label: "Com telefone", path: "/admin/clientes/com-telefone" },
       { key: "ultima-compra", label: "Ultima compra", path: "/admin/clientes/ultima-compra" },
       { key: "favoritos", label: "Favoritos", path: "/admin/clientes/favoritos" },
+    ],
+  },
+  {
+    key: "cadastro",
+    label: "Cadastro",
+    path: "/admin/cadastro",
+    icon: <IdcardOutlined />,
+    description: "Atalho lateral para os cadastros principais de clientes e fornecedores.",
+    section: "principal",
+    panelTitle: "Cadastro",
+    panelKicker: "Modulo",
+    topbarItems: [
+      { key: "clientes", label: "Clientes", path: "/admin/clientes", accent: "primary" },
+      { key: "fornecedores", label: "Fornecedores", path: "/admin/fornecedores" },
     ],
   },
   {
