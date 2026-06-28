@@ -22,7 +22,12 @@ export function usePricingModule() {
     null;
 
   const simulatedPrice = simulatedPriceInput.trim() ? Number(simulatedPriceInput) : null;
-  const simulation = simulatePricing(selectedProduct?.breakdown.totalCost ?? null, simulatedPrice);
+  const selectedBaseCost =
+    selectedProduct?.hybridCost.adoptedCost ??
+    selectedProduct?.hybridCost.theoreticalCost ??
+    selectedProduct?.hybridCost.observedCost ??
+    null;
+  const simulation = simulatePricing(selectedBaseCost, simulatedPrice);
 
   return {
     legacySnapshot: snapshot.legacy,

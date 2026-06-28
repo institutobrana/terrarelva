@@ -1,7 +1,13 @@
 import type { LegacyStorageSnapshot, Product, Production, Recipe, StockMovement, Supply } from "@/types/legacy";
 
 import { buildRecipeCostBreakdown, getPricingSettings } from "@/modules/pricing/selectors";
-import type { ProductionBatchView, ProductionCostBreakdown, ProductionModuleSnapshot, ProductionRecipeUsage } from "@/modules/production/types";
+import type {
+  ProductionBatchView,
+  ProductionCostBreakdown,
+  ProductionModuleSnapshot,
+  ProductionObservedCostReference,
+  ProductionRecipeUsage,
+} from "@/modules/production/types";
 
 function normalizeText(value: string) {
   return String(value || "")
@@ -146,6 +152,8 @@ export function buildProductionModuleSnapshot(snapshot: LegacyStorageSnapshot): 
     .map((batch) => batch.breakdown.estimatedTotalCost)
     .filter((value): value is number => value !== null);
 
+  const observedCostReferences = buildObservedCostReferences(batches);
+
   return {
     batches,
     recentBatches: batches.slice(0, 5),
@@ -157,7 +165,65 @@ export function buildProductionModuleSnapshot(snapshot: LegacyStorageSnapshot): 
       recentProductions: Math.min(batches.length, 5),
       incompleteProductions: batches.filter((batch) => batch.status !== "completo").length,
     },
+    observedCostReferences,
   };
+}
+
+function buildObservedCostReferences(batches: ProductionBatchView[]): ProductionObservedCostReference[] {
+  const grouped = new Map<string, ProductionBatchView[]>();
+
+  batches.forEach((batch) => {
+    const key = normalizeText(batch.record.ingredient);
+    const current = grouped.get(key) ?? [];
+    current.push(batch);
+    grouped.set(key, current);
+  });
+
+  return [...grouped.entries()].map(([ingredientKey, ingredientBatches]) => {
+    const validCostBatches = ingredientBatches.filter(
+      (batch) => batch.breakdown.costPerGram !== null && batch.record.finalWeight > 0,
+    );
+    const totalFinalWeight = validCostBatches.reduce((sum, batch) => sum + batch.record.finalWeight, 0);
+    const weightedAverageCostPerGram =
+      totalFinalWeight > 0
+        ? validCostBatches.reduce(
+            (sum, batch) => sum + batch.record.finalWeight * (batch.breakdown.costPerGram ?? 0),
+            0,
+          ) / totalFinalWeight
+        : null;
+    const latestBatch = ingredientBatches[0] ?? null;
+    const latestCostPerGram = latestBatch?.breakdown.costPerGram ?? null;
+    const latestProductionDate = latestBatch?.record.date ?? null;
+    const linkedProductCodes = [
+      ...new Set(
+        ingredientBatches.flatMap((batch) => batch.recipeUsage.linkedProducts.map((product) => product.code)),
+      ),
+    ];
+    const confidence =
+      validCostBatches.length >= 2 && totalFinalWeight > 0
+        ? "forte"
+        : validCostBatches.length === 1
+          ? "moderada"
+          : "fraca";
+
+    return {
+      ingredient: ingredientBatches[0]?.record.ingredient ?? ingredientKey,
+      outputSupplyName: ingredientBatches[0]?.outputSupply?.name ?? null,
+      batchCount: ingredientBatches.length,
+      totalFinalWeight,
+      weightedAverageCostPerGram,
+      latestCostPerGram,
+      latestProductionDate,
+      linkedProductCodes,
+      confidence,
+      notes: [
+        ...(validCostBatches.length ? [] : ["Nenhum lote com custo por grama calculavel foi encontrado."]),
+        ...(ingredientBatches.some((batch) => batch.recipeUsage.linkedProducts.length === 0)
+          ? ["Ha lotes sem produto ligado com seguranca."]
+          : []),
+      ],
+    };
+  });
 }
 
 export function filterProductionBatches(batches: ProductionBatchView[], term: string) {

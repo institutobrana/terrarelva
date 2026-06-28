@@ -1,6 +1,12 @@
 import type { AppSettings, Product, Recipe, Supply } from "@/types/legacy";
 
 export type PricingDataStatus = "completo" | "incompleto" | "sem-base";
+export type PricingConfidenceStatus =
+  | "somente-receita"
+  | "somente-producao"
+  | "compativeis"
+  | "divergentes"
+  | "base-insuficiente";
 
 export type PricingSettings = Pick<AppSettings, "hourRate" | "taxPercent" | "profitPercent">;
 
@@ -31,11 +37,39 @@ export type ProductPricingView = {
   product: Product;
   recipe: Recipe | null;
   breakdown: RecipeCostBreakdown;
+  hybridCost: HybridCostComparison;
   currentPrice: number;
   actualMargin: number | null;
   actualMarginPercent: number | null;
   status: PricingDataStatus;
   statusLabel: string;
+  notes: string[];
+};
+
+export type HybridCostObservedBreakdown = {
+  available: boolean;
+  basisLabel: string;
+  costPerGram: number | null;
+  materialCost: number | null;
+  laborCost: number | null;
+  totalCost: number | null;
+  batchCount: number;
+  totalObservedWeight: number;
+  latestProductionDate: string | null;
+  confidence: "forte" | "moderada" | "fraca" | "indisponivel";
+  missingData: string[];
+};
+
+export type HybridCostComparison = {
+  theoreticalCost: number | null;
+  observedCost: number | null;
+  adoptedCost: number | null;
+  adoptedSource: "teorico" | "observado" | "nenhum";
+  costDifference: number | null;
+  costDifferencePercent: number | null;
+  confidenceStatus: PricingConfidenceStatus;
+  confidenceLabel: string;
+  observedBreakdown: HybridCostObservedBreakdown;
   notes: string[];
 };
 
@@ -53,6 +87,7 @@ export type PricingModuleSnapshot = {
   productViews: ProductPricingView[];
   productsWithRecipe: ProductPricingView[];
   incompleteProducts: ProductPricingView[];
+  divergentProducts: ProductPricingView[];
   recipes: Recipe[];
   supplies: Supply[];
 };

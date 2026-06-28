@@ -2,20 +2,23 @@
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
   color: #24352f;
   background:
-    radial-gradient(circle at top left, rgba(106, 148, 108, 0.14), transparent 24%),
-    radial-gradient(circle at right top, rgba(222, 194, 154, 0.18), transparent 28%),
-    linear-gradient(180deg, #f5f1e8 0%, #ece6da 100%);
+    radial-gradient(circle at top left, rgba(90, 118, 82, 0.16), transparent 24%),
+    radial-gradient(circle at right top, rgba(201, 184, 152, 0.18), transparent 28%),
+    linear-gradient(180deg, #f3eee6 0%, #ece5d9 100%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --shell-border: #ded6c8;
-  --shell-panel: rgba(252, 249, 243, 0.82);
-  --shell-panel-strong: rgba(255, 253, 249, 0.94);
-  --shell-ink: #23352d;
-  --shell-muted: #6b786f;
-  --shell-brand: #1f4d3c;
-  --shell-brand-soft: #e8f0e6;
+  --shell-border: #d9cfbf;
+  --shell-panel: rgba(252, 249, 243, 0.84);
+  --shell-panel-strong: rgba(255, 252, 247, 0.96);
+  --shell-ink: #25352d;
+  --shell-muted: #5f6f63;
+  --shell-brand: #436245;
+  --shell-brand-strong: #36513d;
+  --shell-brand-soft: #e5ede0;
+  --shell-brand-accent: #6e875f;
+  --shell-sand: #d6c4a5;
   --shell-shadow: 0 24px 70px rgba(56, 53, 41, 0.09);
 }
 
@@ -45,8 +48,8 @@ a {
 }
 
 .admin-sider.ant-layout-sider {
-  background: rgba(250, 248, 242, 0.88);
-  border-inline-end: 1px solid rgba(201, 190, 172, 0.72);
+  background: rgba(248, 245, 238, 0.9);
+  border-inline-end: 1px solid rgba(198, 188, 169, 0.72);
   padding: 24px 16px;
   backdrop-filter: blur(18px);
 }
@@ -71,7 +74,7 @@ a {
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.92);
   padding: 6px;
-  box-shadow: 0 16px 30px rgba(31, 77, 60, 0.16);
+  box-shadow: 0 16px 30px rgba(54, 81, 61, 0.16);
 }
 
 .brand-title.ant-typography,
@@ -105,9 +108,9 @@ a {
 }
 
 .admin-menu.ant-menu-light .ant-menu-item-selected {
-  background: linear-gradient(135deg, rgba(42, 84, 66, 0.98), rgba(92, 134, 99, 0.92));
+  background: linear-gradient(135deg, rgba(54, 81, 61, 0.98), rgba(110, 135, 95, 0.94));
   color: #f7f7f2;
-  box-shadow: 0 14px 24px rgba(42, 84, 66, 0.18);
+  box-shadow: 0 14px 24px rgba(54, 81, 61, 0.2);
 }
 
 .admin-menu.ant-menu-light .ant-menu-item-selected .ant-menu-item-icon,
@@ -128,7 +131,7 @@ a {
 
 .admin-topbar-shell {
   background: var(--shell-panel);
-  border: 1px solid rgba(219, 209, 193, 0.9);
+  border: 1px solid rgba(214, 205, 188, 0.92);
   border-radius: 28px 28px 22px 22px;
   box-shadow: var(--shell-shadow);
   overflow: hidden;
@@ -142,7 +145,7 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  background: linear-gradient(180deg, rgba(255, 253, 249, 0.85), rgba(245, 240, 232, 0.85));
+  background: linear-gradient(180deg, rgba(255, 252, 247, 0.9), rgba(242, 237, 229, 0.9));
 }
 
 .page-kicker {
@@ -157,7 +160,7 @@ a {
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.92);
   padding: 5px;
-  box-shadow: 0 10px 20px rgba(37, 71, 55, 0.12);
+  box-shadow: 0 10px 20px rgba(54, 81, 61, 0.12);
 }
 
 .admin-toolbar {
@@ -203,14 +206,14 @@ a {
 }
 
 .toolbar-tab.primary {
-  background: #edf3ea;
+  background: #e8efe4;
 }
 
 .toolbar-tab.active {
   color: #f8f7f2;
   border-color: transparent;
-  background: linear-gradient(135deg, #254737 0%, #5c8761 100%);
-  box-shadow: 0 14px 24px rgba(37, 71, 55, 0.22);
+  background: linear-gradient(135deg, #36513d 0%, #6e875f 100%);
+  box-shadow: 0 14px 24px rgba(54, 81, 61, 0.24);
 }
 
 .admin-content {
@@ -250,10 +253,10 @@ a {
 }
 
 .hero-metric {
-  border: 1px solid #e7dcc8;
+  border: 1px solid #e4d8c8;
   border-radius: 16px;
   padding: 14px 16px;
-  background: #faf7f0;
+  background: #faf7f1;
 }
 
 .hero-metric span {
@@ -274,8 +277,8 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #eef4e8;
-  color: #47673d;
+  background: #e8efe4;
+  color: #436245;
   font-size: 1.1rem;
 }
 
@@ -351,8 +354,8 @@ a {
   justify-content: center;
   gap: 10px;
   background:
-    linear-gradient(150deg, rgba(61, 96, 57, 0.92), rgba(123, 154, 89, 0.92)),
-    linear-gradient(180deg, #426345, #8ca75f);
+    linear-gradient(150deg, rgba(54, 81, 61, 0.94), rgba(110, 135, 95, 0.92)),
+    linear-gradient(180deg, #36513d, #7b8f63);
   color: #f8f5ee;
 }
 

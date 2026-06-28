@@ -33,7 +33,10 @@ export function PrecificacaoPage({ view = "overview" }: PrecificacaoPageProps) {
     view === "with-recipe"
       ? filteredProducts.filter((item) => item.recipe)
       : view === "incomplete"
-        ? filteredProducts.filter((item) => item.status !== "completo")
+        ? filteredProducts.filter(
+            (item) =>
+              item.status !== "completo" || ["divergentes", "base-insuficiente"].includes(item.hybridCost.confidenceStatus),
+          )
         : filteredProducts;
 
   const visibleSelectedProduct =
@@ -43,12 +46,12 @@ export function PrecificacaoPage({ view = "overview" }: PrecificacaoPageProps) {
     view === "with-recipe"
       ? "Lista focada nos produtos que ja possuem ficha tecnica encontrada no legado."
       : view === "incomplete"
-        ? "Lista focada nos produtos que ainda dependem de receita, custo unitario ou base mais completa."
+        ? "Lista focada nos produtos com base fraca, divergente ou ainda incompleta para custo."
         : view === "parameters"
-          ? "Tela focada nos parametros globais e na forma como eles entram nos calculos lidos do legado."
+          ? "Tela focada nos parametros globais e na forma como eles entram na comparacao entre teoria e pratica."
           : view === "simulation"
-            ? "Tela focada na simulacao visual de preco, sem gravacao e sem alterar a base oficial."
-            : "Primeiro modulo novo com estrutura real no shell React, reaproveitando receitas, insumos e parametros do legado em modo somente leitura.";
+            ? "Tela focada na simulacao visual de preco, usando a melhor base segura disponivel."
+            : "Precificacao com base hibrida: custo teorico por receita, custo observado por producao e comparacao entre os dois quando houver base suficiente.";
 
   return (
     <Row gutter={[24, 24]}>
@@ -61,6 +64,7 @@ export function PrecificacaoPage({ view = "overview" }: PrecificacaoPageProps) {
           metrics={[
             { label: "Produtos visiveis", value: String(visibleProducts.length) },
             { label: "Receitas encontradas", value: String(pricingSnapshot.productsWithRecipe.length) },
+            { label: "Divergencias", value: String(pricingSnapshot.divergentProducts.length) },
             { label: "Ultima leitura", value: new Date(legacySnapshot.loadedAt).toLocaleString("pt-BR") },
           ]}
           actions={
@@ -87,17 +91,22 @@ export function PrecificacaoPage({ view = "overview" }: PrecificacaoPageProps) {
         </Col>
       ) : null}
 
-      <Col xs={24} md={8}>
+      <Col xs={24} md={6}>
         <Card className="module-card">
           <Statistic title="Produtos com receita" value={pricingSnapshot.productsWithRecipe.length} />
         </Card>
       </Col>
-      <Col xs={24} md={8}>
+      <Col xs={24} md={6}>
         <Card className="module-card">
           <Statistic title="Produtos incompletos" value={pricingSnapshot.incompleteProducts.length} />
         </Card>
       </Col>
-      <Col xs={24} md={8}>
+      <Col xs={24} md={6}>
+        <Card className="module-card">
+          <Statistic title="Bases divergentes" value={pricingSnapshot.divergentProducts.length} />
+        </Card>
+      </Col>
+      <Col xs={24} md={6}>
         <Card className="module-card">
           <Space direction="vertical" size={4}>
             <Typography.Text type="secondary">Parametros globais</Typography.Text>
@@ -114,15 +123,15 @@ export function PrecificacaoPage({ view = "overview" }: PrecificacaoPageProps) {
           <Space direction="vertical" size={16} style={{ width: "100%" }}>
             <div>
               <Typography.Title level={4} style={{ marginBottom: 0 }}>
-                Base de precificacao
+                Base de precificacao hibrida
               </Typography.Title>
               <Typography.Text type="secondary">
-                Produtos, receitas, insumos e parametros lidos do snapshot legado atual.
+                Comparacao entre custo teorico da receita e custo observado da producao quando houver base segura.
               </Typography.Text>
               <div style={{ marginTop: 8 }}>
-                <Tag color="blue">Sem gravacao</Tag>
-                <Tag color="green">Simulacao local opcional</Tag>
-                <Tag color="gold">Transparencia de dados ausentes</Tag>
+                <Tag color="blue">Somente leitura</Tag>
+                <Tag color="green">Custo teorico + observado</Tag>
+                <Tag color="gold">Transparencia de divergencia</Tag>
               </div>
             </div>
 

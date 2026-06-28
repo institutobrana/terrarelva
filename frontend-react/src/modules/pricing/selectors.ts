@@ -1,5 +1,7 @@
 import type { LegacyStorageSnapshot, Product, Recipe, Supply } from "@/types/legacy";
 
+import { buildProductionModuleSnapshot } from "@/modules/production/selectors";
+import { buildHybridCostComparison } from "@/modules/pricing/hybridCostEngine";
 import type {
   PricingInput,
   PricingModuleSnapshot,
@@ -120,27 +122,32 @@ export function buildRecipeCostBreakdown(input: PricingInput): RecipeCostBreakdo
 }
 
 export function buildProductPricingView(
+  snapshot: LegacyStorageSnapshot,
   product: Product,
   recipes: Recipe[],
   supplies: Supply[],
   settings: PricingSettings,
+  observedCostReferences = buildProductionModuleSnapshot(snapshot).observedCostReferences,
 ): PricingResult {
   const recipe = findRecipeByProductCode(recipes, product.code);
   const breakdown = buildRecipeCostBreakdown({ product, recipe, settings, supplies });
+  const hybridCost = buildHybridCostComparison(observedCostReferences, snapshot, product, recipe, breakdown, settings);
   const currentPrice = product.price;
-  const actualMargin = breakdown.totalCost !== null ? currentPrice - breakdown.totalCost : null;
-  const actualMarginPercent =
-    breakdown.totalCost !== null && currentPrice > 0 ? (actualMargin ?? 0) / currentPrice : null;
+  const displayCost = hybridCost.adoptedCost ?? hybridCost.theoreticalCost ?? hybridCost.observedCost;
+  const actualMargin = displayCost !== null ? currentPrice - displayCost : null;
+  const actualMarginPercent = displayCost !== null && currentPrice > 0 ? (actualMargin ?? 0) / currentPrice : null;
   const statusInfo = formatStatus(breakdown, recipe);
   const notes = [
     ...(recipe ? [] : ["O produto ainda nao possui ficha tecnica no snapshot legado."]),
     ...breakdown.missingData,
+    ...hybridCost.notes,
   ];
 
   return {
     product,
     recipe,
     breakdown,
+    hybridCost,
     currentPrice,
     actualMargin,
     actualMarginPercent,
@@ -154,8 +161,9 @@ export function buildPricingModuleSnapshot(snapshot: LegacyStorageSnapshot): Pri
   const settings = getPricingSettings(snapshot);
   const recipes = snapshot.state.recipes;
   const supplies = snapshot.state.supplies;
+  const observedCostReferences = buildProductionModuleSnapshot(snapshot).observedCostReferences;
   const productViews = snapshot.state.products.map((product) =>
-    buildProductPricingView(product, recipes, supplies, settings),
+    buildProductPricingView(snapshot, product, recipes, supplies, settings, observedCostReferences),
   );
 
   return {
@@ -163,6 +171,7 @@ export function buildPricingModuleSnapshot(snapshot: LegacyStorageSnapshot): Pri
     productViews,
     productsWithRecipe: productViews.filter((item) => item.recipe),
     incompleteProducts: productViews.filter((item) => item.status !== "completo"),
+    divergentProducts: productViews.filter((item) => item.hybridCost.confidenceStatus === "divergentes"),
     recipes,
     supplies,
   };

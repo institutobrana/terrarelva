@@ -39,9 +39,23 @@ export type ProductionSummary = {
   incompleteProductions: number;
 };
 
+export type ProductionObservedCostReference = {
+  ingredient: string;
+  outputSupplyName: string | null;
+  batchCount: number;
+  totalFinalWeight: number;
+  weightedAverageCostPerGram: number | null;
+  latestCostPerGram: number | null;
+  latestProductionDate: string | null;
+  linkedProductCodes: string[];
+  confidence: "forte" | "moderada" | "fraca";
+  notes: string[];
+};
+
 export type ProductionModuleSnapshot = {
   batches: ProductionBatchView[];
   recentBatches: ProductionBatchView[];
   incompleteBatches: ProductionBatchView[];
   summary: ProductionSummary;
+  observedCostReferences: ProductionObservedCostReference[];
 };

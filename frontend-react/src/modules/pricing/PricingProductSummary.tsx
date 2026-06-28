@@ -26,6 +26,21 @@ function formatPercent(value: number | null) {
   return `${(value * 100).toFixed(1)}%`;
 }
 
+function getConfidenceTagColor(productView: ProductPricingView) {
+  switch (productView.hybridCost.confidenceStatus) {
+    case "compativeis":
+      return "green";
+    case "divergentes":
+      return "red";
+    case "somente-receita":
+      return "blue";
+    case "somente-producao":
+      return "gold";
+    default:
+      return "default";
+  }
+}
+
 export function PricingProductSummary({
   productView,
   hourRate,
@@ -55,19 +70,39 @@ export function PricingProductSummary({
           </div>
 
           <Space wrap>
-            <Tag color={productView.status === "completo" ? "green" : productView.status === "incompleto" ? "gold" : "default"}>
-              {productView.statusLabel}
-            </Tag>
+            <Tag color={getConfidenceTagColor(productView)}>{productView.hybridCost.confidenceLabel}</Tag>
             <Tag color="blue">{productView.recipe ? "Receita encontrada" : "Receita ausente"}</Tag>
             <Tag color="purple">{productView.breakdown.compositionItems.length} insumo(s)</Tag>
           </Space>
 
           <Descriptions size="small" column={1} bordered>
             <Descriptions.Item label="Preco atual">{formatCurrency(productView.currentPrice)}</Descriptions.Item>
-            <Descriptions.Item label="Custo estimado">{formatCurrency(productView.breakdown.totalCost)}</Descriptions.Item>
-            <Descriptions.Item label="Lucro bruto estimado">{formatCurrency(productView.actualMargin)}</Descriptions.Item>
-            <Descriptions.Item label="Margem percentual estimada">
+            <Descriptions.Item label="Custo teorico">{formatCurrency(productView.hybridCost.theoreticalCost)}</Descriptions.Item>
+            <Descriptions.Item label="Custo observado">{formatCurrency(productView.hybridCost.observedCost)}</Descriptions.Item>
+            <Descriptions.Item label="Custo adotado">{formatCurrency(productView.hybridCost.adoptedCost)}</Descriptions.Item>
+            <Descriptions.Item label="Margem sobre custo adotado">{formatCurrency(productView.actualMargin)}</Descriptions.Item>
+            <Descriptions.Item label="Margem sobre custo adotado (%)">
               {formatPercent(productView.actualMarginPercent)}
+            </Descriptions.Item>
+            <Descriptions.Item label="Margem sobre custo teorico">
+              {formatCurrency(
+                productView.hybridCost.theoreticalCost !== null
+                  ? productView.currentPrice - productView.hybridCost.theoreticalCost
+                  : null,
+              )}
+            </Descriptions.Item>
+            <Descriptions.Item label="Margem sobre custo observado">
+              {formatCurrency(
+                productView.hybridCost.observedCost !== null
+                  ? productView.currentPrice - productView.hybridCost.observedCost
+                  : null,
+              )}
+            </Descriptions.Item>
+            <Descriptions.Item label="Diferenca teoria x pratica">
+              {formatCurrency(productView.hybridCost.costDifference)}
+            </Descriptions.Item>
+            <Descriptions.Item label="Diferenca teoria x pratica (%)">
+              {formatPercent(productView.hybridCost.costDifferencePercent)}
             </Descriptions.Item>
             <Descriptions.Item label="Preco sugerido">{formatCurrency(productView.breakdown.suggestedPrice)}</Descriptions.Item>
             <Descriptions.Item label="Receita usada">
@@ -89,7 +124,7 @@ export function PricingProductSummary({
         />
       ) : null}
 
-      <Card className="module-card" title="Composicao encontrada">
+      <Card className="module-card" title="Custo teorico detalhado">
         <Space direction="vertical" size={12} style={{ width: "100%" }}>
           {productView.breakdown.compositionItems.length ? (
             productView.breakdown.compositionItems.map((item) => (
@@ -98,7 +133,9 @@ export function PricingProductSummary({
                   <Typography.Text strong>{item.supplyName}</Typography.Text>
                 </Col>
                 <Col xs={12} md={4}>
-                  <Typography.Text>{item.quantity} {item.unit}</Typography.Text>
+                  <Typography.Text>
+                    {item.quantity} {item.unit}
+                  </Typography.Text>
                 </Col>
                 <Col xs={12} md={5}>
                   <Typography.Text type="secondary">Unitario: {formatCurrency(item.unitCost)}</Typography.Text>
@@ -115,6 +152,40 @@ export function PricingProductSummary({
             <Typography.Text type="secondary">Nenhum item de composicao encontrado para este produto.</Typography.Text>
           )}
         </Space>
+      </Card>
+
+      <Card className="module-card" title="Custo observado detalhado">
+        <Descriptions size="small" column={1} bordered>
+          <Descriptions.Item label="Base observada">
+            {productView.hybridCost.observedBreakdown.basisLabel}
+          </Descriptions.Item>
+          <Descriptions.Item label="Custo observado por grama">
+            {formatCurrency(productView.hybridCost.observedBreakdown.costPerGram)}
+          </Descriptions.Item>
+          <Descriptions.Item label="Material observado">
+            {formatCurrency(productView.hybridCost.observedBreakdown.materialCost)}
+          </Descriptions.Item>
+          <Descriptions.Item label="Mao de obra mantida">
+            {formatCurrency(productView.hybridCost.observedBreakdown.laborCost)}
+          </Descriptions.Item>
+          <Descriptions.Item label="Total observado">
+            {formatCurrency(productView.hybridCost.observedBreakdown.totalCost)}
+          </Descriptions.Item>
+          <Descriptions.Item label="Lotes considerados">
+            {productView.hybridCost.observedBreakdown.batchCount}
+          </Descriptions.Item>
+          <Descriptions.Item label="Peso observado acumulado">
+            {productView.hybridCost.observedBreakdown.totalObservedWeight
+              ? `${productView.hybridCost.observedBreakdown.totalObservedWeight} g`
+              : "Nao disponivel"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Ultima producao usada">
+            {productView.hybridCost.observedBreakdown.latestProductionDate || "Nao disponivel"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Confianca da base observada">
+            {productView.hybridCost.observedBreakdown.confidence}
+          </Descriptions.Item>
+        </Descriptions>
       </Card>
 
       <Card className="module-card" title="Simulacao local">
