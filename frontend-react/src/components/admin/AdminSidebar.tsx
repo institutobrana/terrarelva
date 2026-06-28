@@ -30,17 +30,25 @@ export function AdminSidebar({ collapsed, currentPath, modules }: AdminSidebarPr
     items.find((item) => currentPath === item.key || currentPath.startsWith(`${item.key}/`))?.key ?? "/admin/mais";
 
   return (
-    <>
+    <div className="admin-sidebar-shell">
       <div className="brand-block">
         <img src={terraRelvaLogo} alt="Terra Relva" className="brand-logo" />
         {!collapsed && (
-          <div>
+          <div className="brand-copy">
             <Typography.Title level={4} className="brand-title">
               Terra Relva
             </Typography.Title>
+            <Typography.Text className="brand-helper">Operacao artesanal conectada</Typography.Text>
           </div>
         )}
       </div>
+
+      {!collapsed ? (
+        <div className="admin-sidebar-meta">
+          <Typography.Text className="admin-sidebar-label">Navegacao</Typography.Text>
+          <Typography.Text className="admin-sidebar-kicker">Painel principal</Typography.Text>
+        </div>
+      ) : null}
 
       <Menu
         mode="inline"
@@ -49,6 +57,13 @@ export function AdminSidebar({ collapsed, currentPath, modules }: AdminSidebarPr
         onClick={({ key }) => navigate(String(key))}
         className="admin-menu"
       />
-    </>
+
+      {!collapsed ? (
+        <div className="admin-sidebar-footer">
+          <Typography.Text className="admin-sidebar-foot-title">Terra Relva Suite</Typography.Text>
+          <Typography.Text className="admin-sidebar-foot-copy">Shell modular em leitura estruturada</Typography.Text>
+        </div>
+      ) : null}
+    </div>
   );
 }

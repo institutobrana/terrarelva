@@ -22,11 +22,11 @@ export const terraRelvaTheme: ThemeConfig = {
       siderBg: "#fefcf8",
     },
     Menu: {
-      itemBorderRadius: 14,
-      itemMarginInline: 10,
+      itemBorderRadius: 16,
+      itemMarginInline: 8,
       itemMarginBlock: 6,
-      itemSelectedBg: "#e7eee2",
-      itemSelectedColor: "#36513d",
+      itemSelectedBg: "#36513d",
+      itemSelectedColor: "#f7f7f2",
       itemHoverColor: "#36513d",
     },
     Card: {
@@ -34,6 +34,10 @@ export const terraRelvaTheme: ThemeConfig = {
     },
     Button: {
       controlHeightLG: 48,
+    },
+    Input: {
+      activeBorderColor: "#6e875f",
+      hoverBorderColor: "#6e875f",
     },
     Tag: {
       defaultBg: "#eef3ea",

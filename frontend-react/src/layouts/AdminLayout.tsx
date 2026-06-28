@@ -2,6 +2,7 @@ import { Layout } from "antd";
 import { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
+import { AdminContextBar } from "@/components/admin/AdminContextBar";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminTopbar } from "@/components/admin/AdminTopbar";
 import type { AdminModuleNavigation } from "@/types/navigation";
@@ -41,6 +42,9 @@ export function AdminLayout({ modules }: AdminLayoutProps) {
             onToggleSidebar={() => setCollapsed((current) => !current)}
           />
         </Header>
+        <div className="admin-context-wrap">
+          <AdminContextBar currentPath={location.pathname} currentModule={currentModule} />
+        </div>
         <Content className="admin-content">
           <div className="page-frame">
             <Outlet />
