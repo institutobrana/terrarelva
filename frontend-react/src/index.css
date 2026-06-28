@@ -1330,6 +1330,18 @@ a {
   }
 }
 
+.supplier-modal-divider {
+  height: 1px;
+  margin: 4px 0 12px 158px;
+  background: rgba(145, 136, 113, 0.22);
+}
+
+@media (max-width: 860px) {
+  .supplier-modal-divider {
+    margin-left: 0;
+  }
+}
+
 .cashflow-shell-toolbar-right .ant-select-selector,
 .cashflow-shell-toolbar-right .ant-picker,
 .cashflow-shell-toolbar-right .ant-input-affix-wrapper {

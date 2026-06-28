@@ -68,6 +68,22 @@
   - `Novo fornecedor`
   - `Alterar`
   - `Detalhes`
+- O botao `Novo fornecedor` agora abre modal `Novo fornecedor - Dados principais`.
+- Campos adicionados no modal:
+  - `Nome do fornecedor`
+  - `Razao social`
+  - `CPF/CNPJ`
+  - `Segmento`
+  - `Telefone 1`
+  - `Telefone 2`
+  - `E-mail 1`
+- Estrutura de contatos aplicada:
+  - `Telefone 1` e `Telefone 2` com `tipo`, `DDD`, `numero` e `ramal`
+  - `E-mail 1` com `tipo` + `endereco`
+- O modal inclui:
+  - `Gravar fornecedor`
+  - `Cancelar`
+- Nesta etapa, `Gravar fornecedor` faz validacao e submit controlado, sem persistencia real ainda.
 
 ## Estrutura de dados
 

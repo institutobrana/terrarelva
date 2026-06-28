@@ -1,10 +1,11 @@
 import {
+  CloseOutlined,
   FileTextOutlined,
   InfoCircleOutlined,
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Button, Input, Select, Table, Typography, message } from "antd";
+import { Button, Form, Input, Modal, Select, Table, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useMemo, useState } from "react";
 
@@ -27,11 +28,49 @@ const segmentOptions = [
   { label: "Sem filtro", value: "prepared" },
 ];
 
+const supplierSegmentOptions = [
+  { label: "Materias-primas", value: "materias-primas" },
+  { label: "Embalagens", value: "embalagens" },
+  { label: "Distribuicao", value: "distribuicao" },
+];
+
+const phoneTypeOptions = [
+  { label: "Celular", value: "celular" },
+  { label: "Residencial", value: "residencial" },
+  { label: "Comercial", value: "comercial" },
+];
+
+const emailTypeOptions = [
+  { label: "Principal", value: "principal" },
+  { label: "Comercial", value: "comercial" },
+  { label: "Financeiro", value: "financeiro" },
+];
+
+type SupplierFormValues = {
+  supplierName: string;
+  companyName: string | undefined;
+  document: string | undefined;
+  segment: string | undefined;
+  phonePrimaryType: string | undefined;
+  phonePrimaryDdd: string | undefined;
+  phonePrimaryNumber: string | undefined;
+  phonePrimaryExtension: string | undefined;
+  phoneSecondaryType: string | undefined;
+  phoneSecondaryDdd: string | undefined;
+  phoneSecondaryNumber: string | undefined;
+  phoneSecondaryExtension: string | undefined;
+  emailPrimaryType: string | undefined;
+  emailPrimaryAddress: string | undefined;
+};
+
 export function CadastroFornecedoresPage() {
   const { setShellBandContent } = useAdminShellBand();
+  const [form] = Form.useForm<SupplierFormValues>();
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [selectedSegment, setSelectedSegment] = useState("all");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiMessage, messageContext] = message.useMessage();
 
   const visibleRows = useMemo(() => {
@@ -51,6 +90,22 @@ export function CadastroFornecedoresPage() {
 
   const selectedRow = visibleRows.find((row) => row.id === selectedRowId) ?? null;
   const disableSelectionActions = !selectedRow;
+
+  function handleCloseModal() {
+    setIsModalOpen(false);
+    form.resetFields();
+  }
+
+  async function handleCreateSupplier() {
+    try {
+      const values = await form.validateFields();
+      setIsSubmitting(true);
+      apiMessage.success(`Fornecedor "${values.supplierName}" validado e preparado para gravacao na proxima etapa.`);
+      handleCloseModal();
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   const columns: ColumnsType<SupplierRow> = [
     {
@@ -97,7 +152,7 @@ export function CadastroFornecedoresPage() {
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => apiMessage.info("Cadastro de novo fornecedor preparado para a proxima etapa.")}
+              onClick={() => setIsModalOpen(true)}
             >
               Novo fornecedor
             </Button>
@@ -170,6 +225,166 @@ export function CadastroFornecedoresPage() {
           </div>
         </div>
       </ModuleSectionCard>
+
+      <Modal
+        open={isModalOpen}
+        footer={null}
+        onCancel={handleCloseModal}
+        closeIcon={<CloseOutlined />}
+        centered
+        width={820}
+        destroyOnHidden
+        className="terra-password-modal client-modal supplier-modal"
+      >
+        <div className="terra-password-modal-header">
+          <Typography.Title level={3} className="terra-password-modal-title">
+            Novo fornecedor - Dados principais
+          </Typography.Title>
+        </div>
+
+        <Form<SupplierFormValues>
+          form={form}
+          layout="vertical"
+          preserve={false}
+          className="terra-password-form client-modal-form supplier-modal-form"
+          onFinish={() => void handleCreateSupplier()}
+        >
+          <Form.Item
+            name="supplierName"
+            label="Nome do fornecedor"
+            rules={[{ required: true, message: "Informe o nome do fornecedor." }]}
+          >
+            <Input placeholder="Nome do fornecedor" />
+          </Form.Item>
+
+          <Form.Item name="companyName" label="Razao social">
+            <Input placeholder="Razao social" />
+          </Form.Item>
+
+          <Form.Item
+            name="document"
+            label="CPF/CNPJ"
+            rules={[
+              {
+                validator(_, value) {
+                  if (!value) {
+                    return Promise.resolve();
+                  }
+
+                  const digits = String(value).replace(/\D/g, "");
+                  if (digits.length === 11 || digits.length === 14) {
+                    return Promise.resolve();
+                  }
+
+                  return Promise.reject(new Error("Informe um CPF ou CNPJ valido."));
+                },
+              },
+            ]}
+          >
+            <Input placeholder="CPF ou CNPJ" />
+          </Form.Item>
+
+          <Form.Item
+            name="segment"
+            label="Segmento"
+            rules={[{ required: true, message: "Selecione o segmento." }]}
+          >
+            <Select placeholder="Selecionar segmento" options={supplierSegmentOptions} />
+          </Form.Item>
+
+          <div className="supplier-modal-divider" aria-hidden="true" />
+
+          <div className="client-modal-communication-row">
+            <Typography.Text className="client-modal-group-label">Telefone 1</Typography.Text>
+            <div className="client-modal-communication-grid">
+              <Form.Item name="phonePrimaryType" className="client-modal-phone-type">
+                <Select allowClear placeholder="Tipo" options={phoneTypeOptions} />
+              </Form.Item>
+              <Form.Item name="phonePrimaryDdd" className="client-modal-phone-ddd">
+                <Input placeholder="DDD" />
+              </Form.Item>
+              <Form.Item
+                name="phonePrimaryNumber"
+                className="client-modal-phone-number"
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const email = getFieldValue("emailPrimaryAddress");
+                      const secondaryNumber = getFieldValue("phoneSecondaryNumber");
+
+                      if (value || email || secondaryNumber) {
+                        return Promise.resolve();
+                      }
+
+                      return Promise.reject(new Error("Informe pelo menos um contato principal."));
+                    },
+                  }),
+                ]}
+              >
+                <Input placeholder="Numero" />
+              </Form.Item>
+              <Form.Item name="phonePrimaryExtension" className="client-modal-phone-extension">
+                <Input placeholder="Ramal" />
+              </Form.Item>
+            </div>
+          </div>
+
+          <div className="client-modal-communication-row">
+            <Typography.Text className="client-modal-group-label">Telefone 2</Typography.Text>
+            <div className="client-modal-communication-grid">
+              <Form.Item name="phoneSecondaryType" className="client-modal-phone-type">
+                <Select allowClear placeholder="Tipo" options={phoneTypeOptions} />
+              </Form.Item>
+              <Form.Item name="phoneSecondaryDdd" className="client-modal-phone-ddd">
+                <Input placeholder="DDD" />
+              </Form.Item>
+              <Form.Item name="phoneSecondaryNumber" className="client-modal-phone-number">
+                <Input placeholder="Numero" />
+              </Form.Item>
+              <Form.Item name="phoneSecondaryExtension" className="client-modal-phone-extension">
+                <Input placeholder="Ramal" />
+              </Form.Item>
+            </div>
+          </div>
+
+          <div className="client-modal-communication-row">
+            <Typography.Text className="client-modal-group-label">E-mail 1</Typography.Text>
+            <div className="client-modal-email-grid">
+              <Form.Item name="emailPrimaryType" className="client-modal-email-type">
+                <Select allowClear placeholder="Tipo" options={emailTypeOptions} />
+              </Form.Item>
+              <Form.Item
+                name="emailPrimaryAddress"
+                className="client-modal-email-address"
+                rules={[
+                  { type: "email", message: "Informe um e-mail valido." },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const phonePrimary = getFieldValue("phonePrimaryNumber");
+                      const phoneSecondary = getFieldValue("phoneSecondaryNumber");
+
+                      if (value || phonePrimary || phoneSecondary) {
+                        return Promise.resolve();
+                      }
+
+                      return Promise.reject(new Error("Informe pelo menos um contato principal."));
+                    },
+                  }),
+                ]}
+              >
+                <Input placeholder="email@fornecedor.com" />
+              </Form.Item>
+            </div>
+          </div>
+
+          <div className="terra-password-modal-actions client-modal-actions">
+            <Button type="primary" htmlType="submit" loading={isSubmitting}>
+              Gravar fornecedor
+            </Button>
+            <Button onClick={handleCloseModal}>Cancelar</Button>
+          </div>
+        </Form>
+      </Modal>
     </div>
   );
 }
