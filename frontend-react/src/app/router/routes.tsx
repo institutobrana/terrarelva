@@ -9,6 +9,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import { CaixaPage } from "@/pages/admin/CaixaPage";
 import { ClientesPage } from "@/pages/admin/ClientesPage";
 import { ConfiguracoesPage } from "@/pages/admin/ConfiguracoesPage";
+import { ContasBancariasPage } from "@/pages/admin/ContasBancariasPage";
 import { DashboardPage } from "@/pages/admin/DashboardPage";
 import { EstoquePage } from "@/pages/admin/EstoquePage";
 import { FluxoCaixaPage } from "@/pages/admin/FluxoCaixaPage";
@@ -562,20 +563,7 @@ const adminRoutes = [
   },
   {
     path: "configuracoes/contas-bancarias",
-    element: (
-      <AdminPlaceholderPage
-        eyebrow="Configuracao interna"
-        title="Contas bancarias"
-        description="Entrada reservada para estruturar contas bancarias e apoio ao fluxo financeiro."
-        tag="Placeholder seguro"
-        metrics={[
-          { label: "Area", value: "Configuracao" },
-          { label: "Recorte", value: "Bancos" },
-          { label: "Estado", value: "Sem escrita" },
-        ]}
-        bullets={["Base pronta para dados bancarios internos", "Sem integracao externa nesta etapa"]}
-      />
-    ),
+    element: <ContasBancariasPage />,
   },
 ];
 
