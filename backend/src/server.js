@@ -1,5 +1,6 @@
 import http from "node:http";
 
+import { applyCors } from "./config/cors.js";
 import { env } from "./config/env.js";
 import { runMigrations } from "./db/runMigrations.js";
 import { authenticate } from "./middleware/authenticate.js";
@@ -7,9 +8,11 @@ import { authenticateUser, getCurrentUser } from "./services/authService.js";
 import { readJsonBody, sendJson } from "./utils/http.js";
 
 const server = http.createServer(async (request, response) => {
-  response.setHeader("Access-Control-Allow-Origin", env.corsOrigin);
-  response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  const corsAllowed = applyCors(request, response);
+  if (!corsAllowed) {
+    sendJson(response, 403, { error: "Origin not allowed by CORS" });
+    return;
+  }
 
   if (request.method === "OPTIONS") {
     response.writeHead(204);
@@ -68,6 +71,7 @@ const server = http.createServer(async (request, response) => {
 
 await runMigrations();
 
-server.listen(env.port, () => {
-  console.log(`Terra Relva backend listening on port ${env.port}`);
+server.listen(env.port, env.host, () => {
+  console.log(`Terra Relva backend listening on http://${env.host}:${env.port}`);
+  console.log(`Allowed CORS origins: ${env.corsOrigins.join(", ")}`);
 });

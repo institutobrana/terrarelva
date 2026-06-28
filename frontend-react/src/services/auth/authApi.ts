@@ -1,3 +1,5 @@
+import { getApiBaseUrl } from "@/services/auth/apiBase";
+
 export type AuthUser = {
   id: string;
   name?: string;
@@ -21,7 +23,7 @@ export class AuthApiError extends Error {
   }
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
+const API_BASE_URL = getApiBaseUrl();
 
 export async function loginRequest(email: string, password: string): Promise<LoginResponse> {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {

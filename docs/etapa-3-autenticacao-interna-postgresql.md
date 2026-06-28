@@ -60,14 +60,15 @@ Nao existe `POST /register`, rota de signup, botao de criar conta ou onboarding 
 - `LoginPage` tecnica para validacao do backend.
 - `VITE_API_BASE_URL` para apontar ao backend local.
 
-## Validacao local
+## Validacao local e em rede
 
 ### Estado validado nesta rodada
 
 - A base oficial validada foi `D:\TERRA RELVA APP`.
 - O PostgreSQL local em `localhost:5432` respondeu com `pg_isready`.
-- O backend continua preparado para ler `DATABASE_URL` e `JWT_SECRET` via ambiente.
+- O backend continua preparado para ler `DATABASE_URL`, `JWT_SECRET`, `HOST` e `CORS_ORIGINS` via ambiente.
 - O frontend agora trata login, bootstrap de sessao, redirecionamento para `/admin` e logout.
+- A estrategia de API base agora atende localhost, rede local e futura publicacao externa.
 
 ### Pendencia manual atual
 
