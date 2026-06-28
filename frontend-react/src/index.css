@@ -881,12 +881,58 @@ a {
   background: rgba(255, 253, 249, 0.98);
 }
 
-.users-hero-actions {
-  width: 100%;
+.users-admin-page {
+  gap: 14px;
 }
 
-.users-hero-actions .ant-btn {
-  border-radius: 12px;
+.users-ops-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-inline: -18px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(96, 116, 84, 0.16);
+  background: linear-gradient(90deg, rgba(90, 118, 82, 0.95), rgba(110, 135, 95, 0.92) 14%, rgba(235, 240, 231, 0.95) 14%, rgba(244, 247, 240, 0.95) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.users-ops-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-height: 48px;
+  padding: 7px 14px 7px 22px;
+  background: transparent;
+}
+
+.users-ops-toolbar .ant-btn {
+  height: 32px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.users-ops-divider {
+  width: 1px;
+  height: 24px;
+  margin: 0 2px;
+  background: rgba(67, 98, 69, 0.2);
+}
+
+.users-ops-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  min-height: 28px;
+  padding: 4px 14px 6px 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  color: #667261;
+  font-size: 0.78rem;
+}
+
+.users-ops-meta .ant-typography {
+  color: inherit;
 }
 
 .users-grid-shell {
@@ -1129,9 +1175,17 @@ a {
     margin-right: 0;
   }
 
-  .users-admin-topmeta {
+  .users-ops-strip {
+    margin-inline: 0;
+  }
+
+  .users-ops-toolbar {
+    padding-left: 12px;
+  }
+
+  .users-ops-meta {
     gap: 8px 12px;
-    padding-left: 16px;
+    padding-left: 12px;
   }
 }
 

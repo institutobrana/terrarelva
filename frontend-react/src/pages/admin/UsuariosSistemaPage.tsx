@@ -11,11 +11,9 @@ import {
   Alert,
   Button,
   Checkbox,
-  Col,
   Form,
   Input,
   Modal,
-  Row,
   Select,
   Space,
   Table,
@@ -28,7 +26,6 @@ import { useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { useAuth } from "@/app/hooks/useAuth";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
-import { PageHero } from "@/components/ui/PageHero";
 import {
   createInternalUserRequest,
   fetchInternalUsers,
@@ -214,139 +211,128 @@ export function UsuariosSistemaPage() {
   const visibleInactiveUsers = users.filter((entry) => !entry.isActive).length;
 
   return (
-    <Row gutter={[24, 24]} className="users-admin-page">
+    <div className="module-page-shell users-admin-page">
       {messageContext}
+      <section className="users-ops-strip" aria-label="Barra operacional de usuarios">
+        <div className="users-ops-toolbar" role="toolbar" aria-label="Acoes da tela de usuarios">
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
+            Novo usuario
+          </Button>
+          <Button icon={<UserOutlined />} disabled={disabledWithoutSelection}>
+            Alterar
+          </Button>
+          <Button icon={<SettingOutlined />} disabled={disabledWithoutSelection}>
+            Propriedades
+          </Button>
+          <Button
+            icon={<CheckCircleOutlined />}
+            disabled={disabledWithoutSelection || selectedUser?.isActive}
+            loading={isSubmitting}
+            onClick={() => void handleAccessToggle(true)}
+          >
+            Habilitar acesso
+          </Button>
+          <Button
+            danger
+            icon={<StopOutlined />}
+            disabled={disabledWithoutSelection || !selectedUser?.isActive}
+            loading={isSubmitting}
+            onClick={() => void handleAccessToggle(false)}
+          >
+            Desabilitar acesso
+          </Button>
+          <Button icon={<KeyOutlined />} disabled={disabledWithoutSelection}>
+            Permissoes especiais
+          </Button>
+          <span className="users-ops-divider" aria-hidden="true" />
+          <Button icon={<ReloadOutlined />} onClick={() => void loadUsers(effectiveFilter)}>
+            Atualizar grade
+          </Button>
+        </div>
 
-      <Col span={24}>
-        <PageHero
-          eyebrow="Gestao interna protegida"
-          title="Usuarios do sistema"
-          description="Tela alinhada ao mesmo padrao estrutural do Dashboard, mantendo a barra de acoes de usuarios e a listagem real conectada ao PostgreSQL."
-          tag={isAdminUser ? "Area exclusiva de administrador" : "Acesso bloqueado"}
-          metrics={[
-            { label: "Filtro atual", value: effectiveFilter },
-            { label: "Ativos visiveis", value: String(visibleActiveUsers) },
-            { label: "Inativos visiveis", value: String(visibleInactiveUsers) },
-            { label: "Selecionado", value: selectedUser ? selectedUser.name : "Nenhum" },
-          ]}
-          actions={
-            <Space wrap className="users-hero-actions">
-              <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalOpen(true)}>
-                Novo usuario
-              </Button>
-              <Button icon={<UserOutlined />} disabled={disabledWithoutSelection}>
-                Alterar
-              </Button>
-              <Button icon={<SettingOutlined />} disabled={disabledWithoutSelection}>
-                Propriedades
-              </Button>
-              <Button
-                icon={<CheckCircleOutlined />}
-                disabled={disabledWithoutSelection || selectedUser?.isActive}
-                loading={isSubmitting}
-                onClick={() => void handleAccessToggle(true)}
-              >
-                Habilitar acesso
-              </Button>
-              <Button
-                danger
-                icon={<StopOutlined />}
-                disabled={disabledWithoutSelection || !selectedUser?.isActive}
-                loading={isSubmitting}
-                onClick={() => void handleAccessToggle(false)}
-              >
-                Desabilitar acesso
-              </Button>
-              <Button icon={<KeyOutlined />} disabled={disabledWithoutSelection}>
-                Permissoes especiais
-              </Button>
-              <Button icon={<ReloadOutlined />} onClick={() => void loadUsers(effectiveFilter)}>
-                Atualizar grade
-              </Button>
-            </Space>
-          }
-        />
-      </Col>
+        <div className="users-ops-meta">
+          <Typography.Text>Filtro: {effectiveFilter}</Typography.Text>
+          <Typography.Text>Ativos: {visibleActiveUsers}</Typography.Text>
+          <Typography.Text>Inativos: {visibleInactiveUsers}</Typography.Text>
+          <Typography.Text>Selecionado: {selectedUser ? selectedUser.name : "Nenhum"}</Typography.Text>
+        </div>
+      </section>
 
       {!isAdminUser ? (
-        <Col span={24}>
-          <Alert type="error" showIcon message="Acesso restrito" description="Somente administradores podem abrir esta tela." />
-        </Col>
+        <Alert type="error" showIcon message="Acesso restrito" description="Somente administradores podem abrir esta tela." />
       ) : null}
 
-      <Col span={24}>
-        <ModuleSectionCard>
-          <div className="module-table-shell">
-            <Space direction="vertical" size={18} style={{ width: "100%" }}>
-              {!selectedUser ? (
-                <Alert
-                  type="info"
-                  showIcon
-                  message="Nenhum usuario selecionado"
-                  description="As acoes dependentes de linha ficam desabilitadas ate voce selecionar um registro na grade."
-                />
-              ) : null}
+      <ModuleSectionCard>
+        <div className="module-table-shell">
+          <Space direction="vertical" size={18} style={{ width: "100%" }}>
+            {!selectedUser ? (
+              <Alert
+                type="info"
+                showIcon
+                message="Nenhum usuario selecionado"
+                description="As acoes dependentes de linha ficam desabilitadas ate voce selecionar um registro na grade."
+              />
+            ) : null}
 
-              <div className="users-grid-shell">
-                <Table<InternalUser>
-                  rowKey="id"
-                  loading={isLoading}
-                  className="module-table users-admin-table"
-                  columns={columns}
-                  dataSource={users}
-                  pagination={false}
-                  rowSelection={{
-                    type: "radio",
-                    selectedRowKeys: selectedUserId ? [selectedUserId] : [],
-                    onChange: (selectedRowKeys) => setSelectedUserId((selectedRowKeys[0] as string) ?? null),
-                  }}
-                  onRow={(record) => ({
-                    onClick: () => setSelectedUserId(record.id),
-                  })}
-                  rowClassName={(record) => (record.id === selectedUserId ? "users-table-row-selected" : "")}
-                  locale={{ emptyText: "Nenhum usuario encontrado para o filtro atual." }}
-                  footer={() => (
-                    <div className="users-grid-footer">
-                      <Space wrap size={16}>
-                        <Checkbox
-                          checked={showInactive}
-                          onChange={(event) => {
-                            setShowInactive(event.target.checked);
-                            setFilter("active");
-                          }}
-                        >
-                          Visualizar inativos
-                        </Checkbox>
-                        <Button
-                          type={filter === "inactive" ? "primary" : "default"}
-                          size="small"
-                          onClick={() => {
-                            setFilter("inactive");
-                            setShowInactive(false);
-                          }}
-                        >
-                          Somente inativos
-                        </Button>
-                        <Button
-                          type={filter === "active" && !showInactive ? "primary" : "default"}
-                          size="small"
-                          onClick={() => {
-                            setFilter("active");
-                            setShowInactive(false);
-                          }}
-                        >
-                          Somente ativos
-                        </Button>
-                      </Space>
-                      <Typography.Text strong>Total de registros: {users.length}</Typography.Text>
-                    </div>
-                  )}
-                />
-              </div>
-            </Space>
-          </div>
-        </ModuleSectionCard>
-      </Col>
+            <div className="users-grid-shell">
+              <Table<InternalUser>
+                rowKey="id"
+                loading={isLoading}
+                className="module-table users-admin-table"
+                columns={columns}
+                dataSource={users}
+                pagination={false}
+                rowSelection={{
+                  type: "radio",
+                  selectedRowKeys: selectedUserId ? [selectedUserId] : [],
+                  onChange: (selectedRowKeys) => setSelectedUserId((selectedRowKeys[0] as string) ?? null),
+                }}
+                onRow={(record) => ({
+                  onClick: () => setSelectedUserId(record.id),
+                })}
+                rowClassName={(record) => (record.id === selectedUserId ? "users-table-row-selected" : "")}
+                locale={{ emptyText: "Nenhum usuario encontrado para o filtro atual." }}
+                footer={() => (
+                  <div className="users-grid-footer">
+                    <Space wrap size={16}>
+                      <Checkbox
+                        checked={showInactive}
+                        onChange={(event) => {
+                          setShowInactive(event.target.checked);
+                          setFilter("active");
+                        }}
+                      >
+                        Visualizar inativos
+                      </Checkbox>
+                      <Button
+                        type={filter === "inactive" ? "primary" : "default"}
+                        size="small"
+                        onClick={() => {
+                          setFilter("inactive");
+                          setShowInactive(false);
+                        }}
+                      >
+                        Somente inativos
+                      </Button>
+                      <Button
+                        type={filter === "active" && !showInactive ? "primary" : "default"}
+                        size="small"
+                        onClick={() => {
+                          setFilter("active");
+                          setShowInactive(false);
+                        }}
+                      >
+                        Somente ativos
+                      </Button>
+                    </Space>
+                    <Typography.Text strong>Total de registros: {users.length}</Typography.Text>
+                  </div>
+                )}
+              />
+            </div>
+          </Space>
+        </div>
+      </ModuleSectionCard>
 
       <Modal
         open={isModalOpen}
@@ -416,6 +402,6 @@ export function UsuariosSistemaPage() {
           </Form.Item>
         </Form>
       </Modal>
-    </Row>
+    </div>
   );
 }

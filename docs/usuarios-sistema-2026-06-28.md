@@ -63,3 +63,9 @@ Essas acoes ja aparecem na barra operacional, dependem de selecao de linha e fic
 - A referencia estrutural desta etapa passou a ser a propria tela `DashboardPage` do Terra Relva.
 - A tela de usuarios foi reencaixada no mesmo esqueleto de `Row` + `PageHero` + bloco de conteudo abaixo, em vez de manter um topo proprio paralelo.
 - Foram preservadas as acoes, filtros e a tabela funcional de usuarios; o que mudou foi a arquitetura visual do topo para herdar o mesmo padrao do Dashboard.
+
+## Correcao de entendimento do layout
+
+- O `PageHero` interno foi removido porque ainda criava um cabecalho de pagina grande, o que nao era desejado para uma tela operacional.
+- No lugar dele, a tela agora comeca em uma faixa horizontal unica de comandos, com metadados discretos na mesma regiao.
+- A grade de usuarios voltou a ser o elemento principal da tela, sem cards de resumo nem hero section acima.
