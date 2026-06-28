@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { AdminModuleNavigation } from "@/types/navigation";
+import terraRelvaLogo from "../../../../assets/LOGO_TERRA_RELVA.png";
 
 type AdminSidebarProps = {
   collapsed: boolean;
@@ -31,22 +32,15 @@ export function AdminSidebar({ collapsed, currentPath, modules }: AdminSidebarPr
   return (
     <>
       <div className="brand-block">
-        <span className="brand-mark">TR</span>
+        <img src={terraRelvaLogo} alt="Terra Relva" className="brand-logo" />
         {!collapsed && (
           <div>
             <Typography.Title level={4} className="brand-title">
               Terra Relva
             </Typography.Title>
-            <Typography.Text className="brand-subtitle">Shell administrativo React</Typography.Text>
           </div>
         )}
       </div>
-
-      {!collapsed && (
-        <div className="sider-section-label">
-          <Typography.Text>Navegacao principal</Typography.Text>
-        </div>
-      )}
 
       <Menu
         mode="inline"

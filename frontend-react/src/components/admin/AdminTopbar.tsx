@@ -1,8 +1,9 @@
 import { BellOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Avatar, Breadcrumb, Button, Space, Tag, Typography } from "antd";
+import { Breadcrumb, Button, Space, Tag, Typography } from "antd";
 import { Link } from "react-router-dom";
 
 import type { AdminModuleNavigation } from "@/types/navigation";
+import terraRelvaLogo from "../../../../assets/LOGO_TERRA_RELVA.png";
 
 type AdminTopbarProps = {
   collapsed: boolean;
@@ -37,7 +38,7 @@ export function AdminTopbar({ collapsed, currentPath, currentModule, onToggleSid
         <Space size="middle">
           <Tag color="green-inverse">Fase 2</Tag>
           <Button icon={<BellOutlined />} />
-          <Avatar style={{ backgroundColor: "#1f4d3c" }}>TR</Avatar>
+          <img src={terraRelvaLogo} alt="Terra Relva" className="admin-header-logo" />
         </Space>
       </div>
 

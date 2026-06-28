@@ -53,7 +53,7 @@ export const adminModules: AdminModuleNavigation[] = [
     section: "principal",
     topbarItems: [
       { key: "visao-geral", label: "Visao geral", path: "/admin/producao", accent: "primary" },
-      { key: "nova-producao", label: "Nova producao", path: "/admin/producao/nova-producao" },
+      { key: "recentes", label: "Producoes recentes", path: "/admin/producao/recentes" },
       { key: "lotes", label: "Lotes", path: "/admin/producao/lotes" },
       { key: "consumo", label: "Consumo de insumos", path: "/admin/producao/consumo-insumos" },
       { key: "custos", label: "Custos", path: "/admin/producao/custos" },

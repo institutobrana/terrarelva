@@ -64,18 +64,14 @@ a {
   padding: 0 12px;
 }
 
-.brand-mark {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(145deg, #214636 0%, #5d8b61 100%);
-  color: #fff;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  box-shadow: 0 16px 30px rgba(31, 77, 60, 0.24);
+.brand-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 6px;
+  box-shadow: 0 16px 30px rgba(31, 77, 60, 0.16);
 }
 
 .brand-title.ant-typography,
@@ -87,7 +83,6 @@ a {
   margin: 0;
 }
 
-.brand-subtitle,
 .page-kicker,
 .toolbar-description,
 .store-brand-copy,
@@ -95,15 +90,6 @@ a {
 .module-description,
 .store-description {
   color: var(--shell-muted);
-}
-
-.sider-section-label {
-  padding: 0 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #7b8178;
 }
 
 .admin-menu {
@@ -162,6 +148,16 @@ a {
 .page-kicker {
   display: block;
   margin-bottom: 2px;
+}
+
+.admin-header-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 5px;
+  box-shadow: 0 10px 20px rgba(37, 71, 55, 0.12);
 }
 
 .admin-toolbar {

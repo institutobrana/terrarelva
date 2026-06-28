@@ -9,6 +9,7 @@ import { ConfiguracoesPage } from "@/pages/admin/ConfiguracoesPage";
 import { DashboardPage } from "@/pages/admin/DashboardPage";
 import { EstoquePage } from "@/pages/admin/EstoquePage";
 import { PrecificacaoPage } from "@/pages/admin/PrecificacaoPage";
+import { ProducaoPage } from "@/pages/admin/ProducaoPage";
 import { ProdutosPage } from "@/pages/admin/ProdutosPage";
 import { VendasPage } from "@/pages/admin/VendasPage";
 import { AdminPlaceholderPage } from "@/pages/admin/AdminPlaceholderPage";
@@ -30,7 +31,7 @@ const adminRoutes = [
     element: (
       <AdminPlaceholderPage
         eyebrow="Visao operacional"
-        title="Hoje · Agenda"
+        title="Hoje - Agenda"
         description="Subtela preparada para agenda do dia, entregas combinadas e prioridades operacionais."
         tag="Placeholder seguro"
         metrics={[
@@ -47,7 +48,7 @@ const adminRoutes = [
     element: (
       <AdminPlaceholderPage
         eyebrow="Visao operacional"
-        title="Hoje · Alertas"
+        title="Hoje - Alertas"
         description="Espaco reservado para alertas de estoque, producao, entregas e recebimentos."
         tag="Placeholder seguro"
         metrics={[
@@ -65,7 +66,7 @@ const adminRoutes = [
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de produtos"
-        title="Produtos · Ativos"
+        title="Produtos - Ativos"
         description="Filtro visual reservado para itens ativos, mantendo o shell contextual coerente."
         tag="Placeholder seguro"
         metrics={[
@@ -82,7 +83,7 @@ const adminRoutes = [
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de produtos"
-        title="Produtos · Inativos"
+        title="Produtos - Inativos"
         description="Base pronta para revisar itens pausados ou fora de linha sem mexer no legado."
         tag="Placeholder seguro"
         metrics={[
@@ -99,7 +100,7 @@ const adminRoutes = [
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de produtos"
-        title="Produtos · Estoque baixo"
+        title="Produtos - Estoque baixo"
         description="Rota reservada para itens com ruptura ou risco de ruptura."
         tag="Placeholder seguro"
         metrics={[
@@ -116,7 +117,7 @@ const adminRoutes = [
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de produtos"
-        title="Produtos · Novo produto"
+        title="Produtos - Novo produto"
         description="Entrada futura para cadastro estruturado no React, ainda sem habilitar gravacao."
         tag="Placeholder seguro"
         metrics={[
@@ -134,7 +135,7 @@ const adminRoutes = [
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de estoque"
-        title="Estoque · Movimentacoes"
+        title="Estoque - Movimentacoes"
         description="Area destinada a entradas, saidas e rastreio de variacoes de saldo."
         tag="Placeholder seguro"
         metrics={[
@@ -151,7 +152,7 @@ const adminRoutes = [
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de estoque"
-        title="Estoque · Reposicao"
+        title="Estoque - Reposicao"
         description="Espaco preparado para priorizacao de compra e producao a partir do estoque."
         tag="Placeholder seguro"
         metrics={[
@@ -169,7 +170,7 @@ const adminRoutes = [
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de vendas"
-        title="Vendas · Orcamentos"
+        title="Vendas - Orcamentos"
         description="Rota reservada para propostas, atendimento e conversao comercial."
         tag="Placeholder seguro"
         metrics={[
@@ -186,7 +187,7 @@ const adminRoutes = [
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de vendas"
-        title="Vendas · Pedido rapido"
+        title="Vendas - Pedido rapido"
         description="Entrada futura para venda expressa sem comprometer a etapa segura da migracao."
         tag="Placeholder seguro"
         metrics={[
@@ -203,7 +204,7 @@ const adminRoutes = [
     element: (
       <AdminPlaceholderPage
         eyebrow="Subtela de vendas"
-        title="Vendas · Recebimentos"
+        title="Vendas - Recebimentos"
         description="Espaco contextual para pagamentos pendentes e acompanhamento comercial."
         tag="Placeholder seguro"
         metrics={[
@@ -215,30 +216,209 @@ const adminRoutes = [
       />
     ),
   },
-  { path: "producao", element: <AdminPlaceholderPage eyebrow="Modulo futuro" title="Producao" description="Modulo-base para consolidar lotes, custos, validades e consumo de insumos no novo admin." tag="Casco pronto para o dominio" metrics={[{ label: "Dependencias", value: "Estoque + precificacao" }, { label: "Operacao", value: "Lotes e custos" }, { label: "Estado", value: "Placeholder" }]} bullets={["Rota principal adicionada ao shell", "Barra superior contextual ativa"]} /> },
-  { path: "producao/nova-producao", element: <AdminPlaceholderPage eyebrow="Subtela de producao" title="Producao · Nova producao" description="Area futura para abrir ordens ou registros de producao com seguranca." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Producao" }, { label: "Recorte", value: "Nova producao" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Boa base para formulario guiado", "Sem acoplar persistencia agora"]} /> },
-  { path: "producao/lotes", element: <AdminPlaceholderPage eyebrow="Subtela de producao" title="Producao · Lotes" description="Espaco reservado para acompanhamento de lotes e rastreabilidade." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Producao" }, { label: "Recorte", value: "Lotes" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Prepara rastreabilidade", "Pode receber tabela e timeline"]} /> },
-  { path: "producao/consumo-insumos", element: <AdminPlaceholderPage eyebrow="Subtela de producao" title="Producao · Consumo de insumos" description="Rota pensada para conciliar receitas, insumos e baixa de estoque." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Producao" }, { label: "Recorte", value: "Consumo de insumos" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Aproxima o dominio real", "Mantem a fase segura"]} /> },
-  { path: "producao/custos", element: <AdminPlaceholderPage eyebrow="Subtela de producao" title="Producao · Custos" description="Area reservada para custo por lote, custo por unidade e apoio a precificacao." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Producao" }, { label: "Recorte", value: "Custos" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Conecta com futura modelagem", "Sem ativar regras financeiras agora"]} /> },
-  { path: "producao/validades", element: <AdminPlaceholderPage eyebrow="Subtela de producao" title="Producao · Validades" description="Espaco para alertas, vencimentos e rotacao de produtos produzidos." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Producao" }, { label: "Recorte", value: "Validades" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Boa base para monitoramento", "Alinha operacao e qualidade"]} /> },
+  { path: "producao", element: <ProducaoPage /> },
+  { path: "producao/recentes", element: <ProducaoPage view="recent" /> },
+  { path: "producao/lotes", element: <ProducaoPage view="lots" /> },
+  { path: "producao/consumo-insumos", element: <ProducaoPage view="supplies" /> },
+  { path: "producao/custos", element: <ProducaoPage view="costs" /> },
+  { path: "producao/validades", element: <ProducaoPage view="expiry" /> },
   { path: "clientes", element: <ClientesPage /> },
-  { path: "clientes/com-telefone", element: <AdminPlaceholderPage eyebrow="Subtela de clientes" title="Clientes · Com telefone" description="Recorte pronto para contato rapido e relacionamento ativo com clientes." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Clientes" }, { label: "Recorte", value: "Com telefone" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Suporta futuras acoes comerciais", "Mantem a navegacao contextual"]} /> },
-  { path: "clientes/ultima-compra", element: <AdminPlaceholderPage eyebrow="Subtela de clientes" title="Clientes · Ultima compra" description="Entrada preparada para recorrencia e reativacao com base na compra mais recente." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Clientes" }, { label: "Recorte", value: "Ultima compra" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Apoia CRM futuro", "Nao depende de nova persistencia ainda"]} /> },
-  { path: "clientes/favoritos", element: <AdminPlaceholderPage eyebrow="Subtela de clientes" title="Clientes · Favoritos" description="Espaco reservado para destacar clientes recorrentes e de maior valor." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Clientes" }, { label: "Recorte", value: "Favoritos" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Ajuda a separar segmentos", "Casco pronto para listas filtradas"]} /> },
+  {
+    path: "clientes/com-telefone",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Subtela de clientes"
+        title="Clientes - Com telefone"
+        description="Recorte pronto para contato rapido e relacionamento ativo com clientes."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Modulo", value: "Clientes" },
+          { label: "Recorte", value: "Com telefone" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Suporta futuras acoes comerciais", "Mantem a navegacao contextual"]}
+      />
+    ),
+  },
+  {
+    path: "clientes/ultima-compra",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Subtela de clientes"
+        title="Clientes - Ultima compra"
+        description="Entrada preparada para recorrencia e reativacao com base na compra mais recente."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Modulo", value: "Clientes" },
+          { label: "Recorte", value: "Ultima compra" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Apoia CRM futuro", "Nao depende de nova persistencia ainda"]}
+      />
+    ),
+  },
+  {
+    path: "clientes/favoritos",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Subtela de clientes"
+        title="Clientes - Favoritos"
+        description="Espaco reservado para destacar clientes recorrentes e de maior valor."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Modulo", value: "Clientes" },
+          { label: "Recorte", value: "Favoritos" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Ajuda a separar segmentos", "Casco pronto para listas filtradas"]}
+      />
+    ),
+  },
   { path: "caixa", element: <CaixaPage /> },
-  { path: "caixa/saidas", element: <AdminPlaceholderPage eyebrow="Subtela de caixa" title="Caixa · Saidas" description="Recorte reservado para despesas, retiradas e compromissos financeiros." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Caixa" }, { label: "Recorte", value: "Saidas" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Pode virar tabela de lancamentos", "Sem conciliacao real nesta fase"]} /> },
-  { path: "caixa/contas", element: <AdminPlaceholderPage eyebrow="Subtela de caixa" title="Caixa · Contas" description="Rota prevista para contas, centros financeiros e separacao por origem." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Caixa" }, { label: "Recorte", value: "Contas" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Boa base para multiplas contas", "Mantem o shell coeso"]} /> },
-  { path: "caixa/recebiveis", element: <AdminPlaceholderPage eyebrow="Subtela de caixa" title="Caixa · Recebiveis" description="Espaco pronto para acompanhar pendencias, parcelamentos e valores a receber." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Caixa" }, { label: "Recorte", value: "Recebiveis" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Conecta vendas e caixa", "Sem tocar na logica existente"]} /> },
-  { path: "caixa/fechamento", element: <AdminPlaceholderPage eyebrow="Subtela de caixa" title="Caixa · Fechamento" description="Area contextual para conferencia de periodo e resumo financeiro consolidado." tag="Placeholder seguro" metrics={[{ label: "Modulo", value: "Caixa" }, { label: "Recorte", value: "Fechamento" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Boa base para exportacoes futuras", "Segura para evoluir depois"]} /> },
-  { path: "mais", element: <AdminPlaceholderPage eyebrow="Navegacao secundaria" title="Mais" description="Pagina-ponte para os modulos complementares do admin, mantendo a simplicidade da operacao atual." tag="Agrupamento principal definido" metrics={[{ label: "Grupo", value: "Modulos complementares" }, { label: "Origem", value: "Baseado no legado" }, { label: "Estado", value: "Shell ativo" }]} bullets={["Precificacao, pedidos, fornecedores e relatorios ficam agrupados aqui", "Configuracoes e loja seguem acessiveis pelo topo"]} /> },
+  {
+    path: "caixa/saidas",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Subtela de caixa"
+        title="Caixa - Saidas"
+        description="Recorte reservado para despesas, retiradas e compromissos financeiros."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Modulo", value: "Caixa" },
+          { label: "Recorte", value: "Saidas" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Pode virar tabela de lancamentos", "Sem conciliacao real nesta fase"]}
+      />
+    ),
+  },
+  {
+    path: "caixa/contas",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Subtela de caixa"
+        title="Caixa - Contas"
+        description="Rota prevista para contas, centros financeiros e separacao por origem."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Modulo", value: "Caixa" },
+          { label: "Recorte", value: "Contas" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Boa base para multiplas contas", "Mantem o shell coeso"]}
+      />
+    ),
+  },
+  {
+    path: "caixa/recebiveis",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Subtela de caixa"
+        title="Caixa - Recebiveis"
+        description="Espaco pronto para acompanhar pendencias, parcelamentos e valores a receber."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Modulo", value: "Caixa" },
+          { label: "Recorte", value: "Recebiveis" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Conecta vendas e caixa", "Sem tocar na logica existente"]}
+      />
+    ),
+  },
+  {
+    path: "caixa/fechamento",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Subtela de caixa"
+        title="Caixa - Fechamento"
+        description="Area contextual para conferencia de periodo e resumo financeiro consolidado."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Modulo", value: "Caixa" },
+          { label: "Recorte", value: "Fechamento" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Boa base para exportacoes futuras", "Segura para evoluir depois"]}
+      />
+    ),
+  },
+  {
+    path: "mais",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Navegacao secundaria"
+        title="Mais"
+        description="Pagina-ponte para os modulos complementares do admin, mantendo a simplicidade da operacao atual."
+        tag="Agrupamento principal definido"
+        metrics={[
+          { label: "Grupo", value: "Modulos complementares" },
+          { label: "Origem", value: "Baseado no legado" },
+          { label: "Estado", value: "Shell ativo" },
+        ]}
+        bullets={[
+          "Precificacao, pedidos, fornecedores e relatorios ficam agrupados aqui",
+          "Configuracoes e loja seguem acessiveis pelo topo",
+        ]}
+      />
+    ),
+  },
   { path: "precificacao", element: <PrecificacaoPage /> },
   { path: "precificacao/produtos-com-receita", element: <PrecificacaoPage view="with-recipe" /> },
   { path: "precificacao/produtos-incompletos", element: <PrecificacaoPage view="incomplete" /> },
   { path: "precificacao/parametros", element: <PrecificacaoPage view="parameters" /> },
   { path: "precificacao/simulacao", element: <PrecificacaoPage view="simulation" /> },
-  { path: "pedidos", element: <AdminPlaceholderPage eyebrow="Modulo futuro" title="Pedidos" description="Base para acompanhamento de pedidos, entregas e pos-venda sem misturar com o legado agora." tag="Placeholder seguro" metrics={[{ label: "Dependencias", value: "Vendas + clientes" }, { label: "Escopo", value: "Pedidos e entregas" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Boa separacao de dominio", "Pode receber timeline depois"]} /> },
-  { path: "fornecedores", element: <AdminPlaceholderPage eyebrow="Modulo futuro" title="Fornecedores" description="Tela-base para abastecimento, compras e parceiros da operacao." tag="Placeholder seguro" metrics={[{ label: "Dependencias", value: "Estoque + compras" }, { label: "Escopo", value: "Fornecedores" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Ajuda a preparar compras estruturadas", "Mantem navegacao completa"]} /> },
-  { path: "relatorios", element: <AdminPlaceholderPage eyebrow="Modulo futuro" title="Relatorios" description="Entrada reservada para consolidar indicadores operacionais, comerciais e financeiros." tag="Placeholder seguro" metrics={[{ label: "Dependencias", value: "Todos os modulos" }, { label: "Escopo", value: "Analise e exportacao" }, { label: "Estado", value: "Sem escrita" }]} bullets={["Boa base para painels futuros", "Nao exige banco novo nesta fase"]} /> },
+  {
+    path: "pedidos",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Modulo futuro"
+        title="Pedidos"
+        description="Base para acompanhamento de pedidos, entregas e pos-venda sem misturar com o legado agora."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Dependencias", value: "Vendas + clientes" },
+          { label: "Escopo", value: "Pedidos e entregas" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Boa separacao de dominio", "Pode receber timeline depois"]}
+      />
+    ),
+  },
+  {
+    path: "fornecedores",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Modulo futuro"
+        title="Fornecedores"
+        description="Tela-base para abastecimento, compras e parceiros da operacao."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Dependencias", value: "Estoque + compras" },
+          { label: "Escopo", value: "Fornecedores" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Ajuda a preparar compras estruturadas", "Mantem navegacao completa"]}
+      />
+    ),
+  },
+  {
+    path: "relatorios",
+    element: (
+      <AdminPlaceholderPage
+        eyebrow="Modulo futuro"
+        title="Relatorios"
+        description="Entrada reservada para consolidar indicadores operacionais, comerciais e financeiros."
+        tag="Placeholder seguro"
+        metrics={[
+          { label: "Dependencias", value: "Todos os modulos" },
+          { label: "Escopo", value: "Analise e exportacao" },
+          { label: "Estado", value: "Sem escrita" },
+        ]}
+        bullets={["Boa base para painels futuros", "Nao exige banco novo nesta fase"]}
+      />
+    ),
+  },
   { path: "configuracoes", element: <ConfiguracoesPage /> },
 ];
 
