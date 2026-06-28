@@ -45,3 +45,9 @@ Essas acoes ja aparecem na barra operacional, dependem de selecao de linha e fic
 - Removidos o header alto e os cards de resumo que estavam deixando o topo distante do print de referencia.
 - A barra de acoes passou a ser uma faixa continua, integrada ao shell e com comandos na mesma linha.
 - A tabela inferior, filtros do rodape e logica funcional de criar, habilitar e desabilitar usuario foram preservados.
+
+## Ajuste fino de integracao com a lateral
+
+- A faixa superior recebeu a mesma familia de cor do rail esquerdo para parecer uma extensao do shell.
+- Foram reduzidos borda, arredondamento e sombra para remover a sensacao de card independente.
+- A logica visual foi alinhada ao shell do Brana Cloud como referencia estrutural de continuidade lateral para barra horizontal, sem copiar branding.

@@ -215,8 +215,10 @@ export function UsuariosSistemaPage() {
       {messageContext}
       <section className="users-admin-topstrip">
         <div className="users-admin-topstrip-title">
-          <Typography.Text className="users-admin-kicker">Gestao interna protegida</Typography.Text>
-          <Typography.Title level={3}>Usuarios do sistema</Typography.Title>
+          <div className="users-admin-topstrip-copy">
+            <Typography.Text className="users-admin-kicker">Gestao interna protegida</Typography.Text>
+            <Typography.Title level={3}>Usuarios do sistema</Typography.Title>
+          </div>
         </div>
 
         <div className="users-admin-commandbar" role="toolbar" aria-label="Acoes da tela de usuarios">

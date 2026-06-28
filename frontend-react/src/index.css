@@ -886,29 +886,64 @@ a {
 }
 
 .users-admin-topstrip {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-inline: -6px;
-  border: 1px solid rgba(142, 157, 131, 0.4);
-  border-radius: 0 0 20px 20px;
+  margin-inline: -18px 0;
+  border: 0;
+  border-radius: 0;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(251, 249, 244, 0.98), rgba(241, 236, 227, 0.98));
-  box-shadow: 0 10px 24px rgba(56, 53, 41, 0.08);
+  background:
+    linear-gradient(90deg, rgba(90, 118, 82, 0.98), rgba(119, 146, 103, 0.96) 22%, rgba(240, 244, 236, 0.96) 22%, rgba(234, 239, 228, 0.96) 100%);
+  box-shadow: 0 4px 10px rgba(56, 53, 41, 0.05);
+}
+
+.users-admin-topstrip::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 88px;
+  background: linear-gradient(180deg, #5a7652, #6e875f);
+}
+
+.users-admin-topstrip::after {
+  content: "";
+  position: absolute;
+  left: 88px;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  background: linear-gradient(90deg, rgba(90, 118, 82, 0.9), rgba(90, 118, 82, 0));
 }
 
 .users-admin-topstrip-title {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 10px 18px 8px;
-  border-bottom: 1px solid rgba(130, 144, 118, 0.18);
-  background: linear-gradient(180deg, rgba(248, 244, 237, 0.98), rgba(241, 236, 227, 0.98));
+  min-height: 42px;
+  padding: 8px 18px 6px 126px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
 }
 
 .users-admin-topstrip-title .ant-typography {
   margin: 0;
+}
+
+.users-admin-topstrip-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.users-admin-topstrip-copy .ant-typography {
+  color: #f7faf4;
 }
 
 .users-admin-kicker {
@@ -916,48 +951,52 @@ a {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #76816a;
+  color: rgba(247, 250, 244, 0.74);
 }
 
 .users-admin-commandbar {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 2px;
   flex-wrap: wrap;
-  padding: 6px 10px;
-  border-bottom: 1px solid rgba(130, 144, 118, 0.18);
-  background: linear-gradient(180deg, rgba(246, 242, 234, 0.98), rgba(238, 233, 223, 0.98));
+  padding: 8px 12px 8px 126px;
+  border-bottom: 1px solid rgba(96, 116, 84, 0.12);
+  background: linear-gradient(180deg, rgba(236, 241, 231, 0.96), rgba(228, 235, 221, 0.96));
 }
 
 .users-admin-commandbar .ant-btn {
   height: 34px;
-  border-radius: 8px;
+  border-radius: 6px;
   padding-inline: 10px;
-  color: #4d5b45;
+  color: #41533f;
   font-weight: 600;
 }
 
 .users-admin-commandbar .ant-btn:not(:disabled):hover {
-  color: #3f5740;
-  background: rgba(90, 118, 82, 0.1);
+  color: #304032;
+  background: rgba(67, 98, 69, 0.08);
 }
 
 .users-admin-commandbar-divider {
   width: 1px;
   align-self: stretch;
   margin: 0 6px;
-  background: rgba(67, 98, 69, 0.16);
+  background: rgba(67, 98, 69, 0.18);
 }
 
 .users-admin-topmeta {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 14px;
   flex-wrap: wrap;
-  padding: 7px 16px 9px;
+  padding: 7px 16px 8px 126px;
   font-size: 0.82rem;
   color: #6b7562;
-  background: rgba(251, 250, 247, 0.92);
+  background: rgba(245, 248, 241, 0.92);
 }
 
 .users-admin-topmeta .ant-typography {
@@ -1184,18 +1223,27 @@ a {
 
   .users-admin-topstrip {
     margin-inline: 0;
+    background: linear-gradient(180deg, rgba(90, 118, 82, 0.98), rgba(234, 239, 228, 0.96) 46%);
   }
 
   .users-admin-topstrip-title {
     align-items: flex-start;
+    padding-left: 18px;
+  }
+
+  .users-admin-topstrip::before,
+  .users-admin-topstrip::after {
+    display: none;
   }
 
   .users-admin-commandbar {
     padding-inline: 8px;
+    padding-left: 8px;
   }
 
   .users-admin-topmeta {
     gap: 8px 12px;
+    padding-left: 16px;
   }
 }
 
