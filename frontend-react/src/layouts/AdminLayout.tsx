@@ -6,6 +6,7 @@ import { AdminActionTopbar } from "@/components/admin/AdminActionTopbar";
 import { AdminContextPanel } from "@/components/admin/AdminContextPanel";
 import { AdminIconRail } from "@/components/admin/AdminIconRail";
 import { AdminWorkspace } from "@/components/admin/AdminWorkspace";
+import { useAuth } from "@/app/hooks/useAuth";
 import type { AdminModuleNavigation } from "@/types/navigation";
 import { getAdminModuleFromPath } from "@/utils/navigation";
 
@@ -14,6 +15,7 @@ type AdminLayoutProps = {
 };
 
 export function AdminLayout({ modules }: AdminLayoutProps) {
+  const { logout, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const panelCloseTimerRef = useRef<number | null>(null);
@@ -65,7 +67,14 @@ export function AdminLayout({ modules }: AdminLayoutProps) {
   return (
     <div className="terra-shell" style={shellStyle}>
       <div className="terra-shell-topbar">
-        <AdminActionTopbar userLabel="Sessao administrativa ativa" onToolbarAction={(path) => navigate(path)} />
+        <AdminActionTopbar
+          userLabel={user?.name ?? user?.email ?? "Sessao administrativa ativa"}
+          onToolbarAction={(path) => navigate(path)}
+          onLogout={() => {
+            logout();
+            navigate("/auth/login", { replace: true });
+          }}
+        />
       </div>
 
       <div className={`terra-shell-body${panelModule ? " has-panel" : ""}`}>

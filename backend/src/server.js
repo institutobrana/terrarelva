@@ -3,7 +3,7 @@ import http from "node:http";
 import { env } from "./config/env.js";
 import { runMigrations } from "./db/runMigrations.js";
 import { authenticate } from "./middleware/authenticate.js";
-import { authenticateUser } from "./services/authService.js";
+import { authenticateUser, getCurrentUser } from "./services/authService.js";
 import { readJsonBody, sendJson } from "./utils/http.js";
 
 const server = http.createServer(async (request, response) => {
@@ -49,13 +49,13 @@ const server = http.createServer(async (request, response) => {
         return;
       }
 
-      sendJson(response, 200, {
-        user: {
-          id: claims.sub,
-          email: claims.email,
-          role: claims.role,
-        },
-      });
+      const user = await getCurrentUser(claims.sub);
+      if (!user) {
+        sendJson(response, 401, { error: "Unauthorized" });
+        return;
+      }
+
+      sendJson(response, 200, { user });
       return;
     }
 

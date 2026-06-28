@@ -43,3 +43,9 @@
 ## Resultado esperado apos esta rodada
 
 `D:\TERRA RELVA APP` passa a concentrar a base correta do Terra Relva, incluindo frontend React, shell consolidado, modulos ja estruturados e fundacao minima de autenticacao/backend.
+
+## Evolucao posterior de login interno
+
+- A rodada seguinte consolidou a tela de login como entrada real do sistema.
+- O acesso ao `/admin` permanece protegido por rota autenticada.
+- Continua sem qualquer rota publica de cadastro.

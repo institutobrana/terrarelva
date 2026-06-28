@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 
-import { createUser, findUserByEmail, updateLastLogin } from "../repositories/usersRepository.js";
+import { createUser, findUserByEmail, findUserById, updateLastLogin } from "../repositories/usersRepository.js";
 import { hashPassword, verifyPassword } from "./passwordService.js";
 import { signToken } from "./tokenService.js";
 
@@ -34,6 +34,21 @@ export async function authenticateUser(email, password) {
       role: user.role,
       isActive: user.is_active,
     },
+  };
+}
+
+export async function getCurrentUser(userId) {
+  const user = await findUserById(userId);
+  if (!user || !user.is_active) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    isActive: user.is_active,
   };
 }
 

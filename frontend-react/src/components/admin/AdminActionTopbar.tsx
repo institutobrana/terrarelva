@@ -79,9 +79,10 @@ function ActionButton({ action, onAction }: { action: (typeof toolbarGroups)[num
 type AdminActionTopbarProps = {
   userLabel: string;
   onToolbarAction: (path: string) => void;
+  onLogout: () => void;
 };
 
-export function AdminActionTopbar({ userLabel, onToolbarAction }: AdminActionTopbarProps) {
+export function AdminActionTopbar({ userLabel, onToolbarAction, onLogout }: AdminActionTopbarProps) {
   return (
     <header className="terra-action-topbar">
       <div className="terra-action-topbar-brand">
@@ -122,6 +123,7 @@ export function AdminActionTopbar({ userLabel, onToolbarAction }: AdminActionTop
           items: userMenuItems,
           onClick: ({ key }) => {
             if (key === "sair") {
+              onLogout();
               return;
             }
           },

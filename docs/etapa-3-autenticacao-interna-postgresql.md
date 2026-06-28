@@ -62,15 +62,28 @@ Nao existe `POST /register`, rota de signup, botao de criar conta ou onboarding 
 
 ## Validacao local
 
+### Estado validado nesta rodada
+
+- A base oficial validada foi `D:\TERRA RELVA APP`.
+- O PostgreSQL local em `localhost:5432` respondeu com `pg_isready`.
+- O backend continua preparado para ler `DATABASE_URL` e `JWT_SECRET` via ambiente.
+- O frontend agora trata login, bootstrap de sessao, redirecionamento para `/admin` e logout.
+
+### Pendencia manual atual
+
+- A senha efetiva do usuario `terra_relva_user` nao estava disponivel na sessao.
+- Sem essa senha nao foi possivel executar a migration e o seed reais contra `terra_relva` nesta rodada.
+- Assim que a senha local for preenchida no `backend/.env`, o fluxo abaixo pode ser executado sem alterar a base.
+
 ### Backend
 
 ```bash
 cd backend
 copy .env.example .env
-npm install
-npm run db:migrate
-npm run db:seed-admin -- "Administrador Terra Relva" admin@terrarelva.com senha-forte
-npm run dev
+npm.cmd install
+npm.cmd run db:migrate
+npm.cmd run db:seed-admin -- "Administrador Terra Relva" admin@terrarelva.com senha-forte
+npm.cmd run dev
 ```
 
 ### Frontend
@@ -78,8 +91,8 @@ npm run dev
 ```bash
 cd frontend-react
 copy .env.example .env
-npm install
-npm run dev
+npm.cmd install
+npm.cmd run dev
 ```
 
 Com isso, a tela `/auth/login` pode autenticar e liberar acesso ao `/admin`.

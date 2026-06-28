@@ -11,6 +11,16 @@ export type LoginResponse = {
   user: AuthUser;
 };
 
+export class AuthApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "AuthApiError";
+    this.status = status;
+  }
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
 
 export async function loginRequest(email: string, password: string): Promise<LoginResponse> {
@@ -24,7 +34,7 @@ export async function loginRequest(email: string, password: string): Promise<Log
 
   if (!response.ok) {
     const payload = await response.json().catch(() => ({ error: "Falha ao autenticar." }));
-    throw new Error(payload.error ?? "Falha ao autenticar.");
+    throw new AuthApiError(payload.error ?? "Falha ao autenticar.", response.status);
   }
 
   return response.json();
@@ -38,7 +48,7 @@ export async function fetchCurrentUser(token: string): Promise<AuthUser> {
   });
 
   if (!response.ok) {
-    throw new Error("Sessao invalida.");
+    throw new AuthApiError("Sessao invalida.", response.status);
   }
 
   const payload = await response.json();

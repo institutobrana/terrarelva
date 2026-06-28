@@ -8,6 +8,7 @@ type AuthContextValue = {
   isAuthenticated: boolean;
   isBootstrapping: boolean;
   user: AuthUser | null;
+  clearInvalidSession: () => void;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 };
@@ -44,9 +45,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setUser(session.user);
   }
 
-  function logout() {
+  function clearInvalidSession() {
     clearStoredToken();
     setUser(null);
+  }
+
+  function logout() {
+    clearInvalidSession();
   }
 
   return (
@@ -55,6 +60,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         isAuthenticated: Boolean(user),
         isBootstrapping,
         user,
+        clearInvalidSession,
         login,
         logout,
       }}

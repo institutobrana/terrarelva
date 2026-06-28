@@ -11,6 +11,17 @@ export async function findUserByEmail(email) {
   return result.rows[0] ?? null;
 }
 
+export async function findUserById(id) {
+  const result = await pool.query(
+    `SELECT id, name, email, password_hash, role, is_active, last_login_at, created_at, updated_at
+     FROM users
+     WHERE id = $1`,
+    [id],
+  );
+
+  return result.rows[0] ?? null;
+}
+
 export async function createUser({ id, name, email, passwordHash, role, isActive = true }) {
   const result = await pool.query(
     `INSERT INTO users (id, name, email, password_hash, role, is_active)
