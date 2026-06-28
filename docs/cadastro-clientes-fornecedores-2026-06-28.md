@@ -13,6 +13,7 @@
 - A tela de clientes foi reconstruida no padrao operacional seco:
   - barra superior unida ao shell
   - comandos do modulo
+  - filtro dropdown antes da pesquisa
   - nome do registro selecionado no topo direito
   - busca no canto direito
   - grade principal abaixo
@@ -24,6 +25,31 @@
   - `Imprimir`
   - `Ficha clinica`
 - `Ficha clinica` foi mantida como placeholder controlado para evolucao futura.
+- O botao `Novo cliente` agora abre modal `Novo cliente - Dados principais`.
+- Opcoes adicionadas ao filtro de busca:
+  - `Nome do cliente`
+  - `Nome do responsavel`
+  - `CPF do cliente`
+  - `CPF do responsavel`
+  - `E-mail principal`
+  - `Telefone principal`
+  - `Codigo do cliente`
+- Campos adicionados no modal:
+  - `Nome`
+  - `Sexo`
+  - `Data de nascimento`
+  - `CPF`
+  - `Documento`
+  - `Numero do documento`
+  - `Responsavel principal`
+  - `Telefone 1`
+  - `Telefone 2`
+  - `E-mail 1`
+- O modal inclui:
+  - `Importar`
+  - `Gravar cliente`
+  - `Cancelar`
+- Nesta etapa, `Gravar cliente` faz validacao e submit controlado, sem persistencia real ainda.
 
 ## Tela de fornecedores
 
