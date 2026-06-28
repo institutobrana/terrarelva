@@ -57,3 +57,9 @@ Essas acoes ja aparecem na barra operacional, dependem de selecao de linha e fic
 - O titulo deixou de ocupar uma faixa propria e passou a viver dentro da mesma barra operacional das acoes.
 - O bloco verde isolado da esquerda foi reduzido para uma emenda visual curta, evitando a leitura de duas pecas acopladas.
 - A tabela inferior permaneceu intacta; o ajuste ficou concentrado na arquitetura visual do topo.
+
+## Alinhamento ao padrao do Dashboard
+
+- A referencia estrutural desta etapa passou a ser a propria tela `DashboardPage` do Terra Relva.
+- A tela de usuarios foi reencaixada no mesmo esqueleto de `Row` + `PageHero` + bloco de conteudo abaixo, em vez de manter um topo proprio paralelo.
+- Foram preservadas as acoes, filtros e a tabela funcional de usuarios; o que mudou foi a arquitetura visual do topo para herdar o mesmo padrao do Dashboard.
