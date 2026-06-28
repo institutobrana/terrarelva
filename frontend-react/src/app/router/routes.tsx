@@ -1,9 +1,11 @@
+import type { ReactElement } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
 import { adminModules } from "@/app/router/adminNavigation";
 import { ProtectedRoute } from "@/app/router/ProtectedRoute";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { StoreLayout } from "@/layouts/StoreLayout";
+import { useAuth } from "@/app/hooks/useAuth";
 import { CaixaPage } from "@/pages/admin/CaixaPage";
 import { ClientesPage } from "@/pages/admin/ClientesPage";
 import { ConfiguracoesPage } from "@/pages/admin/ConfiguracoesPage";
@@ -12,12 +14,23 @@ import { EstoquePage } from "@/pages/admin/EstoquePage";
 import { PrecificacaoPage } from "@/pages/admin/PrecificacaoPage";
 import { ProducaoPage } from "@/pages/admin/ProducaoPage";
 import { ProdutosPage } from "@/pages/admin/ProdutosPage";
+import { UsuariosSistemaPage } from "@/pages/admin/UsuariosSistemaPage";
 import { VendasPage } from "@/pages/admin/VendasPage";
 import { AdminPlaceholderPage } from "@/pages/admin/AdminPlaceholderPage";
 import { LoginPage } from "@/pages/auth/LoginPage";
 import { CatalogoPage } from "@/pages/loja/CatalogoPage";
 import { LojaHomePage } from "@/pages/loja/LojaHomePage";
 import type { RouteMenuItem } from "@/types/navigation";
+
+function AdminOnlyElement({ children }: { children: ReactElement }) {
+  const { user } = useAuth();
+
+  if (user?.role !== "admin") {
+    return <Navigate to="/admin/configuracoes" replace />;
+  }
+
+  return children;
+}
 
 export const storeNavigationItems: RouteMenuItem[] = [
   { key: "/loja", label: "Inicio" },
@@ -425,18 +438,9 @@ const adminRoutes = [
   {
     path: "configuracoes/usuarios-sistema",
     element: (
-      <AdminPlaceholderPage
-        eyebrow="Configuracao interna"
-        title="Usuarios do sistema"
-        description="Entrada preparada para a proxima etapa de gestao interna de usuarios, com base protegida dentro do shell."
-        tag="Proximo passo preparado"
-        metrics={[
-          { label: "Area", value: "Configuracao" },
-          { label: "Recorte", value: "Usuarios internos" },
-          { label: "Estado", value: "Placeholder navegavel" },
-        ]}
-        bullets={["Rota protegida pronta", "Base limpa para listar, criar e ativar usuarios"]}
-      />
+      <AdminOnlyElement>
+        <UsuariosSistemaPage />
+      </AdminOnlyElement>
     ),
   },
   {

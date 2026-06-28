@@ -4,7 +4,15 @@ import { applyCors } from "./config/cors.js";
 import { env } from "./config/env.js";
 import { runMigrations } from "./db/runMigrations.js";
 import { authenticate } from "./middleware/authenticate.js";
-import { authenticateUser, changeAuthenticatedUserPassword, getCurrentUser } from "./services/authService.js";
+import {
+  authenticateUser,
+  changeAuthenticatedUserPassword,
+  createInternalUser,
+  ensureAdminRole,
+  getCurrentUser,
+  listInternalUsers,
+  setInternalUserAccess,
+} from "./services/authService.js";
 import { readJsonBody, sendJson } from "./utils/http.js";
 
 const server = http.createServer(async (request, response) => {
@@ -78,6 +86,52 @@ const server = http.createServer(async (request, response) => {
 
       sendJson(response, 200, { success: true });
       return;
+    }
+
+    if (request.url?.startsWith("/admin/users")) {
+      const claims = await authenticate(request, response);
+      if (!claims) {
+        return;
+      }
+
+      ensureAdminRole(claims);
+
+      const requestUrl = new URL(request.url, `http://${request.headers.host ?? `${env.host}:${env.port}`}`);
+
+      if (request.method === "GET" && requestUrl.pathname === "/admin/users") {
+        const status = requestUrl.searchParams.get("status") ?? "active";
+        const payload = await listInternalUsers(status);
+        sendJson(response, 200, payload);
+        return;
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/admin/users") {
+        const body = await readJsonBody(request);
+        const user = await createInternalUser({
+          name: typeof body.name === "string" ? body.name : "",
+          email: typeof body.email === "string" ? body.email : "",
+          password: typeof body.password === "string" ? body.password : "",
+          confirmPassword: typeof body.confirmPassword === "string" ? body.confirmPassword : "",
+          role: typeof body.role === "string" ? body.role : "operator",
+          isActive: typeof body.isActive === "boolean" ? body.isActive : true,
+        });
+
+        sendJson(response, 201, { user });
+        return;
+      }
+
+      const accessMatch = requestUrl.pathname.match(/^\/admin\/users\/([^/]+)\/access$/);
+      if (request.method === "PATCH" && accessMatch) {
+        const body = await readJsonBody(request);
+        if (typeof body.isActive !== "boolean") {
+          sendJson(response, 400, { error: "Campo isActive obrigatorio." });
+          return;
+        }
+
+        const user = await setInternalUserAccess(accessMatch[1], body.isActive);
+        sendJson(response, 200, { user });
+        return;
+      }
     }
 
     sendJson(response, 404, { error: "Not found" });

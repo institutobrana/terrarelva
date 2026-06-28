@@ -4,8 +4,10 @@ import {
   createUser,
   findUserByEmail,
   findUserById,
+  listUsersByStatus,
   updateLastLogin,
   updatePasswordHash,
+  updateUserActiveStatus,
 } from "../repositories/usersRepository.js";
 import { hashPassword, verifyPassword } from "./passwordService.js";
 import { signToken } from "./tokenService.js";
@@ -14,6 +16,23 @@ function authValidationError(message, statusCode = 400) {
   const error = new Error(message);
   error.statusCode = statusCode;
   return error;
+}
+
+function normalizeRole(role) {
+  return role.trim().toLowerCase();
+}
+
+function serializeUser(user) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    isActive: user.is_active,
+    lastLoginAt: user.last_login_at,
+    createdAt: user.created_at,
+    updatedAt: user.updated_at,
+  };
 }
 
 export async function authenticateUser(email, password) {
@@ -39,13 +58,7 @@ export async function authenticateUser(email, password) {
 
   return {
     token,
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      isActive: user.is_active,
-    },
+    user: serializeUser(user),
   };
 }
 
@@ -55,13 +68,7 @@ export async function getCurrentUser(userId) {
     return null;
   }
 
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    isActive: user.is_active,
-  };
+  return serializeUser(user);
 }
 
 export async function changeAuthenticatedUserPassword(userId, currentPassword, newPassword, confirmPassword) {
@@ -112,7 +119,80 @@ export async function bootstrapAdmin({ name, email, password, role = "admin" }) 
     name: name.trim(),
     email: normalizedEmail,
     passwordHash,
-    role,
+    role: normalizeRole(role),
     isActive: true,
   });
+}
+
+export function ensureAdminRole(claims) {
+  if (!claims?.role || normalizeRole(claims.role) !== "admin") {
+    throw authValidationError("Acesso restrito a administradores.", 403);
+  }
+}
+
+export async function listInternalUsers(status) {
+  const normalizedStatus = status === "inactive" || status === "all" ? status : "active";
+  const users = await listUsersByStatus(normalizedStatus);
+
+  return {
+    users: users.map(serializeUser),
+    appliedFilter: normalizedStatus,
+    total: users.length,
+  };
+}
+
+export async function createInternalUser({ name, email, password, confirmPassword, role, isActive = true }) {
+  const normalizedName = typeof name === "string" ? name.trim() : "";
+  const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
+  const normalizedRole = typeof role === "string" && role.trim() ? normalizeRole(role) : "operator";
+
+  if (!normalizedName) {
+    throw authValidationError("Nome obrigatorio.");
+  }
+
+  if (!normalizedEmail) {
+    throw authValidationError("Email obrigatorio.");
+  }
+
+  if (!password) {
+    throw authValidationError("Senha obrigatoria.");
+  }
+
+  if (!confirmPassword) {
+    throw authValidationError("Confirmacao de senha obrigatoria.");
+  }
+
+  if (password !== confirmPassword) {
+    throw authValidationError("Senha e confirmacao precisam ser iguais.");
+  }
+
+  const existingUser = await findUserByEmail(normalizedEmail);
+  if (existingUser) {
+    throw authValidationError("Ja existe um usuario com este email.");
+  }
+
+  const passwordHash = await hashPassword(password);
+  const user = await createUser({
+    id: crypto.randomUUID(),
+    name: normalizedName,
+    email: normalizedEmail,
+    passwordHash,
+    role: normalizedRole,
+    isActive: Boolean(isActive),
+  });
+
+  return serializeUser(user);
+}
+
+export async function setInternalUserAccess(userId, isActive) {
+  if (!userId) {
+    throw authValidationError("Usuario invalido.", 400);
+  }
+
+  const updatedUser = await updateUserActiveStatus(userId, Boolean(isActive));
+  if (!updatedUser) {
+    throw authValidationError("Usuario nao encontrado.", 404);
+  }
+
+  return serializeUser(updatedUser);
 }

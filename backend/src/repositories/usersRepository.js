@@ -1,8 +1,10 @@
 import { pool } from "../db/pool.js";
 
+const userSelectFields = `id, name, email, password_hash, role, is_active, last_login_at, created_at, updated_at`;
+
 export async function findUserByEmail(email) {
   const result = await pool.query(
-    `SELECT id, name, email, password_hash, role, is_active, last_login_at, created_at, updated_at
+    `SELECT ${userSelectFields}
      FROM users
      WHERE email = $1`,
     [email],
@@ -13,7 +15,7 @@ export async function findUserByEmail(email) {
 
 export async function findUserById(id) {
   const result = await pool.query(
-    `SELECT id, name, email, password_hash, role, is_active, last_login_at, created_at, updated_at
+    `SELECT ${userSelectFields}
      FROM users
      WHERE id = $1`,
     [id],
@@ -33,6 +35,20 @@ export async function createUser({ id, name, email, passwordHash, role, isActive
   return result.rows[0];
 }
 
+export async function listUsersByStatus(status = "active") {
+  const whereClause =
+    status === "inactive" ? "WHERE is_active = FALSE" : status === "all" ? "" : "WHERE is_active = TRUE";
+
+  const result = await pool.query(
+    `SELECT id, name, email, role, is_active, last_login_at, created_at, updated_at
+     FROM users
+     ${whereClause}
+     ORDER BY LOWER(name) ASC, created_at DESC`,
+  );
+
+  return result.rows;
+}
+
 export async function updateLastLogin(id) {
   await pool.query("UPDATE users SET last_login_at = NOW() WHERE id = $1", [id]);
 }
@@ -44,6 +60,18 @@ export async function updatePasswordHash(id, passwordHash) {
      WHERE id = $1
      RETURNING id, name, email, role, is_active, last_login_at, created_at, updated_at`,
     [id, passwordHash],
+  );
+
+  return result.rows[0] ?? null;
+}
+
+export async function updateUserActiveStatus(id, isActive) {
+  const result = await pool.query(
+    `UPDATE users
+     SET is_active = $2
+     WHERE id = $1
+     RETURNING id, name, email, role, is_active, last_login_at, created_at, updated_at`,
+    [id, isActive],
   );
 
   return result.rows[0] ?? null;
