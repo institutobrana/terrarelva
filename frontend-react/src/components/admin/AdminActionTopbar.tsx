@@ -1,4 +1,4 @@
-import { Button, Dropdown, Form, Input, Modal, Space, Tooltip, Typography } from "antd";
+import { App, Button, Dropdown, Form, Input, Modal, Space, Tooltip, Typography } from "antd";
 import {
   CloseOutlined,
   CalendarOutlined,
@@ -21,6 +21,8 @@ import {
 } from "@ant-design/icons";
 import { useState } from "react";
 
+import { getStoredToken } from "@/services/auth/authStorage";
+import { changePasswordRequest } from "@/services/auth/authApi";
 import terraRelvaLogo from "../../../../assets/LOGO_TERRA_RELVA.png";
 
 const toolbarGroups = [
@@ -85,6 +87,7 @@ type AdminActionTopbarProps = {
 };
 
 export function AdminActionTopbar({ userLabel, onToolbarAction, onLogout }: AdminActionTopbarProps) {
+  const { message } = App.useApp();
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
   const [form] = Form.useForm<{
@@ -103,18 +106,46 @@ export function AdminActionTopbar({ userLabel, onToolbarAction, onLogout }: Admi
     nextPassword: string;
     confirmPassword: string;
   }) {
-    void values;
     setIsSubmittingPassword(true);
 
-    window.setTimeout(() => {
+    try {
+      const token = getStoredToken();
+      if (!token) {
+        throw new Error("Sua sessao expirou. Entre novamente.");
+      }
+
+      await changePasswordRequest(token, {
+        currentPassword: values.currentPassword,
+        newPassword: values.nextPassword,
+        confirmPassword: values.confirmPassword,
+      });
+      message.success({
+        content: "Senha alterada com sucesso. Entre novamente com a nova senha.",
+        duration: 1.2,
+      });
+      handleClosePasswordModal();
+      window.setTimeout(() => {
+        onLogout();
+      }, 900);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Nao foi possivel alterar a senha.";
+      const fieldName =
+        errorMessage === "Senha atual incorreta."
+          ? "currentPassword"
+          : errorMessage === "A confirmacao precisa ser igual a nova senha."
+            ? "confirmPassword"
+            : "confirmPassword";
       setIsSubmittingPassword(false);
       form.setFields([
         {
-          name: "confirmPassword",
-          errors: ["Fluxo de troca real de senha ainda nao conectado ao backend."],
+          name: fieldName,
+          errors: [errorMessage],
         },
       ]);
-    }, 400);
+      return;
+    }
+
+    setIsSubmittingPassword(false);
   }
 
   return (

@@ -36,3 +36,15 @@ export async function createUser({ id, name, email, passwordHash, role, isActive
 export async function updateLastLogin(id) {
   await pool.query("UPDATE users SET last_login_at = NOW() WHERE id = $1", [id]);
 }
+
+export async function updatePasswordHash(id, passwordHash) {
+  const result = await pool.query(
+    `UPDATE users
+     SET password_hash = $2
+     WHERE id = $1
+     RETURNING id, name, email, role, is_active, last_login_at, created_at, updated_at`,
+    [id, passwordHash],
+  );
+
+  return result.rows[0] ?? null;
+}

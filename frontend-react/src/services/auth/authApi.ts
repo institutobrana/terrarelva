@@ -13,6 +13,12 @@ export type LoginResponse = {
   user: AuthUser;
 };
 
+export type ChangePasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
 export class AuthApiError extends Error {
   status: number;
 
@@ -55,4 +61,22 @@ export async function fetchCurrentUser(token: string): Promise<AuthUser> {
 
   const payload = await response.json();
   return payload.user;
+}
+
+export async function changePasswordRequest(token: string, input: ChangePasswordInput) {
+  const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({ error: "Nao foi possivel alterar a senha." }));
+    throw new AuthApiError(payload.error ?? "Nao foi possivel alterar a senha.", response.status);
+  }
+
+  return response.json();
 }

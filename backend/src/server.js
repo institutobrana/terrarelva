@@ -4,7 +4,7 @@ import { applyCors } from "./config/cors.js";
 import { env } from "./config/env.js";
 import { runMigrations } from "./db/runMigrations.js";
 import { authenticate } from "./middleware/authenticate.js";
-import { authenticateUser, getCurrentUser } from "./services/authService.js";
+import { authenticateUser, changeAuthenticatedUserPassword, getCurrentUser } from "./services/authService.js";
 import { readJsonBody, sendJson } from "./utils/http.js";
 
 const server = http.createServer(async (request, response) => {
@@ -62,10 +62,30 @@ const server = http.createServer(async (request, response) => {
       return;
     }
 
+    if (request.method === "POST" && request.url === "/auth/change-password") {
+      const claims = await authenticate(request, response);
+      if (!claims) {
+        return;
+      }
+
+      const body = await readJsonBody(request);
+      await changeAuthenticatedUserPassword(
+        claims.sub,
+        typeof body.currentPassword === "string" ? body.currentPassword : "",
+        typeof body.newPassword === "string" ? body.newPassword : "",
+        typeof body.confirmPassword === "string" ? body.confirmPassword : "",
+      );
+
+      sendJson(response, 200, { success: true });
+      return;
+    }
+
     sendJson(response, 404, { error: "Not found" });
   } catch (error) {
     console.error(error);
-    sendJson(response, 500, { error: "Internal server error" });
+    const statusCode = typeof error?.statusCode === "number" ? error.statusCode : 500;
+    const message = statusCode >= 500 ? "Internal server error" : error.message;
+    sendJson(response, statusCode, { error: message });
   }
 });
 
