@@ -544,6 +544,121 @@ a {
   width: 100%;
 }
 
+.terra-password-modal .ant-modal-content {
+  padding: 0 0 18px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(164, 171, 180, 0.7);
+  box-shadow: 0 18px 45px rgba(56, 53, 41, 0.16);
+}
+
+.terra-password-modal .ant-modal-close {
+  top: 10px;
+  right: 10px;
+  color: #ffffff;
+  background: #1db6b2;
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+}
+
+.terra-password-modal .ant-modal-close:hover {
+  color: #ffffff;
+  background: #18a5a2;
+}
+
+.terra-password-modal .ant-modal-close-x {
+  font-size: 12px;
+}
+
+.terra-password-modal-header {
+  padding: 14px 22px 10px;
+  border-bottom: 1px solid rgba(207, 210, 214, 0.8);
+  background: linear-gradient(180deg, #fefefe, #f3f3f3);
+}
+
+.terra-password-modal-title.ant-typography {
+  margin: 0;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #17aeb6;
+}
+
+.terra-password-form {
+  padding: 12px 26px 0;
+}
+
+.terra-password-form .ant-form-item {
+  margin-bottom: 10px;
+}
+
+.terra-password-form .ant-form-item-row {
+  flex-direction: row;
+  align-items: center;
+}
+
+.terra-password-form .ant-form-item-label {
+  padding: 0 10px 0 0;
+  text-align: right;
+}
+
+.terra-password-form .ant-form-item-label > label {
+  width: 128px;
+  justify-content: flex-end;
+  font-weight: 700;
+  color: #26352e;
+}
+
+.terra-password-form .ant-form-item-control {
+  flex: 1;
+}
+
+.terra-password-form .ant-input-affix-wrapper {
+  height: 34px;
+  border-radius: 0;
+  border-color: #bec8d9;
+  box-shadow: none;
+}
+
+.terra-password-form .ant-input-affix-wrapper:focus,
+.terra-password-form .ant-input-affix-wrapper-focused {
+  border-color: #17aeb6;
+  box-shadow: 0 0 0 2px rgba(23, 174, 182, 0.12);
+}
+
+.terra-password-form .ant-form-item-explain-error {
+  padding-left: 138px;
+}
+
+.terra-password-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.terra-password-modal-actions .ant-btn {
+  min-width: 104px;
+  height: 34px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.terra-password-modal-actions .ant-btn-primary {
+  background: linear-gradient(180deg, #ffffff, #f3f1eb);
+  border-color: #c9c5bc;
+  color: #5b4d39;
+  box-shadow: none;
+}
+
+.terra-password-modal-actions .ant-btn-primary:hover,
+.terra-password-modal-actions .ant-btn-primary:focus {
+  background: linear-gradient(180deg, #fffef9, #ece6dc) !important;
+  border-color: #bcb5a8 !important;
+  color: #4f4332 !important;
+}
+
 .terra-content {
   padding: 14px 16px 18px;
   max-width: 1700px;
@@ -917,6 +1032,29 @@ a {
 }
 
 @media (max-width: 640px) {
+  .terra-password-modal {
+    margin: 16px;
+  }
+
+  .terra-password-form .ant-form-item-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .terra-password-form .ant-form-item-label {
+    padding: 0 0 6px;
+    text-align: left;
+  }
+
+  .terra-password-form .ant-form-item-label > label {
+    width: auto;
+    justify-content: flex-start;
+  }
+
+  .terra-password-form .ant-form-item-explain-error {
+    padding-left: 0;
+  }
+
   .terra-shell {
     min-width: 0;
   }
