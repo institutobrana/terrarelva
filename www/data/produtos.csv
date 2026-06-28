@@ -1,0 +1,95 @@
+codigo,categoria,nome,apresentacao,peso_g,preco_venda,estoque,estoque_minimo,ativo,receita_base
+CHA001,Chas,Blend Alegria,Sache individual,2,4.00,0,10,Sim,Blend Alegria
+CHA002,Chas,Blend Alegria,Caixa 4 saches,8,15.00,0,10,Sim,Blend Alegria
+CHA003,Chas,Blend Alegria,Kraft 20g,20,20.00,0,10,Sim,Blend Alegria
+CHA004,Chas,Blend Alegria,Tubo 20g,20,25.00,0,10,Sim,Blend Alegria
+CHA005,Chas,Blend Vivencie,Sache individual,2,4.00,0,10,Sim,Blend Vivencie
+CHA006,Chas,Blend Vivencie,Caixa 4 saches,8,15.00,0,10,Sim,Blend Vivencie
+CHA007,Chas,Blend Vivencie,Kraft 20g,20,20.00,0,10,Sim,Blend Vivencie
+CHA008,Chas,Blend Vivencie,Tubo 20g,20,25.00,0,10,Sim,Blend Vivencie
+CHA009,Chas,Blend Acalme,Sache individual,2,4.00,0,10,Sim,Blend Acalme
+CHA010,Chas,Blend Acalme,Caixa 4 saches,8,15.00,0,10,Sim,Blend Acalme
+CHA011,Chas,Blend Acalme,Kraft 20g,20,20.00,0,10,Sim,Blend Acalme
+CHA012,Chas,Blend Acalme,Tubo 20g,20,25.00,0,10,Sim,Blend Acalme
+CHA013,Chas,Blend Fluir,Sache individual,2,4.00,0,10,Sim,Blend Fluir
+CHA014,Chas,Blend Fluir,Caixa 4 saches,8,15.00,0,10,Sim,Blend Fluir
+CHA015,Chas,Blend Fluir,Kraft 20g,20,20.00,0,10,Sim,Blend Fluir
+CHA016,Chas,Blend Fluir,Tubo 20g,20,25.00,0,10,Sim,Blend Fluir
+CHA017,Chas,Blend Tropical,Sache individual,2,4.00,0,10,Sim,Blend Tropical
+CHA018,Chas,Blend Tropical,Caixa 4 saches,8,15.00,0,10,Sim,Blend Tropical
+CHA019,Chas,Blend Tropical,Kraft 20g,20,20.00,0,10,Sim,Blend Tropical
+CHA020,Chas,Blend Tropical,Tubo 20g,20,25.00,0,10,Sim,Blend Tropical
+MEX001,Mexedores,Colecao Botanica,Unidade,1,10.00,0,10,Sim,Mexedor Botanica
+MEX002,Mexedores,Colecao Botanica,Kit degustacao 12 unidades,12,100.00,0,5,Sim,Mexedor Botanica Sortido
+MEX003,Mexedores,Colecao Tropical,Unidade,1,10.00,0,10,Sim,Mexedor Tropical
+MEX004,Mexedores,Colecao Tropical,Kit degustacao 12 unidades,12,100.00,0,5,Sim,Mexedor Tropical Sortido
+FR001,Frutas Desidratadas,Banana,50g,50,10.00,0,10,Sim,Banana Desidratada
+FR002,Frutas Desidratadas,Abacaxi,50g,50,20.00,0,10,Sim,Abacaxi Desidratado
+FR003,Frutas Desidratadas,Abacaxi Rosa,50g,50,22.00,0,10,Sim,Abacaxi Rosa Desidratado
+FR004,Frutas Desidratadas,Caju,50g,50,18.00,0,10,Sim,Caju Desidratado
+FR005,Frutas Desidratadas,Laranja,50g,50,18.00,0,10,Sim,Laranja Desidratada
+FR006,Frutas Desidratadas,Limao Tahiti,50g,50,18.00,0,10,Sim,Limao Tahiti Desidratado
+FR007,Frutas Desidratadas,Limao Siciliano,50g,50,22.00,0,10,Sim,Limao Siciliano Desidratado
+FR008,Frutas Desidratadas,Maca,50g,50,16.00,0,10,Sim,Maca Desidratada
+FR009,Frutas Desidratadas,Maca Rosa,50g,50,18.00,0,10,Sim,Maca Rosa Desidratada
+FR010,Frutas Desidratadas,Manga,50g,50,18.00,0,10,Sim,Manga Desidratada
+FR011,Frutas Desidratadas,Manga com Maracuja,50g,50,22.00,0,10,Sim,Manga com Maracuja Desidratada
+FR012,Frutas Desidratadas,Maracuja,50g,50,25.00,0,10,Sim,Maracuja Desidratado
+FR013,Frutas Desidratadas,Melancia,50g,50,25.00,0,10,Sim,Melancia Desidratada
+FR014,Frutas Desidratadas,Kiwi,25g,25,20.00,0,10,Sim,Kiwi Desidratado
+FR015,Frutas Desidratadas,Morango,25g,25,30.00,0,10,Sim,Morango Desidratado
+FR016,Frutas Desidratadas,Pitaya,25g,25,20.00,0,10,Sim,Pitaya Desidratada
+FR017,Frutas Desidratadas,Jaca,50g,50,16.00,0,10,Sim,Jaca Desidratada
+MIX001,Mix de Frutas,Banana + Manga + Pitaya,50g,50,16.00,0,10,Sim,Mix Banana Manga Pitaya
+MIX002,Mix de Frutas,Banana + Kiwi + Morango,70g,70,20.00,0,10,Sim,Mix Banana Kiwi Morango
+MIX003,Mix de Frutas,Banana + Abacaxi + Manga com Maracuja,50g,50,16.00,0,10,Sim,Mix Banana Abacaxi Manga com Maracuja
+MIX004,Mix de Frutas,Mix Degustacao,25g,25,10.00,0,10,Sim,Mix Degustacao
+MIX005,Mix de Frutas,Mix Premium,200g,200,60.00,0,5,Sim,Mix Premium
+MIX006,Mix de Frutas,Mix Premium,400g,400,120.00,0,5,Sim,Mix Premium
+BAR001,Barras,Banana + Amendoas de Cacau,Mini barra 18g,18,5.00,0,20,Sim,Mini Barra Banana Amendoas de Cacau
+BAR002,Barras,Banana + Amendoim,Mini barra 18g,18,5.00,0,20,Sim,Mini Barra Banana Amendoim
+BAR003,Barras,Banana + Pitaya,Mini barra 18g,18,5.00,0,20,Sim,Mini Barra Banana Pitaya
+BAR004,Barras,Banana + Morango + Tamara,Mini barra 18g,18,5.00,0,20,Sim,Mini Barra Banana Morango Tamara
+BAR005,Barras,Banana + Amendoas de Cacau,Barra 35g,35,10.00,0,20,Sim,Barra Banana Amendoas de Cacau
+BAR006,Barras,Banana + Amendoim,Barra 35g,35,10.00,0,20,Sim,Barra Banana Amendoim
+BAR007,Barras,Banana + Pitaya,Barra 35g,35,10.00,0,20,Sim,Barra Banana Pitaya
+BAR008,Barras,Banana + Morango + Tamara,Barra 35g,35,10.00,0,20,Sim,Barra Banana Morango Tamara
+BAR009,Barras,Mini Barras Sortidas,Kit 25 unidades 18g,450,100.00,0,5,Sim,Mini Barras Sortidas
+BAR010,Barras,Barras de Frutas Sortidas,Kit 20 unidades 35g,700,175.00,0,5,Sim,Barras Sortidas
+BAR011,Barras,Banana + Kiwi + Morango,Barra tropical 35g,35,13.00,0,20,Sim,Barra Tropical Banana Kiwi Morango
+BAR012,Barras,Banana + Abacaxi + Manga com Maracuja,Barra tropical 35g,35,13.00,0,20,Sim,Barra Tropical Banana Abacaxi Manga com Maracuja
+BAR013,Barras,2 Barras Tropicais,Combo 2 unidades,70,25.00,0,10,Sim,Combo 2 Barras Tropicais
+BAR014,Barras,Barras Artesanais com Flores,Unidade,35,15.00,0,6,Sim,Barra Artesanal com Flores
+ROL001,Rolinhos,Banana + Maca + Morango,50g,50,15.00,0,10,Sim,Rolinho Banana Maca Morango
+ROL002,Rolinhos,Banana + Cacau + Coco,50g,50,15.00,0,10,Sim,Rolinho Banana Cacau Coco
+ROL003,Rolinhos,Banana + Cacau + Amendoim,50g,50,15.00,0,10,Sim,Rolinho Banana Cacau Amendoim
+ROL004,Rolinhos,Banana + Cacau + Laranja,50g,50,15.00,0,10,Sim,Rolinho Banana Cacau Laranja
+ROL005,Rolinhos,Banana + Cafe + Laranja,50g,50,15.00,0,10,Sim,Rolinho Banana Cafe Laranja
+ROL006,Rolinhos,Manga com Maracuja,50g,50,15.00,0,10,Sim,Rolinho Manga com Maracuja
+ROL007,Rolinhos,Manga com Abacaxi,50g,50,15.00,0,10,Sim,Rolinho Manga com Abacaxi
+ROL008,Rolinhos,Abacaxi com Gengibre,50g,50,15.00,0,10,Sim,Rolinho Abacaxi com Gengibre
+ROL009,Rolinhos,Abacaxi com Pitaya,50g,50,15.00,0,10,Sim,Rolinho Abacaxi com Pitaya
+ROL010,Rolinhos,Abacaxi com Coco,50g,50,15.00,0,10,Sim,Rolinho Abacaxi com Coco
+ROL011,Rolinhos,Banana + Maca + Canela + Cardamomo,50g,50,15.00,0,10,Sim,Rolinho Banana Maca Canela Cardamomo
+ROL012,Rolinhos,Sortidos,100g,100,28.00,0,10,Sim,Rolinho Sortido
+ROL013,Rolinhos,Sortidos,500g,500,130.00,0,2,Sim,Rolinho Sortido
+ROL014,Rolinhos,Sortidos,1kg,1000,250.00,0,2,Sim,Rolinho Sortido
+ERV001,Ervas,Erva Cidreira,Pacote,1,12.00,0,10,Sim,Erva Cidreira
+ERV002,Ervas,Capim Limao,Pacote,1,15.00,0,10,Sim,Capim Limao
+ERV003,Ervas,Hortela,Pacote,1,12.00,0,10,Sim,Hortela
+ESP001,Especiarias,Pimenta Rosa,20g,20,15.00,0,10,Sim,Pimenta Rosa
+ESP002,Especiarias,Pitaya em Po,25g,25,15.00,0,10,Sim,Pitaya em Po
+ESP003,Especiarias,Curcuma em Po,50g,50,15.00,0,10,Sim,Curcuma em Po
+ESP004,Especiarias,Gengibre,25g,25,15.00,0,10,Sim,Gengibre Desidratado
+ESP005,Especiarias,Casca de Limao Tahiti,25g,25,10.00,0,10,Sim,Casca de Limao Tahiti
+ESP006,Especiarias,Casca de Limao Siciliano,25g,25,10.00,0,10,Sim,Casca de Limao Siciliano
+ESP007,Especiarias,Casca de Laranja,25g,25,10.00,0,10,Sim,Casca de Laranja
+ESP008,Especiarias,Casca Cristalizada,30g,30,12.00,0,10,Sim,Casca Cristalizada
+FLO001,Flores,Mini Rosas,10 flores,10,30.00,0,5,Sim,Mini Rosas
+FLO002,Flores,Mini Rosas,25 flores,25,75.00,0,5,Sim,Mini Rosas
+FLO003,Flores,Mini Rosas,50 flores,50,125.00,0,5,Sim,Mini Rosas
+FLO004,Flores,Lavanda,10 flores,10,25.00,0,5,Sim,Lavanda
+FLO005,Flores,Lavanda,20 flores,20,50.00,0,5,Sim,Lavanda
+FLO006,Flores,Lavanda,30 flores,30,70.00,0,5,Sim,Lavanda
+FLO007,Flores,Mix de Flores Sortidas,50 flores,50,50.00,0,5,Sim,Mix de Flores Sortidas
+FLO008,Flores,Mix de Petalas,Unidade,1,50.00,0,5,Sim,Mix de Petalas

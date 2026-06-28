@@ -1,0 +1,8 @@
+{
+  "appId": "com.terrarelva.app",
+  "appName": "Terra Relva",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,23 @@
+codigo,tipo,nome,unidade_base,quantidade_compra,valor_pago,custo_unitario,fornecedor,observacoes
+MP001,Fruta in natura,Banana,g,,,,,"registrar peso bruto comprado"
+MP002,Fruta in natura,Abacaxi,g,,,,,
+MP003,Fruta in natura,Manga,g,,,,,
+MP004,Fruta in natura,Maracuja,g,,,,,
+MP005,Fruta in natura,Kiwi,g,,,,,
+MP006,Fruta in natura,Morango,g,,,,,
+MP007,Fruta in natura,Pitaya,g,,,,,
+MP008,Fruta in natura,Maca,g,,,,,
+MP009,Ingrediente,Amendoim,g,,,,,
+MP010,Ingrediente,Amendoas de cacau,g,,,,,
+MP011,Ingrediente,Cacau,g,,,,,
+MP012,Ingrediente,Coco,g,,,,,
+MP013,Ingrediente,Tamara,g,,,,,
+MP014,Ingrediente,Canela,g,,,,,
+MP015,Ingrediente,Cardamomo,g,,,,,
+MP016,Ingrediente,Cafe,g,,,,,
+MP017,Ingrediente,Gengibre,g,,,,,
+MP018,Embalagem,Embalagem de seguranca,un,,,,,
+MP019,Embalagem,Adesivo,un,,,,,
+MP020,Embalagem,Sacola,un,,,,,
+MP021,Higienizacao,Sanitizante,ml,,,,,"anotar quantos ml por litro e quantas lavagens rende"
+MP022,Processo,Papel antiaderente,m,,,,,"anotar quantas bandejas rende por metro ou rolo"

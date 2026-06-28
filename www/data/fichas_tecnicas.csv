@@ -1,0 +1,465 @@
+produto_codigo,produto_nome,item,quantidade,unidade,valor_unitario,valor_total,observacoes
+CHA001,Blend Alegria Sache individual,Erva cidreira,X,g,,,definir proporcao do blend
+CHA001,Blend Alegria Sache individual,Laranjeira,X,g,,,definir proporcao do blend
+CHA001,Blend Alegria Sache individual,Cavalinha,X,g,,,definir proporcao do blend
+CHA001,Blend Alegria Sache individual,Calendula,X,g,,,definir proporcao do blend
+CHA001,Blend Alegria Sache individual,Receita base Blend Alegria,2,g,,,custo proporcional pela receita base
+CHA001,Blend Alegria Sache individual,Sache individual,1,un,,,
+CHA002,Blend Alegria Caixa 4 saches,Erva cidreira,X,g,,,definir proporcao do blend
+CHA002,Blend Alegria Caixa 4 saches,Laranjeira,X,g,,,definir proporcao do blend
+CHA002,Blend Alegria Caixa 4 saches,Cavalinha,X,g,,,definir proporcao do blend
+CHA002,Blend Alegria Caixa 4 saches,Calendula,X,g,,,definir proporcao do blend
+CHA002,Blend Alegria Caixa 4 saches,Receita base Blend Alegria,8,g,,,custo proporcional pela receita base
+CHA002,Blend Alegria Caixa 4 saches,Sache individual,4,un,,,
+CHA002,Blend Alegria Caixa 4 saches,Caixa,1,un,,,
+CHA003,Blend Alegria Kraft 20g,Erva cidreira,X,g,,,definir proporcao do blend
+CHA003,Blend Alegria Kraft 20g,Laranjeira,X,g,,,definir proporcao do blend
+CHA003,Blend Alegria Kraft 20g,Cavalinha,X,g,,,definir proporcao do blend
+CHA003,Blend Alegria Kraft 20g,Calendula,X,g,,,definir proporcao do blend
+CHA003,Blend Alegria Kraft 20g,Receita base Blend Alegria,20,g,,,custo proporcional pela receita base
+CHA003,Blend Alegria Kraft 20g,Embalagem kraft,1,un,,,
+CHA004,Blend Alegria Tubo 20g,Erva cidreira,X,g,,,definir proporcao do blend
+CHA004,Blend Alegria Tubo 20g,Laranjeira,X,g,,,definir proporcao do blend
+CHA004,Blend Alegria Tubo 20g,Cavalinha,X,g,,,definir proporcao do blend
+CHA004,Blend Alegria Tubo 20g,Calendula,X,g,,,definir proporcao do blend
+CHA004,Blend Alegria Tubo 20g,Receita base Blend Alegria,20,g,,,custo proporcional pela receita base
+CHA004,Blend Alegria Tubo 20g,Tubo lata preta,1,un,,,
+CHA005,Blend Vivencie Sache individual,Cidreira,X,g,,,definir proporcao do blend
+CHA005,Blend Vivencie Sache individual,Gengibre,X,g,,,definir proporcao do blend
+CHA005,Blend Vivencie Sache individual,Alecrim,X,g,,,definir proporcao do blend
+CHA005,Blend Vivencie Sache individual,Laranja,X,g,,,definir proporcao do blend
+CHA005,Blend Vivencie Sache individual,Receita base Blend Vivencie,2,g,,,custo proporcional pela receita base
+CHA005,Blend Vivencie Sache individual,Sache individual,1,un,,,
+CHA006,Blend Vivencie Caixa 4 saches,Cidreira,X,g,,,definir proporcao do blend
+CHA006,Blend Vivencie Caixa 4 saches,Gengibre,X,g,,,definir proporcao do blend
+CHA006,Blend Vivencie Caixa 4 saches,Alecrim,X,g,,,definir proporcao do blend
+CHA006,Blend Vivencie Caixa 4 saches,Laranja,X,g,,,definir proporcao do blend
+CHA006,Blend Vivencie Caixa 4 saches,Receita base Blend Vivencie,8,g,,,custo proporcional pela receita base
+CHA006,Blend Vivencie Caixa 4 saches,Sache individual,4,un,,,
+CHA006,Blend Vivencie Caixa 4 saches,Caixa,1,un,,,
+CHA007,Blend Vivencie Kraft 20g,Cidreira,X,g,,,definir proporcao do blend
+CHA007,Blend Vivencie Kraft 20g,Gengibre,X,g,,,definir proporcao do blend
+CHA007,Blend Vivencie Kraft 20g,Alecrim,X,g,,,definir proporcao do blend
+CHA007,Blend Vivencie Kraft 20g,Laranja,X,g,,,definir proporcao do blend
+CHA007,Blend Vivencie Kraft 20g,Receita base Blend Vivencie,20,g,,,custo proporcional pela receita base
+CHA007,Blend Vivencie Kraft 20g,Embalagem kraft,1,un,,,
+CHA008,Blend Vivencie Tubo 20g,Cidreira,X,g,,,definir proporcao do blend
+CHA008,Blend Vivencie Tubo 20g,Gengibre,X,g,,,definir proporcao do blend
+CHA008,Blend Vivencie Tubo 20g,Alecrim,X,g,,,definir proporcao do blend
+CHA008,Blend Vivencie Tubo 20g,Laranja,X,g,,,definir proporcao do blend
+CHA008,Blend Vivencie Tubo 20g,Receita base Blend Vivencie,20,g,,,custo proporcional pela receita base
+CHA008,Blend Vivencie Tubo 20g,Tubo lata preta,1,un,,,
+CHA009,Blend Acalme Sache individual,Capim limao,X,g,,,definir proporcao do blend
+CHA009,Blend Acalme Sache individual,Maracuja,X,g,,,definir proporcao do blend
+CHA009,Blend Acalme Sache individual,Maca,X,g,,,definir proporcao do blend
+CHA009,Blend Acalme Sache individual,Erva cidreira,X,g,,,definir proporcao do blend
+CHA009,Blend Acalme Sache individual,Receita base Blend Acalme,2,g,,,custo proporcional pela receita base
+CHA009,Blend Acalme Sache individual,Sache individual,1,un,,,
+CHA010,Blend Acalme Caixa 4 saches,Capim limao,X,g,,,definir proporcao do blend
+CHA010,Blend Acalme Caixa 4 saches,Maracuja,X,g,,,definir proporcao do blend
+CHA010,Blend Acalme Caixa 4 saches,Maca,X,g,,,definir proporcao do blend
+CHA010,Blend Acalme Caixa 4 saches,Erva cidreira,X,g,,,definir proporcao do blend
+CHA010,Blend Acalme Caixa 4 saches,Receita base Blend Acalme,8,g,,,custo proporcional pela receita base
+CHA010,Blend Acalme Caixa 4 saches,Sache individual,4,un,,,
+CHA010,Blend Acalme Caixa 4 saches,Caixa,1,un,,,
+CHA011,Blend Acalme Kraft 20g,Capim limao,X,g,,,definir proporcao do blend
+CHA011,Blend Acalme Kraft 20g,Maracuja,X,g,,,definir proporcao do blend
+CHA011,Blend Acalme Kraft 20g,Maca,X,g,,,definir proporcao do blend
+CHA011,Blend Acalme Kraft 20g,Erva cidreira,X,g,,,definir proporcao do blend
+CHA011,Blend Acalme Kraft 20g,Receita base Blend Acalme,20,g,,,custo proporcional pela receita base
+CHA011,Blend Acalme Kraft 20g,Embalagem kraft,1,un,,,
+CHA012,Blend Acalme Tubo 20g,Capim limao,X,g,,,definir proporcao do blend
+CHA012,Blend Acalme Tubo 20g,Maracuja,X,g,,,definir proporcao do blend
+CHA012,Blend Acalme Tubo 20g,Maca,X,g,,,definir proporcao do blend
+CHA012,Blend Acalme Tubo 20g,Erva cidreira,X,g,,,definir proporcao do blend
+CHA012,Blend Acalme Tubo 20g,Receita base Blend Acalme,20,g,,,custo proporcional pela receita base
+CHA012,Blend Acalme Tubo 20g,Tubo lata preta,1,un,,,
+CHA013,Blend Fluir Sache individual,Hortela,X,g,,,definir proporcao do blend
+CHA013,Blend Fluir Sache individual,Amora,X,g,,,definir proporcao do blend
+CHA013,Blend Fluir Sache individual,Manga,X,g,,,definir proporcao do blend
+CHA013,Blend Fluir Sache individual,Fada azul,X,g,,,definir proporcao do blend
+CHA013,Blend Fluir Sache individual,Receita base Blend Fluir,2,g,,,custo proporcional pela receita base
+CHA013,Blend Fluir Sache individual,Sache individual,1,un,,,
+CHA014,Blend Fluir Caixa 4 saches,Hortela,X,g,,,definir proporcao do blend
+CHA014,Blend Fluir Caixa 4 saches,Amora,X,g,,,definir proporcao do blend
+CHA014,Blend Fluir Caixa 4 saches,Manga,X,g,,,definir proporcao do blend
+CHA014,Blend Fluir Caixa 4 saches,Fada azul,X,g,,,definir proporcao do blend
+CHA014,Blend Fluir Caixa 4 saches,Receita base Blend Fluir,8,g,,,custo proporcional pela receita base
+CHA014,Blend Fluir Caixa 4 saches,Sache individual,4,un,,,
+CHA014,Blend Fluir Caixa 4 saches,Caixa,1,un,,,
+CHA015,Blend Fluir Kraft 20g,Hortela,X,g,,,definir proporcao do blend
+CHA015,Blend Fluir Kraft 20g,Amora,X,g,,,definir proporcao do blend
+CHA015,Blend Fluir Kraft 20g,Manga,X,g,,,definir proporcao do blend
+CHA015,Blend Fluir Kraft 20g,Fada azul,X,g,,,definir proporcao do blend
+CHA015,Blend Fluir Kraft 20g,Receita base Blend Fluir,20,g,,,custo proporcional pela receita base
+CHA015,Blend Fluir Kraft 20g,Embalagem kraft,1,un,,,
+CHA016,Blend Fluir Tubo 20g,Hortela,X,g,,,definir proporcao do blend
+CHA016,Blend Fluir Tubo 20g,Amora,X,g,,,definir proporcao do blend
+CHA016,Blend Fluir Tubo 20g,Manga,X,g,,,definir proporcao do blend
+CHA016,Blend Fluir Tubo 20g,Fada azul,X,g,,,definir proporcao do blend
+CHA016,Blend Fluir Tubo 20g,Receita base Blend Fluir,20,g,,,custo proporcional pela receita base
+CHA016,Blend Fluir Tubo 20g,Tubo lata preta,1,un,,,
+CHA017,Blend Tropical Sache individual,Capim limao,X,g,,,definir proporcao do blend
+CHA017,Blend Tropical Sache individual,Abacaxi,X,g,,,definir proporcao do blend
+CHA017,Blend Tropical Sache individual,Pitaya,X,g,,,definir proporcao do blend
+CHA017,Blend Tropical Sache individual,Jasmin,X,g,,,definir proporcao do blend
+CHA017,Blend Tropical Sache individual,Receita base Blend Tropical,2,g,,,custo proporcional pela receita base
+CHA017,Blend Tropical Sache individual,Sache individual,1,un,,,
+CHA018,Blend Tropical Caixa 4 saches,Capim limao,X,g,,,definir proporcao do blend
+CHA018,Blend Tropical Caixa 4 saches,Abacaxi,X,g,,,definir proporcao do blend
+CHA018,Blend Tropical Caixa 4 saches,Pitaya,X,g,,,definir proporcao do blend
+CHA018,Blend Tropical Caixa 4 saches,Jasmin,X,g,,,definir proporcao do blend
+CHA018,Blend Tropical Caixa 4 saches,Receita base Blend Tropical,8,g,,,custo proporcional pela receita base
+CHA018,Blend Tropical Caixa 4 saches,Sache individual,4,un,,,
+CHA018,Blend Tropical Caixa 4 saches,Caixa,1,un,,,
+CHA019,Blend Tropical Kraft 20g,Capim limao,X,g,,,definir proporcao do blend
+CHA019,Blend Tropical Kraft 20g,Abacaxi,X,g,,,definir proporcao do blend
+CHA019,Blend Tropical Kraft 20g,Pitaya,X,g,,,definir proporcao do blend
+CHA019,Blend Tropical Kraft 20g,Jasmin,X,g,,,definir proporcao do blend
+CHA019,Blend Tropical Kraft 20g,Receita base Blend Tropical,20,g,,,custo proporcional pela receita base
+CHA019,Blend Tropical Kraft 20g,Embalagem kraft,1,un,,,
+CHA020,Blend Tropical Tubo 20g,Capim limao,X,g,,,definir proporcao do blend
+CHA020,Blend Tropical Tubo 20g,Abacaxi,X,g,,,definir proporcao do blend
+CHA020,Blend Tropical Tubo 20g,Pitaya,X,g,,,definir proporcao do blend
+CHA020,Blend Tropical Tubo 20g,Jasmin,X,g,,,definir proporcao do blend
+CHA020,Blend Tropical Tubo 20g,Receita base Blend Tropical,20,g,,,custo proporcional pela receita base
+CHA020,Blend Tropical Tubo 20g,Tubo lata preta,1,un,,,
+MEX001,Colecao Botanica Unidade,Isomalte,X,g,,,
+MEX001,Colecao Botanica Unidade,Especiarias botanicas,Y,g,,,"anis estrelado, pimenta rosa, zimbro, cravo e canela conforme modelo"
+MEX001,Colecao Botanica Unidade,Frutas ou flores decorativas,Z,g,,,variam conforme colecao
+MEX001,Colecao Botanica Unidade,Palito do mexedor,1,un,,,
+MEX001,Colecao Botanica Unidade,Embalagem,1,un,,,
+MEX001,Colecao Botanica Unidade,Adesivo,1,un,,,
+MEX002,Colecao Botanica Kit degustacao 12 unidades,Mexedor pronto,12,un,,,usar custo medio por unidade
+MEX002,Colecao Botanica Kit degustacao 12 unidades,Embalagem kit,1,un,,,
+MEX002,Colecao Botanica Kit degustacao 12 unidades,Adesivo,1,un,,,
+MEX003,Colecao Tropical Unidade,Isomalte,X,g,,,
+MEX003,Colecao Tropical Unidade,Especiarias,Y,g,,,"anis estrelado, pimenta rosa, zimbro, cravo e canela conforme modelo"
+MEX003,Colecao Tropical Unidade,Fruta desidratada decorativa,Z,g,,,varia conforme sabor
+MEX003,Colecao Tropical Unidade,Palito do mexedor,1,un,,,
+MEX003,Colecao Tropical Unidade,Embalagem,1,un,,,
+MEX003,Colecao Tropical Unidade,Adesivo,1,un,,,
+MEX004,Colecao Tropical Kit degustacao 12 unidades,Mexedor pronto,12,un,,,usar custo medio por unidade
+MEX004,Colecao Tropical Kit degustacao 12 unidades,Embalagem kit,1,un,,,
+MEX004,Colecao Tropical Kit degustacao 12 unidades,Adesivo,1,un,,,
+FR001,Banana 50g,Banana desidratada,50,g,,,preencher custo por grama a partir da producao
+FR001,Banana 50g,Embalagem,1,un,,,
+FR001,Banana 50g,Adesivo,1,un,,,
+FR001,Banana 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR002,Abacaxi 50g,Abacaxi desidratado,50,g,,,preencher custo por grama a partir da producao
+FR002,Abacaxi 50g,Embalagem,1,un,,,
+FR002,Abacaxi 50g,Adesivo,1,un,,,
+FR002,Abacaxi 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR003,Abacaxi Rosa 50g,Abacaxi rosa desidratado,50,g,,,preencher custo por grama a partir da producao
+FR003,Abacaxi Rosa 50g,Embalagem,1,un,,,
+FR003,Abacaxi Rosa 50g,Adesivo,1,un,,,
+FR003,Abacaxi Rosa 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR004,Caju 50g,Caju desidratado,50,g,,,preencher custo por grama a partir da producao
+FR004,Caju 50g,Embalagem,1,un,,,
+FR004,Caju 50g,Adesivo,1,un,,,
+FR004,Caju 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR005,Laranja 50g,Laranja desidratada,50,g,,,preencher custo por grama a partir da producao
+FR005,Laranja 50g,Embalagem,1,un,,,
+FR005,Laranja 50g,Adesivo,1,un,,,
+FR005,Laranja 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR006,Limao Tahiti 50g,Limao tahiti desidratado,50,g,,,preencher custo por grama a partir da producao
+FR006,Limao Tahiti 50g,Embalagem,1,un,,,
+FR006,Limao Tahiti 50g,Adesivo,1,un,,,
+FR006,Limao Tahiti 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR007,Limao Siciliano 50g,Limao siciliano desidratado,50,g,,,preencher custo por grama a partir da producao
+FR007,Limao Siciliano 50g,Embalagem,1,un,,,
+FR007,Limao Siciliano 50g,Adesivo,1,un,,,
+FR007,Limao Siciliano 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR008,Maca 50g,Maca desidratada,50,g,,,preencher custo por grama a partir da producao
+FR008,Maca 50g,Embalagem,1,un,,,
+FR008,Maca 50g,Adesivo,1,un,,,
+FR008,Maca 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR009,Maca Rosa 50g,Maca rosa desidratada,50,g,,,preencher custo por grama a partir da producao
+FR009,Maca Rosa 50g,Embalagem,1,un,,,
+FR009,Maca Rosa 50g,Adesivo,1,un,,,
+FR009,Maca Rosa 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR010,Manga 50g,Manga desidratada,50,g,,,preencher custo por grama a partir da producao
+FR010,Manga 50g,Embalagem,1,un,,,
+FR010,Manga 50g,Adesivo,1,un,,,
+FR010,Manga 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR011,Manga com Maracuja 50g,Manga com maracuja desidratada,50,g,,,preencher custo por grama a partir da producao
+FR011,Manga com Maracuja 50g,Embalagem,1,un,,,
+FR011,Manga com Maracuja 50g,Adesivo,1,un,,,
+FR011,Manga com Maracuja 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR012,Maracuja 50g,Maracuja desidratado,50,g,,,preencher custo por grama a partir da producao
+FR012,Maracuja 50g,Embalagem,1,un,,,
+FR012,Maracuja 50g,Adesivo,1,un,,,
+FR012,Maracuja 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR013,Melancia 50g,Melancia desidratada,50,g,,,preencher custo por grama a partir da producao
+FR013,Melancia 50g,Embalagem,1,un,,,
+FR013,Melancia 50g,Adesivo,1,un,,,
+FR013,Melancia 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR014,Kiwi 25g,Kiwi desidratado,25,g,,,preencher custo por grama a partir da producao
+FR014,Kiwi 25g,Embalagem,1,un,,,
+FR014,Kiwi 25g,Adesivo,1,un,,,
+FR014,Kiwi 25g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR015,Morango 25g,Morango desidratado,25,g,,,preencher custo por grama a partir da producao
+FR015,Morango 25g,Embalagem,1,un,,,
+FR015,Morango 25g,Adesivo,1,un,,,
+FR015,Morango 25g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR016,Pitaya 25g,Pitaya desidratada,25,g,,,preencher custo por grama a partir da producao
+FR016,Pitaya 25g,Embalagem,1,un,,,
+FR016,Pitaya 25g,Adesivo,1,un,,,
+FR016,Pitaya 25g,Sacola,1,un,,,definir se entra por produto ou por venda
+FR017,Jaca 50g,Jaca desidratada,50,g,,,preencher custo por grama a partir da producao
+FR017,Jaca 50g,Embalagem,1,un,,,
+FR017,Jaca 50g,Adesivo,1,un,,,
+FR017,Jaca 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+MIX001,Banana + Manga + Pitaya 50g,Banana desidratada,X,g,,,definir gramagem da composicao
+MIX001,Banana + Manga + Pitaya 50g,Manga desidratada,Y,g,,,definir gramagem da composicao
+MIX001,Banana + Manga + Pitaya 50g,Pitaya desidratada,Z,g,,,definir gramagem da composicao
+MIX001,Banana + Manga + Pitaya 50g,Embalagem,1,un,,,
+MIX001,Banana + Manga + Pitaya 50g,Adesivo,1,un,,,
+MIX001,Banana + Manga + Pitaya 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+MIX002,Banana + Kiwi + Morango 70g,Banana desidratada,X,g,,,definir gramagem da composicao
+MIX002,Banana + Kiwi + Morango 70g,Kiwi desidratado,Y,g,,,definir gramagem da composicao
+MIX002,Banana + Kiwi + Morango 70g,Morango desidratado,Z,g,,,definir gramagem da composicao
+MIX002,Banana + Kiwi + Morango 70g,Embalagem,1,un,,,
+MIX002,Banana + Kiwi + Morango 70g,Adesivo,1,un,,,
+MIX002,Banana + Kiwi + Morango 70g,Sacola,1,un,,,definir se entra por produto ou por venda
+MIX003,Banana + Abacaxi + Manga com Maracuja 50g,Banana desidratada,X,g,,,definir gramagem da composicao
+MIX003,Banana + Abacaxi + Manga com Maracuja 50g,Abacaxi desidratado,Y,g,,,definir gramagem da composicao
+MIX003,Banana + Abacaxi + Manga com Maracuja 50g,Manga com maracuja desidratada,Z,g,,,definir gramagem da composicao
+MIX003,Banana + Abacaxi + Manga com Maracuja 50g,Embalagem,1,un,,,
+MIX003,Banana + Abacaxi + Manga com Maracuja 50g,Adesivo,1,un,,,
+MIX003,Banana + Abacaxi + Manga com Maracuja 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+MIX004,Mix Degustacao 25g,Banana desidratada,A,g,,,definir gramagem da composicao
+MIX004,Mix Degustacao 25g,Maca desidratada,B,g,,,definir gramagem da composicao
+MIX004,Mix Degustacao 25g,Manga com maracuja desidratada,C,g,,,definir gramagem da composicao
+MIX004,Mix Degustacao 25g,Kiwi desidratado,D,g,,,definir gramagem da composicao
+MIX004,Mix Degustacao 25g,Laranja desidratada,E,g,,,definir gramagem da composicao
+MIX004,Mix Degustacao 25g,Morango desidratado,F,g,,,definir gramagem da composicao
+MIX004,Mix Degustacao 25g,Embalagem,1,un,,,
+MIX004,Mix Degustacao 25g,Adesivo,1,un,,,
+MIX004,Mix Degustacao 25g,Sacola,1,un,,,definir se entra por produto ou por venda
+MIX005,Mix Premium 200g,Banana desidratada,A,g,,,definir gramagem da composicao
+MIX005,Mix Premium 200g,Abacaxi desidratado,B,g,,,definir gramagem da composicao
+MIX005,Mix Premium 200g,Maca desidratada,C,g,,,definir gramagem da composicao
+MIX005,Mix Premium 200g,Manga desidratada,D,g,,,definir gramagem da composicao
+MIX005,Mix Premium 200g,Manga com maracuja desidratada,E,g,,,definir gramagem da composicao
+MIX005,Mix Premium 200g,Kiwi desidratado,F,g,,,definir gramagem da composicao
+MIX005,Mix Premium 200g,Morango desidratado,G,g,,,definir gramagem da composicao
+MIX005,Mix Premium 200g,Laranja desidratada,H,g,,,definir gramagem da composicao
+MIX005,Mix Premium 200g,Pitaya desidratada,I,g,,,definir gramagem da composicao
+MIX005,Mix Premium 200g,Embalagem,1,un,,,
+MIX005,Mix Premium 200g,Adesivo,1,un,,,
+MIX005,Mix Premium 200g,Sacola,1,un,,,definir se entra por produto ou por venda
+MIX006,Mix Premium 400g,Banana desidratada,A,g,,,definir gramagem da composicao
+MIX006,Mix Premium 400g,Abacaxi desidratado,B,g,,,definir gramagem da composicao
+MIX006,Mix Premium 400g,Maca desidratada,C,g,,,definir gramagem da composicao
+MIX006,Mix Premium 400g,Manga desidratada,D,g,,,definir gramagem da composicao
+MIX006,Mix Premium 400g,Manga com maracuja desidratada,E,g,,,definir gramagem da composicao
+MIX006,Mix Premium 400g,Kiwi desidratado,F,g,,,definir gramagem da composicao
+MIX006,Mix Premium 400g,Morango desidratado,G,g,,,definir gramagem da composicao
+MIX006,Mix Premium 400g,Laranja desidratada,H,g,,,definir gramagem da composicao
+MIX006,Mix Premium 400g,Pitaya desidratada,I,g,,,definir gramagem da composicao
+MIX006,Mix Premium 400g,Embalagem,1,un,,,
+MIX006,Mix Premium 400g,Adesivo,1,un,,,
+MIX006,Mix Premium 400g,Sacola,1,un,,,definir se entra por produto ou por venda
+BAR001,Banana + Amendoas de Cacau Mini barra 18g,Banana desidratada,X,g,,,definir gramagem da receita
+BAR001,Banana + Amendoas de Cacau Mini barra 18g,Amendoas de cacau moida,Y,g,,,definir gramagem da receita
+BAR001,Banana + Amendoas de Cacau Mini barra 18g,Embalagem,1,un,,,
+BAR001,Banana + Amendoas de Cacau Mini barra 18g,Adesivo,1,un,,,
+BAR001,Banana + Amendoas de Cacau Mini barra 18g,Sacola,1,un,,,definir se entra por produto ou por venda
+BAR002,Banana + Amendoim Mini barra 18g,Banana desidratada,X,g,,,definir gramagem da receita
+BAR002,Banana + Amendoim Mini barra 18g,Amendoim,Y,g,,,definir gramagem da receita
+BAR002,Banana + Amendoim Mini barra 18g,Embalagem,1,un,,,
+BAR002,Banana + Amendoim Mini barra 18g,Adesivo,1,un,,,
+BAR002,Banana + Amendoim Mini barra 18g,Sacola,1,un,,,definir se entra por produto ou por venda
+BAR003,Banana + Pitaya Mini barra 18g,Banana desidratada,X,g,,,definir gramagem da receita
+BAR003,Banana + Pitaya Mini barra 18g,Pitaya desidratada,Y,g,,,definir gramagem da receita
+BAR003,Banana + Pitaya Mini barra 18g,Embalagem,1,un,,,
+BAR003,Banana + Pitaya Mini barra 18g,Adesivo,1,un,,,
+BAR003,Banana + Pitaya Mini barra 18g,Sacola,1,un,,,definir se entra por produto ou por venda
+BAR004,Banana + Morango + Tamara Mini barra 18g,Banana desidratada,X,g,,,definir gramagem da receita
+BAR004,Banana + Morango + Tamara Mini barra 18g,Morango desidratado,Y,g,,,definir gramagem da receita
+BAR004,Banana + Morango + Tamara Mini barra 18g,Tamara,Z,g,,,definir gramagem da receita
+BAR004,Banana + Morango + Tamara Mini barra 18g,Embalagem,1,un,,,
+BAR004,Banana + Morango + Tamara Mini barra 18g,Adesivo,1,un,,,
+BAR004,Banana + Morango + Tamara Mini barra 18g,Sacola,1,un,,,definir se entra por produto ou por venda
+BAR005,Banana + Amendoas de Cacau Barra 35g,Banana desidratada,X,g,,,definir gramagem da receita
+BAR005,Banana + Amendoas de Cacau Barra 35g,Amendoas de cacau moida,Y,g,,,definir gramagem da receita
+BAR005,Banana + Amendoas de Cacau Barra 35g,Embalagem,1,un,,,
+BAR005,Banana + Amendoas de Cacau Barra 35g,Adesivo,1,un,,,
+BAR005,Banana + Amendoas de Cacau Barra 35g,Sacola,1,un,,,definir se entra por produto ou por venda
+BAR006,Banana + Amendoim Barra 35g,Banana desidratada,X,g,,,definir gramagem da receita
+BAR006,Banana + Amendoim Barra 35g,Amendoim,Y,g,,,definir gramagem da receita
+BAR006,Banana + Amendoim Barra 35g,Embalagem,1,un,,,
+BAR006,Banana + Amendoim Barra 35g,Adesivo,1,un,,,
+BAR006,Banana + Amendoim Barra 35g,Sacola,1,un,,,definir se entra por produto ou por venda
+BAR007,Banana + Pitaya Barra 35g,Banana desidratada,X,g,,,definir gramagem da receita
+BAR007,Banana + Pitaya Barra 35g,Pitaya desidratada,Y,g,,,definir gramagem da receita
+BAR007,Banana + Pitaya Barra 35g,Embalagem,1,un,,,
+BAR007,Banana + Pitaya Barra 35g,Adesivo,1,un,,,
+BAR007,Banana + Pitaya Barra 35g,Sacola,1,un,,,definir se entra por produto ou por venda
+BAR008,Banana + Morango + Tamara Barra 35g,Banana desidratada,X,g,,,definir gramagem da receita
+BAR008,Banana + Morango + Tamara Barra 35g,Morango desidratado,Y,g,,,definir gramagem da receita
+BAR008,Banana + Morango + Tamara Barra 35g,Tamara,Z,g,,,definir gramagem da receita
+BAR008,Banana + Morango + Tamara Barra 35g,Embalagem,1,un,,,
+BAR008,Banana + Morango + Tamara Barra 35g,Adesivo,1,un,,,
+BAR008,Banana + Morango + Tamara Barra 35g,Sacola,1,un,,,definir se entra por produto ou por venda
+BAR009,Mini Barras Sortidas Kit 25 unidades 18g,Mini barras diversas,25,un,,,usar custo medio das mini barras
+BAR009,Mini Barras Sortidas Kit 25 unidades 18g,Embalagem kit,1,un,,,
+BAR009,Mini Barras Sortidas Kit 25 unidades 18g,Adesivo,1,un,,,
+BAR009,Mini Barras Sortidas Kit 25 unidades 18g,Sacola,1,un,,,
+BAR010,Barras de Frutas Sortidas Kit 20 unidades 35g,Barras diversas,20,un,,,usar custo medio das barras de 35g
+BAR010,Barras de Frutas Sortidas Kit 20 unidades 35g,Embalagem kit,1,un,,,
+BAR010,Barras de Frutas Sortidas Kit 20 unidades 35g,Adesivo,1,un,,,
+BAR010,Barras de Frutas Sortidas Kit 20 unidades 35g,Sacola,1,un,,,
+BAR011,Banana + Kiwi + Morango Barra tropical 35g,Banana desidratada,X,g,,,definir gramagem da receita
+BAR011,Banana + Kiwi + Morango Barra tropical 35g,Kiwi desidratado,Y,g,,,definir gramagem da receita
+BAR011,Banana + Kiwi + Morango Barra tropical 35g,Morango desidratado,Z,g,,,definir gramagem da receita
+BAR011,Banana + Kiwi + Morango Barra tropical 35g,Embalagem,1,un,,,
+BAR011,Banana + Kiwi + Morango Barra tropical 35g,Adesivo,1,un,,,
+BAR011,Banana + Kiwi + Morango Barra tropical 35g,Sacola,1,un,,,definir se entra por produto ou por venda
+BAR012,Banana + Abacaxi + Manga com Maracuja Barra tropical 35g,Banana desidratada,X,g,,,definir gramagem da receita
+BAR012,Banana + Abacaxi + Manga com Maracuja Barra tropical 35g,Abacaxi desidratado,Y,g,,,definir gramagem da receita
+BAR012,Banana + Abacaxi + Manga com Maracuja Barra tropical 35g,Manga com maracuja desidratada,Z,g,,,definir gramagem da receita
+BAR012,Banana + Abacaxi + Manga com Maracuja Barra tropical 35g,Embalagem,1,un,,,
+BAR012,Banana + Abacaxi + Manga com Maracuja Barra tropical 35g,Adesivo,1,un,,,
+BAR012,Banana + Abacaxi + Manga com Maracuja Barra tropical 35g,Sacola,1,un,,,definir se entra por produto ou por venda
+BAR013,2 Barras Tropicais Combo 2 unidades,Barra tropical,2,un,,,usar custo medio das barras tropicais
+BAR013,2 Barras Tropicais Combo 2 unidades,Embalagem combo,1,un,,,
+BAR013,2 Barras Tropicais Combo 2 unidades,Adesivo,1,un,,,
+BAR013,2 Barras Tropicais Combo 2 unidades,Sacola,1,un,,,
+BAR014,Barras Artesanais com Flores Unidade,Base de barra artesanal,X,g,,,definir receita base principal
+BAR014,Barras Artesanais com Flores Unidade,Flores comestiveis,Y,g,,,variam conforme encomenda
+BAR014,Barras Artesanais com Flores Unidade,Embalagem,1,un,,,
+BAR014,Barras Artesanais com Flores Unidade,Adesivo,1,un,,,
+BAR014,Barras Artesanais com Flores Unidade,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL001,Banana + Maca + Morango 50g,Banana desidratada,X,g,,,definir gramagem da receita
+ROL001,Banana + Maca + Morango 50g,Maca desidratada,Y,g,,,definir gramagem da receita
+ROL001,Banana + Maca + Morango 50g,Morango desidratado,Z,g,,,definir gramagem da receita
+ROL001,Banana + Maca + Morango 50g,Embalagem,1,un,,,
+ROL001,Banana + Maca + Morango 50g,Adesivo,1,un,,,
+ROL001,Banana + Maca + Morango 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL002,Banana + Cacau + Coco 50g,Banana desidratada,X,g,,,definir gramagem da receita
+ROL002,Banana + Cacau + Coco 50g,Cacau,Y,g,,,definir gramagem da receita
+ROL002,Banana + Cacau + Coco 50g,Coco,Z,g,,,definir gramagem da receita
+ROL002,Banana + Cacau + Coco 50g,Embalagem,1,un,,,
+ROL002,Banana + Cacau + Coco 50g,Adesivo,1,un,,,
+ROL002,Banana + Cacau + Coco 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL003,Banana + Cacau + Amendoim 50g,Banana desidratada,X,g,,,definir gramagem da receita
+ROL003,Banana + Cacau + Amendoim 50g,Cacau,Y,g,,,definir gramagem da receita
+ROL003,Banana + Cacau + Amendoim 50g,Amendoim,Z,g,,,definir gramagem da receita
+ROL003,Banana + Cacau + Amendoim 50g,Embalagem,1,un,,,
+ROL003,Banana + Cacau + Amendoim 50g,Adesivo,1,un,,,
+ROL003,Banana + Cacau + Amendoim 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL004,Banana + Cacau + Laranja 50g,Banana desidratada,X,g,,,definir gramagem da receita
+ROL004,Banana + Cacau + Laranja 50g,Cacau,Y,g,,,definir gramagem da receita
+ROL004,Banana + Cacau + Laranja 50g,Casca de laranja,Z,g,,,definir gramagem da receita
+ROL004,Banana + Cacau + Laranja 50g,Embalagem,1,un,,,
+ROL004,Banana + Cacau + Laranja 50g,Adesivo,1,un,,,
+ROL004,Banana + Cacau + Laranja 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL005,Banana + Cafe + Laranja 50g,Banana desidratada,X,g,,,definir gramagem da receita
+ROL005,Banana + Cafe + Laranja 50g,Cafe,Y,g,,,definir gramagem da receita
+ROL005,Banana + Cafe + Laranja 50g,Casca de laranja,Z,g,,,definir gramagem da receita
+ROL005,Banana + Cafe + Laranja 50g,Embalagem,1,un,,,
+ROL005,Banana + Cafe + Laranja 50g,Adesivo,1,un,,,
+ROL005,Banana + Cafe + Laranja 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL006,Manga com Maracuja 50g,Manga desidratada,X,g,,,definir gramagem da receita
+ROL006,Manga com Maracuja 50g,Maracuja desidratado,Y,g,,,definir gramagem da receita
+ROL006,Manga com Maracuja 50g,Embalagem,1,un,,,
+ROL006,Manga com Maracuja 50g,Adesivo,1,un,,,
+ROL006,Manga com Maracuja 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL007,Manga com Abacaxi 50g,Manga desidratada,X,g,,,definir gramagem da receita
+ROL007,Manga com Abacaxi 50g,Abacaxi desidratado,Y,g,,,definir gramagem da receita
+ROL007,Manga com Abacaxi 50g,Embalagem,1,un,,,
+ROL007,Manga com Abacaxi 50g,Adesivo,1,un,,,
+ROL007,Manga com Abacaxi 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL008,Abacaxi com Gengibre 50g,Abacaxi desidratado,X,g,,,definir gramagem da receita
+ROL008,Abacaxi com Gengibre 50g,Gengibre,Y,g,,,definir gramagem da receita
+ROL008,Abacaxi com Gengibre 50g,Embalagem,1,un,,,
+ROL008,Abacaxi com Gengibre 50g,Adesivo,1,un,,,
+ROL008,Abacaxi com Gengibre 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL009,Abacaxi com Pitaya 50g,Abacaxi desidratado,X,g,,,definir gramagem da receita
+ROL009,Abacaxi com Pitaya 50g,Pitaya desidratada,Y,g,,,definir gramagem da receita
+ROL009,Abacaxi com Pitaya 50g,Embalagem,1,un,,,
+ROL009,Abacaxi com Pitaya 50g,Adesivo,1,un,,,
+ROL009,Abacaxi com Pitaya 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL010,Abacaxi com Coco 50g,Abacaxi desidratado,X,g,,,definir gramagem da receita
+ROL010,Abacaxi com Coco 50g,Coco,Y,g,,,definir gramagem da receita
+ROL010,Abacaxi com Coco 50g,Embalagem,1,un,,,
+ROL010,Abacaxi com Coco 50g,Adesivo,1,un,,,
+ROL010,Abacaxi com Coco 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL011,Banana + Maca + Canela + Cardamomo 50g,Banana desidratada,X,g,,,definir gramagem da receita
+ROL011,Banana + Maca + Canela + Cardamomo 50g,Maca desidratada,Y,g,,,definir gramagem da receita
+ROL011,Banana + Maca + Canela + Cardamomo 50g,Canela,Z,g,,,definir gramagem da receita
+ROL011,Banana + Maca + Canela + Cardamomo 50g,Cardamomo,W,g,,,definir gramagem da receita
+ROL011,Banana + Maca + Canela + Cardamomo 50g,Embalagem,1,un,,,
+ROL011,Banana + Maca + Canela + Cardamomo 50g,Adesivo,1,un,,,
+ROL011,Banana + Maca + Canela + Cardamomo 50g,Sacola,1,un,,,definir se entra por produto ou por venda
+ROL012,Sortidos 100g,Rolinhos variados,X,un,,,usar custo medio conforme sabores do lote
+ROL012,Sortidos 100g,Embalagem,1,un,,,
+ROL012,Sortidos 100g,Adesivo,1,un,,,
+ROL012,Sortidos 100g,Sacola,1,un,,,
+ROL013,Sortidos 500g,Rolinhos variados,X,un,,,usar custo medio conforme sabores do lote
+ROL013,Sortidos 500g,Embalagem,1,un,,,
+ROL013,Sortidos 500g,Adesivo,1,un,,,
+ROL013,Sortidos 500g,Sacola,1,un,,,
+ROL014,Sortidos 1kg,Rolinhos variados,X,un,,,usar custo medio conforme sabores do lote
+ROL014,Sortidos 1kg,Embalagem,1,un,,,
+ROL014,Sortidos 1kg,Adesivo,1,un,,,
+ROL014,Sortidos 1kg,Sacola,1,un,,,
+ERV001,Erva Cidreira Pacote,Erva cidreira,1,pct,,,
+ERV001,Erva Cidreira Pacote,Embalagem,1,un,,,
+ERV001,Erva Cidreira Pacote,Adesivo,1,un,,,
+ERV002,Capim Limao Pacote,Capim limao,1,pct,,,
+ERV002,Capim Limao Pacote,Embalagem,1,un,,,
+ERV002,Capim Limao Pacote,Adesivo,1,un,,,
+ERV003,Hortela Pacote,Hortela,1,pct,,,
+ERV003,Hortela Pacote,Embalagem,1,un,,,
+ERV003,Hortela Pacote,Adesivo,1,un,,,
+ESP001,Pimenta Rosa 20g,Pimenta rosa,20,g,,,
+ESP001,Pimenta Rosa 20g,Embalagem,1,un,,,
+ESP001,Pimenta Rosa 20g,Adesivo,1,un,,,
+ESP002,Pitaya em Po 25g,Pitaya em po,25,g,,,
+ESP002,Pitaya em Po 25g,Embalagem,1,un,,,
+ESP002,Pitaya em Po 25g,Adesivo,1,un,,,
+ESP003,Curcuma em Po 50g,Curcuma em po,50,g,,,
+ESP003,Curcuma em Po 50g,Embalagem,1,un,,,
+ESP003,Curcuma em Po 50g,Adesivo,1,un,,,
+ESP004,Gengibre 25g,Gengibre desidratado,25,g,,,
+ESP004,Gengibre 25g,Embalagem,1,un,,,
+ESP004,Gengibre 25g,Adesivo,1,un,,,
+ESP005,Casca de Limao Tahiti 25g,Casca de limao tahiti,25,g,,,
+ESP005,Casca de Limao Tahiti 25g,Embalagem,1,un,,,
+ESP005,Casca de Limao Tahiti 25g,Adesivo,1,un,,,
+ESP006,Casca de Limao Siciliano 25g,Casca de limao siciliano,25,g,,,
+ESP006,Casca de Limao Siciliano 25g,Embalagem,1,un,,,
+ESP006,Casca de Limao Siciliano 25g,Adesivo,1,un,,,
+ESP007,Casca de Laranja 25g,Casca de laranja,25,g,,,
+ESP007,Casca de Laranja 25g,Embalagem,1,un,,,
+ESP007,Casca de Laranja 25g,Adesivo,1,un,,,
+ESP008,Casca Cristalizada 30g,Casca cristalizada,30,g,,,
+ESP008,Casca Cristalizada 30g,Embalagem,1,un,,,
+ESP008,Casca Cristalizada 30g,Adesivo,1,un,,,
+FLO001,Mini Rosas 10 flores,Mini rosas,10,flor,,,
+FLO001,Mini Rosas 10 flores,Embalagem,1,un,,,
+FLO001,Mini Rosas 10 flores,Adesivo,1,un,,,
+FLO002,Mini Rosas 25 flores,Mini rosas,25,flor,,,
+FLO002,Mini Rosas 25 flores,Embalagem,1,un,,,
+FLO002,Mini Rosas 25 flores,Adesivo,1,un,,,
+FLO003,Mini Rosas 50 flores,Mini rosas,50,flor,,,
+FLO003,Mini Rosas 50 flores,Embalagem,1,un,,,
+FLO003,Mini Rosas 50 flores,Adesivo,1,un,,,
+FLO004,Lavanda 10 flores,Lavanda,10,flor,,,
+FLO004,Lavanda 10 flores,Embalagem,1,un,,,
+FLO004,Lavanda 10 flores,Adesivo,1,un,,,
+FLO005,Lavanda 20 flores,Lavanda,20,flor,,,
+FLO005,Lavanda 20 flores,Embalagem,1,un,,,
+FLO005,Lavanda 20 flores,Adesivo,1,un,,,
+FLO006,Lavanda 30 flores,Lavanda,30,flor,,,
+FLO006,Lavanda 30 flores,Embalagem,1,un,,,
+FLO006,Lavanda 30 flores,Adesivo,1,un,,,
+FLO007,Mix de Flores Sortidas 50 flores,Mix de flores sortidas,50,flor,,,
+FLO007,Mix de Flores Sortidas 50 flores,Embalagem,1,un,,,
+FLO007,Mix de Flores Sortidas 50 flores,Adesivo,1,un,,,
+FLO008,Mix de Petalas Unidade,Mix de petalas,Unidade,un,,,
+FLO008,Mix de Petalas Unidade,Embalagem,1,un,,,
+FLO008,Mix de Petalas Unidade,Adesivo,1,un,,,

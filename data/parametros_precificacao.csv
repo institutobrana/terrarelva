@@ -1,0 +1,13 @@
+parametro,valor,unidade,observacoes
+imposto_percentual,10,percentual,percentual inicial sugerido para simulacao
+mao_de_obra_percentual,20,percentual,percentual inicial sugerido para simulacao
+custos_fixos_mensais,0,brl,preencher com agua luz gas internet feira transporte etc
+pro_labore_mensal,0,brl,valor mensal que a Flavia deve retirar da loja
+horas_trabalhadas_mes,0,horas,usar para descobrir valor da hora artesanal
+valor_hora_artesanal,0,brl,resultado de pro_labore_mensal dividido por horas_trabalhadas_mes
+sanitizante_ml_por_litro,0,ml,quantos ml usa em cada litro da mistura
+sanitizante_litros_por_lavagem,0,l,quantos litros usa em uma lavagem
+sanitizante_lavagens_por_frasco,0,lavagens,quantas lavagens completas um frasco rende
+papel_metros_por_rolo,0,m,metragem do rolo do papel antiaderente
+papel_bandejas_por_metro,0,bandejas,quantas bandejas um metro preparado rende
+sacola_rateio_por_venda,1,un,ajustar para 0 se nem toda venda usa sacola

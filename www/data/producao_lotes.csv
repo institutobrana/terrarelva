@@ -1,0 +1,2 @@
+data,lote,materia_prima,peso_bruto_g,valor_pago,tempo_forno_horas,peso_final_g,rendimento_percentual,custo_por_grama_final,fornecedor,observacoes
+,,,,,,,,,,modelo para registrar cada producao e calcular custo real por grama
