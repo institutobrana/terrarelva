@@ -55,6 +55,13 @@
   - `E-mail 1` foi reestruturado em `tipo` + `endereco`
   - `Documento` foi mantido em `tipo` + `numero`
   - o modal ficou menos arredondado, mais compacto e com cabecalho mais tecnico
+- Refinamento posterior na acao `Alterar`:
+  - o botao `Alterar` passou a abrir o modal `Altera cliente` somente quando ha cliente selecionado
+  - sem selecao, o botao permanece desabilitado
+  - a aba `Dados principais` recebeu bloco de beneficio, codigo, situacao e area de avatar
+  - a aba `Contatos` recebeu telefone principal, e-mail e enderecos com acoes de criacao
+  - a aba `Dados complementares` recebeu os campos operacionais do print adaptados ao dominio de cliente
+  - as abas `Campos livres` e `Observacoes` nasceram preparadas para evolucao futura
 
 ## Tela de fornecedores
 

@@ -1410,6 +1410,43 @@ a {
   padding: 0 10px 10px;
 }
 
+.supplier-contact-form-shell {
+  padding: 10px 12px 0;
+}
+
+.client-edit-tabs .ant-tabs-nav {
+  margin-bottom: 12px;
+}
+
+.client-create-link.ant-btn {
+  padding-inline: 0;
+  height: auto;
+  color: var(--shell-brand);
+}
+
+.client-edit-extra-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 14px;
+}
+
+.client-edit-visibility-item {
+  grid-column: 1 / -1;
+}
+
+.client-edit-placeholder {
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+}
+
+.client-edit-notes-item .ant-form-item-control-input,
+.client-edit-notes-item .ant-form-item-control-input-content,
+.client-edit-notes-item .ant-input-textarea,
+.client-edit-notes-item textarea {
+  min-height: 280px;
+}
+
 @media (max-width: 860px) {
   .supplier-modal-divider {
     margin-left: 0;
@@ -1422,6 +1459,10 @@ a {
   .supplier-contact-block-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .client-edit-extra-grid {
+    grid-template-columns: 1fr;
   }
 }
 
