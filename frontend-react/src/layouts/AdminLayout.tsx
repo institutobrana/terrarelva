@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -21,13 +21,7 @@ export function AdminLayout({ modules }: AdminLayoutProps) {
 
   const principalModules = useMemo(() => modules.filter((module) => module.section === "principal"), [modules]);
   const currentModule = getAdminModuleFromPath(location.pathname, modules);
-  const [panelModuleKey, setPanelModuleKey] = useState(currentModule?.key ?? "hoje");
-
-  useEffect(() => {
-    if (currentModule?.key) {
-      setPanelModuleKey(currentModule.key);
-    }
-  }, [currentModule?.key]);
+  const [panelModuleKey, setPanelModuleKey] = useState("");
 
   const panelModule = principalModules.find((module) => module.key === panelModuleKey) ?? null;
 
@@ -58,7 +52,7 @@ export function AdminLayout({ modules }: AdminLayoutProps) {
     }
 
     panelCloseTimerRef.current = window.setTimeout(() => {
-      setPanelModuleKey(currentModule?.key ?? "hoje");
+      setPanelModuleKey("");
       panelCloseTimerRef.current = null;
     }, 140);
   };
@@ -91,7 +85,7 @@ export function AdminLayout({ modules }: AdminLayoutProps) {
 
         <AdminContextPanel
           module={panelModule}
-          onClose={() => setPanelModuleKey(currentModule?.key ?? "hoje")}
+          onClose={() => setPanelModuleKey("")}
           onSelectItem={(path) => navigate(path)}
           onMouseEnter={handleContextRegionEnter}
           onMouseLeave={handleContextRegionLeave}
