@@ -546,51 +546,58 @@ a {
 
 .terra-password-modal .ant-modal-content {
   padding: 0 0 18px;
-  border-radius: 8px;
+  border-radius: 18px;
   overflow: hidden;
-  border: 1px solid rgba(164, 171, 180, 0.7);
-  box-shadow: 0 18px 45px rgba(56, 53, 41, 0.16);
+  border: 1px solid var(--shell-border-soft);
+  background: linear-gradient(180deg, var(--shell-panel-strong), rgba(248, 244, 236, 0.98));
+  box-shadow: 0 20px 48px rgba(56, 53, 41, 0.18);
 }
 
 .terra-password-modal .ant-modal-close {
-  top: 10px;
-  right: 10px;
+  top: 14px;
+  right: 14px;
   color: #ffffff;
-  background: #1db6b2;
-  border-radius: 4px;
-  width: 20px;
-  height: 20px;
+  background: linear-gradient(180deg, var(--shell-brand-accent), var(--shell-brand));
+  border-radius: 999px;
+  width: 26px;
+  height: 26px;
+  box-shadow: 0 6px 14px rgba(67, 98, 69, 0.2);
 }
 
 .terra-password-modal .ant-modal-close:hover {
   color: #ffffff;
-  background: #18a5a2;
+  background: linear-gradient(180deg, var(--shell-brand), var(--shell-brand-strong));
 }
 
 .terra-password-modal .ant-modal-close-x {
   font-size: 12px;
+  display: grid;
+  place-items: center;
 }
 
 .terra-password-modal-header {
-  padding: 14px 22px 10px;
-  border-bottom: 1px solid rgba(207, 210, 214, 0.8);
-  background: linear-gradient(180deg, #fefefe, #f3f3f3);
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid rgba(214, 202, 184, 0.72);
+  background:
+    linear-gradient(180deg, rgba(255, 254, 251, 0.98), rgba(241, 235, 225, 0.96)),
+    linear-gradient(90deg, rgba(67, 98, 69, 0.06), rgba(110, 135, 95, 0.04));
 }
 
 .terra-password-modal-title.ant-typography {
   margin: 0;
   text-align: center;
-  font-size: 18px;
-  font-weight: 700;
-  color: #17aeb6;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--shell-brand-strong);
+  letter-spacing: 0.01em;
 }
 
 .terra-password-form {
-  padding: 12px 26px 0;
+  padding: 18px 26px 0;
 }
 
 .terra-password-form .ant-form-item {
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .terra-password-form .ant-form-item-row {
@@ -607,24 +614,37 @@ a {
   width: 128px;
   justify-content: flex-end;
   font-weight: 700;
-  color: #26352e;
+  color: var(--shell-brand-strong);
 }
 
 .terra-password-form .ant-form-item-control {
   flex: 1;
 }
 
+.terra-password-form .ant-form-item-required::before {
+  color: var(--shell-brand-accent) !important;
+}
+
 .terra-password-form .ant-input-affix-wrapper {
-  height: 34px;
-  border-radius: 0;
-  border-color: #bec8d9;
+  height: 38px;
+  border-radius: 10px;
+  border-color: rgba(162, 178, 151, 0.72);
+  background: rgba(255, 253, 248, 0.98);
   box-shadow: none;
+}
+
+.terra-password-form .ant-input-affix-wrapper input::placeholder {
+  color: rgba(96, 113, 100, 0.72);
+}
+
+.terra-password-form .ant-input-password-icon.anticon {
+  color: var(--shell-muted);
 }
 
 .terra-password-form .ant-input-affix-wrapper:focus,
 .terra-password-form .ant-input-affix-wrapper-focused {
-  border-color: #17aeb6;
-  box-shadow: 0 0 0 2px rgba(23, 174, 182, 0.12);
+  border-color: var(--shell-brand);
+  box-shadow: 0 0 0 3px rgba(67, 98, 69, 0.12);
 }
 
 .terra-password-form .ant-form-item-explain-error {
@@ -635,28 +655,41 @@ a {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  padding-top: 8px;
+  padding-top: 10px;
 }
 
 .terra-password-modal-actions .ant-btn {
-  min-width: 104px;
-  height: 34px;
-  border-radius: 6px;
-  font-weight: 600;
+  min-width: 116px;
+  height: 38px;
+  border-radius: 10px;
+  font-weight: 700;
 }
 
 .terra-password-modal-actions .ant-btn-primary {
-  background: linear-gradient(180deg, #ffffff, #f3f1eb);
-  border-color: #c9c5bc;
-  color: #5b4d39;
-  box-shadow: none;
+  background: linear-gradient(180deg, var(--shell-brand), var(--shell-brand-strong));
+  border-color: var(--shell-brand-strong);
+  color: #f8f7f2;
+  box-shadow: 0 10px 22px rgba(67, 98, 69, 0.18);
 }
 
 .terra-password-modal-actions .ant-btn-primary:hover,
 .terra-password-modal-actions .ant-btn-primary:focus {
-  background: linear-gradient(180deg, #fffef9, #ece6dc) !important;
-  border-color: #bcb5a8 !important;
-  color: #4f4332 !important;
+  background: linear-gradient(180deg, var(--shell-brand-strong), #2f4636) !important;
+  border-color: #2f4636 !important;
+  color: #ffffff !important;
+}
+
+.terra-password-modal-actions .ant-btn-default {
+  border-color: var(--shell-border-soft);
+  color: var(--shell-brand-strong);
+  background: linear-gradient(180deg, rgba(255, 254, 251, 0.98), rgba(240, 235, 227, 0.96));
+}
+
+.terra-password-modal-actions .ant-btn-default:hover,
+.terra-password-modal-actions .ant-btn-default:focus {
+  border-color: rgba(110, 135, 95, 0.7) !important;
+  color: var(--shell-brand) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 252, 1), rgba(232, 240, 224, 0.9)) !important;
 }
 
 .terra-content {

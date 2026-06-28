@@ -30,3 +30,14 @@
 
 - `frontend-react/src/components/admin/AdminActionTopbar.tsx`
 - `frontend-react/src/index.css`
+
+## Ajuste visual posterior
+
+- O visual do modal foi alinhado a identidade Terra Relva sem mexer no fluxo funcional.
+- Foram reaproveitados os tokens do shell:
+  - `--shell-brand`
+  - `--shell-brand-strong`
+  - `--shell-brand-accent`
+  - `--shell-brand-soft`
+  - `--shell-panel-strong`
+  - `--shell-border-soft`
