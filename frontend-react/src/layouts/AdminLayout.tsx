@@ -1,56 +1,110 @@
-import { Layout } from "antd";
-import { useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
-import { AdminContextBar } from "@/components/admin/AdminContextBar";
-import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { AdminTopbar } from "@/components/admin/AdminTopbar";
+import { AdminActionTopbar } from "@/components/admin/AdminActionTopbar";
+import { AdminContextPanel } from "@/components/admin/AdminContextPanel";
+import { AdminIconRail } from "@/components/admin/AdminIconRail";
+import { AdminWorkspace } from "@/components/admin/AdminWorkspace";
 import type { AdminModuleNavigation } from "@/types/navigation";
 import { getAdminModuleFromPath } from "@/utils/navigation";
-
-const { Header, Sider, Content } = Layout;
 
 type AdminLayoutProps = {
   modules: AdminModuleNavigation[];
 };
 
 export function AdminLayout({ modules }: AdminLayoutProps) {
-  const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const panelCloseTimerRef = useRef<number | null>(null);
+  const [railExpanded, setRailExpanded] = useState(false);
+
+  const principalModules = useMemo(() => modules.filter((module) => module.section === "principal"), [modules]);
   const currentModule = getAdminModuleFromPath(location.pathname, modules);
+  const [panelModuleKey, setPanelModuleKey] = useState(currentModule?.key ?? "hoje");
+
+  useEffect(() => {
+    if (currentModule?.key) {
+      setPanelModuleKey(currentModule.key);
+    }
+  }, [currentModule?.key]);
+
+  const panelModule = principalModules.find((module) => module.key === panelModuleKey) ?? null;
+
+  const handleOpenModule = (moduleKey: string) => {
+    if (panelCloseTimerRef.current) {
+      window.clearTimeout(panelCloseTimerRef.current);
+      panelCloseTimerRef.current = null;
+    }
+
+    const module = principalModules.find((entry) => entry.key === moduleKey);
+    if (!module) {
+      return;
+    }
+
+    setPanelModuleKey(moduleKey);
+  };
+
+  const handleContextRegionEnter = () => {
+    if (panelCloseTimerRef.current) {
+      window.clearTimeout(panelCloseTimerRef.current);
+      panelCloseTimerRef.current = null;
+    }
+  };
+
+  const handleContextRegionLeave = () => {
+    if (panelCloseTimerRef.current) {
+      window.clearTimeout(panelCloseTimerRef.current);
+    }
+
+    panelCloseTimerRef.current = window.setTimeout(() => {
+      setPanelModuleKey(currentModule?.key ?? "hoje");
+      panelCloseTimerRef.current = null;
+    }, 140);
+  };
+
+  const shellStyle = {
+    "--terra-rail-width": railExpanded ? "184px" : "72px",
+    "--terra-panel-width": panelModule ? "272px" : "0px",
+  } as CSSProperties;
 
   return (
-    <Layout className="admin-shell">
-      <Sider
-        breakpoint="lg"
-        collapsed={collapsed}
-        collapsedWidth={88}
-        onCollapse={setCollapsed}
-        theme="light"
-        width={280}
-        className="admin-sider"
-      >
-        <AdminSidebar collapsed={collapsed} currentPath={location.pathname} modules={modules} />
-      </Sider>
+    <div className="terra-shell" style={shellStyle}>
+      <div className="terra-shell-topbar">
+        <AdminActionTopbar userLabel="Sessao administrativa ativa" onToolbarAction={(path) => navigate(path)} />
+      </div>
 
-      <Layout className="admin-main-shell">
-        <Header className="admin-layout-header">
-          <AdminTopbar
-            collapsed={collapsed}
-            currentPath={location.pathname}
-            currentModule={currentModule}
-            onToggleSidebar={() => setCollapsed((current) => !current)}
-          />
-        </Header>
-        <div className="admin-context-wrap">
-          <AdminContextBar currentPath={location.pathname} currentModule={currentModule} />
-        </div>
-        <Content className="admin-content">
-          <div className="page-frame">
-            <Outlet />
+      <div className={`terra-shell-body${panelModule ? " has-panel" : ""}`}>
+        {currentModule?.key === "hoje" ? <div className="terra-shell-corner" aria-hidden="true" /> : null}
+        {currentModule?.key === "hoje" ? <div className="terra-shell-band" aria-hidden="true" /> : null}
+
+        <AdminIconRail
+          activeKey={currentModule?.key ?? "hoje"}
+          expanded={railExpanded}
+          modules={principalModules}
+          panelOpen={Boolean(panelModule)}
+          onOpenModule={handleOpenModule}
+          onToggleExpand={() => setRailExpanded((current) => !current)}
+          onMouseEnter={handleContextRegionEnter}
+          onMouseLeave={handleContextRegionLeave}
+        />
+
+        <AdminContextPanel
+          module={panelModule}
+          onClose={() => setPanelModuleKey(currentModule?.key ?? "hoje")}
+          onSelectItem={(path) => navigate(path)}
+          onMouseEnter={handleContextRegionEnter}
+          onMouseLeave={handleContextRegionLeave}
+        />
+
+        <AdminWorkspace>
+          <div className="terra-content">
+            <div className="page-frame">
+              <Outlet />
+            </div>
           </div>
-        </Content>
-      </Layout>
-    </Layout>
+        </AdminWorkspace>
+      </div>
+    </div>
   );
 }
