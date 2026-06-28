@@ -18,7 +18,7 @@
   - data inicial
   - data final
   - pesquisar
-  - configuracoes
+  - configuracoes com menu dropdown
   - imprimir
   - exportar
 
@@ -30,6 +30,20 @@
   - `Transferencia`
   - `Saldo inicial`
 - Nesta etapa, cada item ficou funcional como placeholder controlado por mensagem.
+
+## Menu da engrenagem
+
+- A engrenagem no canto direito passou a abrir menu dropdown alinhado a propria barra.
+- Opcoes adicionadas:
+  - `Cadastrar fornecedores`
+  - `Configurar plano de contas`
+  - `Configurar contas bancarias`
+  - `Configurar formas de pagamento`
+- Ligacoes aplicadas nesta etapa:
+  - `Cadastrar fornecedores` -> `/admin/fornecedores`
+  - `Configurar plano de contas` -> `/admin/configuracoes/plano-contas`
+  - `Configurar contas bancarias` -> `/admin/configuracoes/contas-bancarias`
+  - `Configurar formas de pagamento` -> base atual em `/admin/configuracoes/tabelas-auxiliares`, com aviso orientando o recorte preparado
 
 ## Grade principal
 

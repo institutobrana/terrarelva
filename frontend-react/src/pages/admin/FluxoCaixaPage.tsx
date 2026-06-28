@@ -1,18 +1,22 @@
 import {
   CalendarOutlined,
+  CreditCardOutlined,
   DeleteOutlined,
   DownOutlined,
   EyeOutlined,
   ExportOutlined,
+  FileTextOutlined,
   PlusOutlined,
   PrinterOutlined,
   SearchOutlined,
   SettingOutlined,
   SwapOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 import { Button, DatePicker, Dropdown, Input, Select, Table, Tabs, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
@@ -50,6 +54,7 @@ function formatDate(value: string | null) {
 
 export function FluxoCaixaPage() {
   const { setShellBandContent } = useAdminShellBand();
+  const navigate = useNavigate();
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [selectedAccount, setSelectedAccount] = useState("loja");
   const [selectedPeriod, setSelectedPeriod] = useState("mes-atual");
@@ -170,7 +175,41 @@ export function FluxoCaixaPage() {
               placeholder="Pesquisar"
               className="cashflow-shell-search"
             />
-            <Button icon={<SettingOutlined />} onClick={() => apiMessage.info("Configuracoes do fluxo de caixa preparadas para a proxima etapa.")} />
+            <Dropdown
+              trigger={["click"]}
+              placement="bottomRight"
+              menu={{
+                items: [
+                  { key: "fornecedores", label: "Cadastrar fornecedores", icon: <TeamOutlined /> },
+                  { key: "plano-contas", label: "Configurar plano de contas", icon: <FileTextOutlined /> },
+                  { key: "contas-bancarias", label: "Configurar contas bancarias", icon: <CreditCardOutlined /> },
+                  { key: "formas-pagamento", label: "Configurar formas de pagamento", icon: <SettingOutlined /> },
+                ],
+                onClick: ({ key }) => {
+                  if (key === "fornecedores") {
+                    navigate("/admin/fornecedores");
+                    return;
+                  }
+
+                  if (key === "plano-contas") {
+                    navigate("/admin/configuracoes/plano-contas");
+                    return;
+                  }
+
+                  if (key === "contas-bancarias") {
+                    navigate("/admin/configuracoes/contas-bancarias");
+                    return;
+                  }
+
+                  if (key === "formas-pagamento") {
+                    navigate("/admin/configuracoes/tabelas-auxiliares");
+                    apiMessage.info("Tabela de formas de pagamento preparada dentro de Tabelas auxiliares.");
+                  }
+                },
+              }}
+            >
+              <Button icon={<SettingOutlined />} aria-label="Configuracoes do fluxo de caixa" />
+            </Dropdown>
             <Button icon={<PrinterOutlined />} onClick={() => apiMessage.info("Impressao preparada para a proxima etapa.")} />
             <Button icon={<ExportOutlined />} onClick={() => apiMessage.info("Exportacao preparada para a proxima etapa.")} />
           </div>
@@ -181,7 +220,7 @@ export function FluxoCaixaPage() {
     return () => {
       setShellBandContent(null);
     };
-  }, [apiMessage, disableSelectionActions, search, selectedAccount, selectedPeriod, setShellBandContent]);
+  }, [apiMessage, disableSelectionActions, navigate, search, selectedAccount, selectedPeriod, setShellBandContent]);
 
   return (
     <div className="module-page-shell users-admin-page">
