@@ -1,13 +1,10 @@
-import { SearchOutlined } from "@ant-design/icons";
-import { Input, Space, Table, Tag, Typography } from "antd";
+import { Space, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
 import type { ProductionBatchView } from "@/modules/production/types";
 
 type ProductionTableProps = {
   batches: ProductionBatchView[];
-  search: string;
-  onSearchChange: (value: string) => void;
   selectedId: string | null;
   onSelectBatch: (id: string) => void;
 };
@@ -76,37 +73,25 @@ const columns: ColumnsType<ProductionBatchView> = [
   },
 ];
 
-export function ProductionTable({
-  batches,
-  search,
-  onSearchChange,
-  selectedId,
-  onSelectBatch,
-}: ProductionTableProps) {
+export function ProductionTable({ batches, selectedId, onSelectBatch }: ProductionTableProps) {
   return (
-    <Space direction="vertical" size={16} style={{ width: "100%" }}>
-      <Input
-        allowClear
-        prefix={<SearchOutlined />}
-        placeholder="Buscar por materia-prima, produto ligado, lote, status ou observacao"
-        value={search}
-        onChange={(event) => onSearchChange(event.target.value)}
-      />
-      <Table<ProductionBatchView>
-        rowKey={(row) => row.record.id}
-        columns={columns}
-        dataSource={batches}
-        pagination={{ pageSize: 10, showSizeChanger: false }}
-        scroll={{ x: 1120 }}
-        rowSelection={{
-          type: "radio",
-          selectedRowKeys: selectedId ? [selectedId] : [],
-          onChange: (selectedKeys) => onSelectBatch(String(selectedKeys[0] ?? "")),
-        }}
-        onRow={(record) => ({
-          onClick: () => onSelectBatch(record.record.id),
-        })}
-      />
-    </Space>
+    <Table<ProductionBatchView>
+      rowKey={(row) => row.record.id}
+      columns={columns}
+      dataSource={batches}
+      pagination={{ pageSize: 10, showSizeChanger: false }}
+      scroll={{ x: 1120 }}
+      rowSelection={{
+        type: "radio",
+        selectedRowKeys: selectedId ? [selectedId] : [],
+        onChange: (selectedKeys) => onSelectBatch(String(selectedKeys[0] ?? "")),
+      }}
+      locale={{
+        emptyText: "Nenhuma producao combina com o recorte atual. Ajuste a busca ou mude a visao do modulo.",
+      }}
+      onRow={(record) => ({
+        onClick: () => onSelectBatch(record.record.id),
+      })}
+    />
   );
 }

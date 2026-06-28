@@ -1,13 +1,10 @@
-import { SearchOutlined } from "@ant-design/icons";
-import { Input, Space, Table, Tag, Typography } from "antd";
+import { Space, Table, Tag, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
 import type { ProductPricingView } from "@/modules/pricing/types";
 
 type PricingProductsTableProps = {
   products: ProductPricingView[];
-  search: string;
-  onSearchChange: (value: string) => void;
   selectedCode: string | null;
   onSelectProduct: (code: string) => void;
 };
@@ -93,37 +90,25 @@ const columns: ColumnsType<ProductPricingView> = [
   },
 ];
 
-export function PricingProductsTable({
-  products,
-  search,
-  onSearchChange,
-  selectedCode,
-  onSelectProduct,
-}: PricingProductsTableProps) {
+export function PricingProductsTable({ products, selectedCode, onSelectProduct }: PricingProductsTableProps) {
   return (
-    <Space direction="vertical" size={16} style={{ width: "100%" }}>
-      <Input
-        allowClear
-        prefix={<SearchOutlined />}
-        placeholder="Buscar por produto, categoria, receita, status ou base de custo"
-        value={search}
-        onChange={(event) => onSearchChange(event.target.value)}
-      />
-      <Table<ProductPricingView>
-        rowKey={(row) => row.product.code}
-        columns={columns}
-        dataSource={products}
-        pagination={{ pageSize: 10, showSizeChanger: false }}
-        scroll={{ x: 1260 }}
-        rowSelection={{
-          type: "radio",
-          selectedRowKeys: selectedCode ? [selectedCode] : [],
-          onChange: (selectedKeys) => onSelectProduct(String(selectedKeys[0] ?? "")),
-        }}
-        onRow={(record) => ({
-          onClick: () => onSelectProduct(record.product.code),
-        })}
-      />
-    </Space>
+    <Table<ProductPricingView>
+      rowKey={(row) => row.product.code}
+      columns={columns}
+      dataSource={products}
+      pagination={{ pageSize: 10, showSizeChanger: false }}
+      scroll={{ x: 1260 }}
+      rowSelection={{
+        type: "radio",
+        selectedRowKeys: selectedCode ? [selectedCode] : [],
+        onChange: (selectedKeys) => onSelectProduct(String(selectedKeys[0] ?? "")),
+      }}
+      locale={{
+        emptyText: "Nenhum produto combina com o recorte atual. Ajuste a busca ou mude a visao do modulo.",
+      }}
+      onRow={(record) => ({
+        onClick: () => onSelectProduct(record.product.code),
+      })}
+    />
   );
 }

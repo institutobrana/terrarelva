@@ -1,7 +1,12 @@
 import { ReloadOutlined, ToolOutlined } from "@ant-design/icons";
-import { Alert, Button, Card, Col, Row, Space, Statistic, Tag, Typography } from "antd";
+import { Button, Input, Tag } from "antd";
 
-import { PageHero } from "@/components/ui/PageHero";
+import { ModuleActionBar } from "@/components/admin/ModuleActionBar";
+import { ModuleAlertStack } from "@/components/admin/ModuleAlertStack";
+import { ModulePageHeader } from "@/components/admin/ModulePageHeader";
+import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
+import { ModuleSummaryCard } from "@/components/admin/ModuleSummaryCard";
+import { ModuleSummaryRow } from "@/components/admin/ModuleSummaryRow";
 import { ProductionSummaryPanel } from "@/modules/production/ProductionSummaryPanel";
 import { ProductionTable } from "@/modules/production/ProductionTable";
 import { useProductionModule } from "@/modules/production/useProductionModule";
@@ -51,99 +56,96 @@ export function ProducaoPage({ view = "overview" }: ProducaoPageProps) {
               ? "O legado atual nao traz validade estruturada; esta subtela evidencia essa lacuna sem inventar dados."
               : "Leitura estruturada das producoes do legado, conectando materia-prima, produtos ligados, custos e movimentos de estoque quando possivel.";
 
+  const moduleWarnings = [
+    ...legacySnapshot.warnings,
+    ...productionSnapshot.incompleteBatches
+      .slice(0, 3)
+      .map((batch) => `${batch.record.ingredient}: ${batch.notes.join(" ") || "Base parcial para custo e rendimento."}`),
+  ];
+
   return (
-    <Row gutter={[24, 24]}>
-      <Col span={24}>
-        <PageHero
-          eyebrow="Leitura estruturada de producao"
-          title="Producao"
-          description={pageDescription}
-          tag={legacySnapshot.hasPersistedState ? "Leitura do legado habilitada" : "Sem estado legado persistido"}
-          metrics={[
-            { label: "Producoes visiveis", value: String(visibleBatches.length) },
-            { label: "Peso final total", value: `${productionSnapshot.summary.totalFinalWeight} g` },
-            { label: "Ultima leitura", value: new Date(legacySnapshot.loadedAt).toLocaleString("pt-BR") },
-          ]}
-          actions={
-            <Space wrap>
-              <Button type="primary" size="large" icon={<ToolOutlined />}>
-                Somente leitura
-              </Button>
-              <Button size="large" icon={<ReloadOutlined />} onClick={() => window.location.reload()}>
-                Recarregar pagina
-              </Button>
-            </Space>
-          }
+    <div className="module-page-shell">
+      <ModulePageHeader
+        eyebrow="Leitura estruturada de producao"
+        title="Producao"
+        description={pageDescription}
+        statusTag={legacySnapshot.hasPersistedState ? "Leitura do legado habilitada" : "Sem estado legado persistido"}
+        actions={
+          <>
+            <Button type="primary" size="large" icon={<ToolOutlined />}>
+              Somente leitura
+            </Button>
+            <Button size="large" icon={<ReloadOutlined />} onClick={() => window.location.reload()}>
+              Recarregar pagina
+            </Button>
+          </>
+        }
+      />
+
+      <ModuleSummaryRow>
+        <ModuleSummaryCard
+          label="Producoes visiveis"
+          value={visibleBatches.length}
+          hint={`Ultima leitura em ${new Date(legacySnapshot.loadedAt).toLocaleString("pt-BR")}`}
         />
-      </Col>
+        <ModuleSummaryCard
+          label="Producoes encontradas"
+          value={productionSnapshot.summary.totalProductions}
+          hint="Leitura conectando materia-prima, receita associada e movimentos de estoque."
+          tone="success"
+        />
+        <ModuleSummaryCard
+          label="Producoes incompletas"
+          value={productionSnapshot.summary.incompleteProductions}
+          hint="Lotes com custo parcial, rendimento nao calculavel ou vinculacao incompleta."
+          tone="warning"
+        />
+        <ModuleSummaryCard
+          label="Custo total estimado"
+          value={formatCurrency(productionSnapshot.summary.totalEstimatedCost)}
+          hint={`Peso final acumulado de ${productionSnapshot.summary.totalFinalWeight} g`}
+        />
+      </ModuleSummaryRow>
 
-      {legacySnapshot.warnings.length ? (
-        <Col span={24}>
-          <Alert
-            type="warning"
-            showIcon
-            message="Leitura do legado com observacoes"
-            description={legacySnapshot.warnings.join(" ")}
-          />
-        </Col>
-      ) : null}
+      <ModuleAlertStack title="Integridade parcial das producoes" items={moduleWarnings} type="warning" />
 
-      <Col xs={24} md={6}>
-        <Card className="module-card">
-          <Statistic title="Producoes encontradas" value={productionSnapshot.summary.totalProductions} />
-        </Card>
-      </Col>
-      <Col xs={24} md={6}>
-        <Card className="module-card">
-          <Statistic title="Producoes incompletas" value={productionSnapshot.summary.incompleteProductions} />
-        </Card>
-      </Col>
-      <Col xs={24} md={6}>
-        <Card className="module-card">
-          <Statistic title="Peso final total" value={productionSnapshot.summary.totalFinalWeight} suffix="g" />
-        </Card>
-      </Col>
-      <Col xs={24} md={6}>
-        <Card className="module-card">
-          <Space direction="vertical" size={4}>
-            <Typography.Text type="secondary">Custo total estimado</Typography.Text>
-            <Typography.Text strong>{formatCurrency(productionSnapshot.summary.totalEstimatedCost)}</Typography.Text>
-            <Typography.Text type="secondary">Base parcial quando o legado nao fecha tudo.</Typography.Text>
-          </Space>
-        </Card>
-      </Col>
+      <div className="module-main-grid">
+        <div className="module-primary-column">
+          <ModuleSectionCard>
+            <div className="module-table-shell module-table">
+              <ModuleActionBar
+                title="Producoes do legado"
+                description="Lista com rendimento, custo, produto ligado e integridade dos dados quando possivel."
+                tags={
+                  <>
+                    <Tag color="blue">Sem gravacao</Tag>
+                    <Tag color="green">Rendimento e custo quando houver base</Tag>
+                    <Tag color="gold">Transparencia de lacunas</Tag>
+                  </>
+                }
+                controls={
+                  <Input
+                    allowClear
+                    value={search}
+                    placeholder="Buscar por materia-prima, produto ligado, lote, status ou observacao"
+                    onChange={(event) => setSearch(event.target.value)}
+                  />
+                }
+              />
 
-      <Col span={24}>
-        <Card className="module-card">
-          <Space direction="vertical" size={16} style={{ width: "100%" }}>
-            <div>
-              <Typography.Title level={4} style={{ marginBottom: 0 }}>
-                Producoes do legado
-              </Typography.Title>
-              <Typography.Text type="secondary">
-                Lista com rendimento, custo, produto ligado e integridade dos dados quando possivel.
-              </Typography.Text>
-              <div style={{ marginTop: 8 }}>
-                <Tag color="blue">Sem gravacao</Tag>
-                <Tag color="green">Rendimento e custo quando houver base</Tag>
-                <Tag color="gold">Transparencia de lacunas</Tag>
-              </div>
+              <ProductionTable
+                batches={visibleBatches}
+                selectedId={selectedId ?? visibleSelectedBatch?.record.id ?? null}
+                onSelectBatch={setSelectedId}
+              />
             </div>
+          </ModuleSectionCard>
+        </div>
 
-            <ProductionTable
-              batches={visibleBatches}
-              search={search}
-              onSearchChange={setSearch}
-              selectedId={selectedId ?? visibleSelectedBatch?.record.id ?? null}
-              onSelectBatch={setSelectedId}
-            />
-          </Space>
-        </Card>
-      </Col>
-
-      <Col span={24}>
-        <ProductionSummaryPanel batch={visibleSelectedBatch} />
-      </Col>
-    </Row>
+        <div className="module-secondary-column">
+          <ProductionSummaryPanel batch={visibleSelectedBatch} />
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,5 +1,9 @@
-import { Alert, Card, Descriptions, Space, Tag, Typography } from "antd";
+import { Descriptions, Space, Tag, Typography } from "antd";
 
+import { ModuleAlertStack } from "@/components/admin/ModuleAlertStack";
+import { ModuleDetailPanel } from "@/components/admin/ModuleDetailPanel";
+import { ModuleEmptyState } from "@/components/admin/ModuleEmptyState";
+import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
 import type { ProductionBatchView } from "@/modules/production/types";
 
 type ProductionSummaryPanelProps = {
@@ -17,23 +21,21 @@ function formatCurrency(value: number | null) {
 export function ProductionSummaryPanel({ batch }: ProductionSummaryPanelProps) {
   if (!batch) {
     return (
-      <Card className="module-card">
-        <Typography.Text type="secondary">Nenhuma producao encontrada no navegador atual.</Typography.Text>
-      </Card>
+      <ModuleSectionCard>
+        <div className="module-table-shell">
+          <ModuleEmptyState
+            title="Nenhuma producao encontrada"
+            description="A selecao atual nao trouxe lotes para o painel secundario. Ajuste o filtro para inspecionar uma producao."
+          />
+        </div>
+      </ModuleSectionCard>
     );
   }
 
   return (
     <Space direction="vertical" size={16} style={{ width: "100%" }}>
-      <Card className="module-card">
+      <ModuleDetailPanel eyebrow="Painel secundario" title={batch.record.ingredient} description={batch.record.date}>
         <Space direction="vertical" size={12} style={{ width: "100%" }}>
-          <div>
-            <Typography.Title level={4} style={{ marginBottom: 0 }}>
-              {batch.record.ingredient}
-            </Typography.Title>
-            <Typography.Text type="secondary">{batch.record.date}</Typography.Text>
-          </div>
-
           <Space wrap>
             <Tag color={batch.status === "completo" ? "green" : batch.status === "incompleto" ? "gold" : "default"}>
               {batch.statusLabel}
@@ -55,9 +57,7 @@ export function ProductionSummaryPanel({ batch }: ProductionSummaryPanelProps) {
               {`${batch.record.rawWeight} g -> ${batch.record.finalWeight} g`}
             </Descriptions.Item>
             <Descriptions.Item label="Rendimento">
-              {batch.breakdown.yieldPercent !== null
-                ? `${batch.breakdown.yieldPercent.toFixed(1)}%`
-                : "Nao calculavel"}
+              {batch.breakdown.yieldPercent !== null ? `${batch.breakdown.yieldPercent.toFixed(1)}%` : "Nao calculavel"}
             </Descriptions.Item>
             <Descriptions.Item label="Custo material estimado">
               {formatCurrency(batch.breakdown.estimatedMaterialCost)}
@@ -82,22 +82,29 @@ export function ProductionSummaryPanel({ batch }: ProductionSummaryPanelProps) {
             <Descriptions.Item label="Validade">Nao existe campo de validade no legado atual.</Descriptions.Item>
           </Descriptions>
         </Space>
-      </Card>
+      </ModuleDetailPanel>
 
-      {batch.notes.length ? (
-        <Alert
-          type={batch.status === "sem-base" ? "info" : "warning"}
-          showIcon
-          message="Integridade dos dados da producao"
-          description={batch.notes.join(" ")}
-        />
-      ) : null}
+      <ModuleAlertStack
+        title="Integridade dos dados da producao"
+        items={batch.notes}
+        type={batch.status === "sem-base" ? "info" : "warning"}
+      />
 
-      <Card className="module-card" title="Observacoes do legado">
-        <Typography.Paragraph style={{ marginBottom: 0 }}>
-          {batch.record.notes || "Nenhuma observacao registrada para esta producao no estado legado."}
-        </Typography.Paragraph>
-      </Card>
+      <ModuleSectionCard>
+        <div className="module-table-shell">
+          <Typography.Title level={5} className="module-section-title">
+            Observacoes do legado
+          </Typography.Title>
+          {batch.record.notes ? (
+            <Typography.Paragraph style={{ marginBottom: 0 }}>{batch.record.notes}</Typography.Paragraph>
+          ) : (
+            <ModuleEmptyState
+              title="Sem observacoes estruturadas"
+              description="Esta producao nao traz anotacoes textuais no estado legado atual."
+            />
+          )}
+        </div>
+      </ModuleSectionCard>
     </Space>
   );
 }

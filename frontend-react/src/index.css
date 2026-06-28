@@ -341,6 +341,167 @@ a {
   box-shadow: 0 16px 40px rgba(85, 73, 43, 0.06);
 }
 
+.module-page-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.module-page-header,
+.module-action-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 24px 26px;
+  border: 1px solid var(--shell-border-soft);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.96), rgba(246, 241, 233, 0.94));
+  box-shadow: var(--shell-shadow-soft);
+}
+
+.module-page-header-copy,
+.module-action-copy,
+.module-detail-header {
+  min-width: 0;
+}
+
+.module-page-header-actions,
+.module-action-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 280px;
+}
+
+.module-status-tag.ant-tag {
+  border-radius: 999px;
+  padding-inline: 12px;
+  color: var(--shell-brand-strong);
+  background: rgba(229, 237, 224, 0.92);
+  border-color: rgba(151, 175, 138, 0.5);
+}
+
+.module-summary-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.module-summary-card {
+  min-height: 146px;
+  padding: 18px 18px 16px;
+  border: 1px solid #e4d8c8;
+  border-radius: 20px;
+  background: rgba(255, 252, 247, 0.98);
+  box-shadow: 0 12px 24px rgba(85, 73, 43, 0.05);
+}
+
+.module-summary-card.tone-success {
+  background: linear-gradient(180deg, rgba(240, 247, 237, 0.98), rgba(249, 252, 246, 0.98));
+}
+
+.module-summary-card.tone-warning {
+  background: linear-gradient(180deg, rgba(251, 246, 235, 0.98), rgba(255, 251, 244, 0.98));
+}
+
+.module-summary-card.tone-danger {
+  background: linear-gradient(180deg, rgba(251, 240, 237, 0.98), rgba(255, 250, 248, 0.98));
+}
+
+.module-summary-label,
+.module-summary-hint,
+.module-section-description,
+.module-empty-description {
+  color: var(--shell-muted);
+}
+
+.module-summary-value.ant-typography,
+.module-section-title.ant-typography,
+.module-empty-title.ant-typography {
+  margin: 0;
+}
+
+.module-summary-hint.ant-typography,
+.module-section-description.ant-typography,
+.module-description.ant-typography,
+.module-empty-description.ant-typography {
+  margin-bottom: 0;
+}
+
+.module-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.module-primary-column,
+.module-secondary-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.module-section-card .ant-card-body,
+.module-card.module-section-card .ant-card-body {
+  padding: 0;
+}
+
+.module-section-card {
+  overflow: hidden;
+}
+
+.module-detail-panel .ant-card-body {
+  padding: 22px;
+}
+
+.module-alert.ant-alert {
+  border-radius: 18px;
+  border-color: rgba(219, 198, 153, 0.55);
+  background: rgba(252, 248, 239, 0.96);
+}
+
+.module-alert.is-danger.ant-alert {
+  border-color: rgba(191, 124, 107, 0.4);
+  background: rgba(252, 244, 242, 0.96);
+}
+
+.module-table-shell {
+  padding: 22px;
+}
+
+.module-table .ant-table-wrapper,
+.module-table .ant-table {
+  width: 100%;
+}
+
+.module-table .ant-input-affix-wrapper {
+  border-radius: 14px;
+  border-color: rgba(199, 188, 170, 0.9);
+  background: rgba(255, 253, 249, 0.98);
+}
+
+.module-empty-state {
+  padding: 34px 22px;
+  text-align: center;
+  border: 1px dashed rgba(167, 154, 131, 0.68);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(249, 245, 238, 0.84), rgba(255, 252, 247, 0.96));
+}
+
+.module-empty-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: var(--shell-brand);
+  background: rgba(229, 237, 224, 0.92);
+}
+
 .page-eyebrow {
   font-size: 0.75rem;
   font-weight: 700;
@@ -484,6 +645,10 @@ a {
   .admin-context-actions {
     justify-content: flex-start;
   }
+
+  .module-main-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 991px) {
@@ -502,6 +667,18 @@ a {
   .admin-header-shell {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .module-page-header,
+  .module-action-bar {
+    flex-direction: column;
+  }
+
+  .module-page-header-actions,
+  .module-action-controls {
+    min-width: 0;
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 
