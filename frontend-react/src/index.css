@@ -1004,6 +1004,82 @@ a {
   gap: 16px;
 }
 
+.cashflow-shell-toolbar {
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.cashflow-shell-toolbar-left,
+.cashflow-shell-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cashflow-shell-control,
+.cashflow-shell-search {
+  min-width: 112px;
+}
+
+.cashflow-shell-account {
+  min-width: 122px;
+}
+
+.cashflow-shell-period {
+  min-width: 116px;
+}
+
+.cashflow-shell-search {
+  width: 132px;
+}
+
+.cashflow-shell-toolbar-right .ant-select-selector,
+.cashflow-shell-toolbar-right .ant-picker,
+.cashflow-shell-toolbar-right .ant-input-affix-wrapper {
+  border-color: rgba(255, 255, 255, 0.26) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.cashflow-shell-toolbar-right .ant-select-selection-item,
+.cashflow-shell-toolbar-right .ant-picker-input > input,
+.cashflow-shell-toolbar-right .ant-input {
+  color: #ffffff !important;
+}
+
+.cashflow-shell-toolbar-right .ant-select-arrow,
+.cashflow-shell-toolbar-right .ant-picker-suffix,
+.cashflow-shell-toolbar-right .ant-input-prefix {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.cashflow-tabs .ant-tabs-nav {
+  margin-bottom: 8px;
+}
+
+.cashflow-tabs .ant-tabs-tab {
+  padding: 4px 0;
+  font-weight: 600;
+}
+
+.cashflow-footer {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cashflow-footer-total {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cashflow-footer-total.is-result .ant-typography:last-child {
+  color: var(--shell-brand-strong);
+}
+
 .auxiliary-layout {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
@@ -1277,6 +1353,14 @@ a {
   }
 
   .auxiliary-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cashflow-shell-toolbar {
+    align-items: flex-start;
+  }
+
+  .cashflow-footer {
     grid-template-columns: 1fr;
   }
 }

@@ -11,6 +11,7 @@ import { ClientesPage } from "@/pages/admin/ClientesPage";
 import { ConfiguracoesPage } from "@/pages/admin/ConfiguracoesPage";
 import { DashboardPage } from "@/pages/admin/DashboardPage";
 import { EstoquePage } from "@/pages/admin/EstoquePage";
+import { FluxoCaixaPage } from "@/pages/admin/FluxoCaixaPage";
 import { PrecificacaoPage } from "@/pages/admin/PrecificacaoPage";
 import { ProducaoPage } from "@/pages/admin/ProducaoPage";
 import { ProdutosPage } from "@/pages/admin/ProdutosPage";
@@ -345,20 +346,7 @@ const adminRoutes = [
   },
   {
     path: "financeiro/fluxo-de-caixa",
-    element: (
-      <AdminPlaceholderPage
-        eyebrow="Subtela financeira"
-        title="Financeiro - Fluxo de caixa"
-        description="Entrada preparada para consolidar entradas, saidas e visao de fluxo financeiro da operacao."
-        tag="Placeholder seguro"
-        metrics={[
-          { label: "Modulo", value: "Financeiro" },
-          { label: "Recorte", value: "Fluxo de caixa" },
-          { label: "Estado", value: "Sem escrita" },
-        ]}
-        bullets={["Nova rota ligada ao submenu", "Pronta para evolucao futura"]} 
-      />
-    ),
+    element: <FluxoCaixaPage />,
   },
   {
     path: "financeiro/fechamento",
