@@ -15,6 +15,7 @@ import { PrecificacaoPage } from "@/pages/admin/PrecificacaoPage";
 import { ProducaoPage } from "@/pages/admin/ProducaoPage";
 import { ProdutosPage } from "@/pages/admin/ProdutosPage";
 import { PlanoContasPage } from "@/pages/admin/PlanoContasPage";
+import { TabelasAuxiliaresPage } from "@/pages/admin/TabelasAuxiliaresPage";
 import { UsuariosSistemaPage } from "@/pages/admin/UsuariosSistemaPage";
 import { VendasPage } from "@/pages/admin/VendasPage";
 import { AdminPlaceholderPage } from "@/pages/admin/AdminPlaceholderPage";
@@ -463,20 +464,7 @@ const adminRoutes = [
   },
   {
     path: "configuracoes/tabelas-auxiliares",
-    element: (
-      <AdminPlaceholderPage
-        eyebrow="Configuracao interna"
-        title="Tabelas auxiliares"
-        description="Area base para listas de apoio, classificacoes e estruturas parametrizadas do sistema."
-        tag="Placeholder seguro"
-        metrics={[
-          { label: "Area", value: "Configuracao" },
-          { label: "Recorte", value: "Tabelas" },
-          { label: "Estado", value: "Sem escrita" },
-        ]}
-        bullets={["Casco pronto para cadastros auxiliares", "Mantem a navegacao estruturada"]}
-      />
-    ),
+    element: <TabelasAuxiliaresPage />,
   },
   {
     path: "configuracoes/plano-contas",
