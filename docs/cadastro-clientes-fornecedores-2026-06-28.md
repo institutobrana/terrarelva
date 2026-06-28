@@ -84,6 +84,12 @@
   - `Gravar fornecedor`
   - `Cancelar`
 - Nesta etapa, `Gravar fornecedor` faz validacao e submit controlado, sem persistencia real ainda.
+- Refinamento posterior na acao `Alterar`:
+  - o botao `Alterar` passou a abrir o modal `Altera fornecedor` somente quando ha fornecedor selecionado
+  - sem selecao, o botao permanece desabilitado
+  - a aba `Dados principais` recebeu campos de cadastro, observacoes, pagamento e estado ativo
+  - a aba `Dados de contato` nasceu com blocos separados para `Enderecos`, `Telefones` e `E-mails`
+  - a estrutura detalhada desses blocos ficou preparada para evolucao futura
 
 ## Estrutura de dados
 

@@ -1,11 +1,12 @@
 import {
+  AppstoreOutlined,
   CloseOutlined,
   FileTextOutlined,
   InfoCircleOutlined,
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Select, Table, Typography, message } from "antd";
+import { Button, Checkbox, Form, Input, Modal, Select, Table, Tabs, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useMemo, useState } from "react";
 
@@ -50,7 +51,12 @@ type SupplierFormValues = {
   supplierName: string;
   companyName: string | undefined;
   document: string | undefined;
+  stateRegistration: string | undefined;
+  portal: string | undefined;
   segment: string | undefined;
+  paymentDetails: string | undefined;
+  notes: string | undefined;
+  isActive: boolean;
   phonePrimaryType: string | undefined;
   phonePrimaryDdd: string | undefined;
   phonePrimaryNumber: string | undefined;
@@ -63,13 +69,25 @@ type SupplierFormValues = {
   emailPrimaryAddress: string | undefined;
 };
 
+type ContactRow = {
+  id: string;
+  main: string;
+  detail: string;
+  note: string | null;
+};
+
+const preparedAddresses: ContactRow[] = [];
+const preparedPhones: ContactRow[] = [];
+const preparedEmails: ContactRow[] = [];
+
 export function CadastroFornecedoresPage() {
   const { setShellBandContent } = useAdminShellBand();
   const [form] = Form.useForm<SupplierFormValues>();
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [selectedSegment, setSelectedSegment] = useState("all");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiMessage, messageContext] = message.useMessage();
 
@@ -91,8 +109,15 @@ export function CadastroFornecedoresPage() {
   const selectedRow = visibleRows.find((row) => row.id === selectedRowId) ?? null;
   const disableSelectionActions = !selectedRow;
 
+  const contactColumns: ColumnsType<ContactRow> = [
+    { title: "Principal", dataIndex: "main", key: "main", render: (value: string) => value },
+    { title: "Detalhe", dataIndex: "detail", key: "detail", render: (value: string) => value },
+    { title: "Observacao", dataIndex: "note", key: "note", render: (value: string | null) => value ?? "Preparado" },
+  ];
+
   function handleCloseModal() {
-    setIsModalOpen(false);
+    setIsCreateModalOpen(false);
+    setIsEditModalOpen(false);
     form.resetFields();
   }
 
@@ -101,6 +126,17 @@ export function CadastroFornecedoresPage() {
       const values = await form.validateFields();
       setIsSubmitting(true);
       apiMessage.success(`Fornecedor "${values.supplierName}" validado e preparado para gravacao na proxima etapa.`);
+      handleCloseModal();
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleUpdateSupplier() {
+    try {
+      const values = await form.validateFields();
+      setIsSubmitting(true);
+      apiMessage.success(`Fornecedor "${values.supplierName}" validado para alteracao na proxima etapa.`);
       handleCloseModal();
     } finally {
       setIsSubmitting(false);
@@ -152,14 +188,42 @@ export function CadastroFornecedoresPage() {
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsCreateModalOpen(true)}
             >
               Novo fornecedor
             </Button>
             <Button
               icon={<FileTextOutlined />}
               disabled={disableSelectionActions}
-              onClick={() => apiMessage.info("Edicao preparada para quando houver base real de fornecedores.")}
+              onClick={() => {
+                if (!selectedRow) {
+                  apiMessage.warning("Selecione um fornecedor para alterar.");
+                  return;
+                }
+
+                form.setFieldsValue({
+                  supplierName: selectedRow.name,
+                  companyName: undefined,
+                  document: selectedRow.document ?? undefined,
+                  stateRegistration: undefined,
+                  portal: undefined,
+                  segment: selectedRow.segment ?? undefined,
+                  paymentDetails: undefined,
+                  notes: undefined,
+                  isActive: true,
+                  phonePrimaryType: undefined,
+                  phonePrimaryDdd: undefined,
+                  phonePrimaryNumber: undefined,
+                  phonePrimaryExtension: undefined,
+                  phoneSecondaryType: undefined,
+                  phoneSecondaryDdd: undefined,
+                  phoneSecondaryNumber: undefined,
+                  phoneSecondaryExtension: undefined,
+                  emailPrimaryType: undefined,
+                  emailPrimaryAddress: selectedRow.email ?? undefined,
+                });
+                setIsEditModalOpen(true);
+              }}
             >
               Alterar
             </Button>
@@ -196,7 +260,7 @@ export function CadastroFornecedoresPage() {
     return () => {
       setShellBandContent(null);
     };
-  }, [apiMessage, disableSelectionActions, search, selectedSegment, setShellBandContent]);
+  }, [apiMessage, disableSelectionActions, form, search, selectedRow, selectedSegment, setShellBandContent]);
 
   return (
     <div className="module-page-shell users-admin-page">
@@ -227,7 +291,7 @@ export function CadastroFornecedoresPage() {
       </ModuleSectionCard>
 
       <Modal
-        open={isModalOpen}
+        open={isCreateModalOpen}
         footer={null}
         onCancel={handleCloseModal}
         closeIcon={<CloseOutlined />}
@@ -376,6 +440,209 @@ export function CadastroFornecedoresPage() {
               </Form.Item>
             </div>
           </div>
+
+          <div className="terra-password-modal-actions client-modal-actions">
+            <Button type="primary" htmlType="submit" loading={isSubmitting}>
+              Gravar fornecedor
+            </Button>
+            <Button onClick={handleCloseModal}>Cancelar</Button>
+          </div>
+        </Form>
+      </Modal>
+
+      <Modal
+        open={isEditModalOpen}
+        footer={null}
+        onCancel={handleCloseModal}
+        closeIcon={<CloseOutlined />}
+        centered
+        width={980}
+        destroyOnHidden
+        className="terra-password-modal client-modal supplier-modal supplier-edit-modal"
+      >
+        <div className="terra-password-modal-header">
+          <Typography.Title level={3} className="terra-password-modal-title">
+            Altera fornecedor
+          </Typography.Title>
+        </div>
+
+        <Form<SupplierFormValues>
+          form={form}
+          layout="vertical"
+          preserve={false}
+          className="terra-password-form client-modal-form supplier-modal-form"
+          onFinish={() => void handleUpdateSupplier()}
+          initialValues={{ isActive: true }}
+        >
+          <Tabs
+            size="small"
+            className="supplier-edit-tabs"
+            items={[
+              {
+                key: "principais",
+                label: "Dados principais",
+                children: (
+                  <div className="supplier-edit-main-grid">
+                    <div className="supplier-edit-main-form">
+                      <Form.Item
+                        name="supplierName"
+                        label="Nome do fornecedor"
+                        rules={[{ required: true, message: "Informe o nome do fornecedor." }]}
+                      >
+                        <Input placeholder="Nome do fornecedor" />
+                      </Form.Item>
+
+                      <Form.Item name="companyName" label="Razao social">
+                        <Input placeholder="Razao social" />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="document"
+                        label="CPF/CNPJ"
+                        rules={[
+                          {
+                            validator(_, value) {
+                              if (!value) {
+                                return Promise.resolve();
+                              }
+
+                              const digits = String(value).replace(/\D/g, "");
+                              if (digits.length === 11 || digits.length === 14) {
+                                return Promise.resolve();
+                              }
+
+                              return Promise.reject(new Error("Informe um CPF ou CNPJ valido."));
+                            },
+                          },
+                        ]}
+                      >
+                        <Input placeholder="CPF ou CNPJ" />
+                      </Form.Item>
+
+                      <Form.Item name="stateRegistration" label="Inscricao estadual">
+                        <Input placeholder="Inscricao estadual" />
+                      </Form.Item>
+
+                      <Form.Item name="portal" label="Portal">
+                        <Input placeholder="Portal do fornecedor" />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="segment"
+                        label="Segmento"
+                        rules={[{ required: true, message: "Selecione o segmento." }]}
+                      >
+                        <Select placeholder="Selecionar segmento" options={supplierSegmentOptions} />
+                      </Form.Item>
+
+                      <Form.Item name="paymentDetails" label="Dados para pagamento">
+                        <Input.TextArea rows={3} placeholder="Dados bancarios e orientacoes para pagamento" />
+                      </Form.Item>
+
+                      <Form.Item name="notes" label="Observacoes">
+                        <Input.TextArea rows={3} placeholder="Observacoes internas" />
+                      </Form.Item>
+
+                      <Form.Item name="isActive" valuePropName="checked">
+                        <Checkbox>Fornecedor ativo</Checkbox>
+                      </Form.Item>
+                    </div>
+
+                    <aside className="supplier-avatar-panel">
+                      <div className="supplier-avatar-box">
+                        <AppstoreOutlined />
+                      </div>
+                      <Typography.Text className="supplier-avatar-copy">
+                        Area preparada para logo, foto ou avatar do fornecedor.
+                      </Typography.Text>
+                    </aside>
+                  </div>
+                ),
+              },
+              {
+                key: "contato",
+                label: "Dados de contato",
+                children: (
+                  <div className="supplier-contact-tab">
+                    <section className="supplier-contact-block">
+                      <div className="supplier-contact-block-header">
+                        <Typography.Text strong>Enderecos</Typography.Text>
+                        <div className="supplier-contact-block-actions">
+                          <Button size="small" onClick={() => apiMessage.info("Novo endereco preparado para a proxima etapa.")}>
+                            Novo endereco
+                          </Button>
+                          <Button size="small" onClick={() => apiMessage.info("Alteracao de endereco preparada para a proxima etapa.")}>
+                            Alterar
+                          </Button>
+                          <Button size="small" onClick={() => apiMessage.info("Propriedades de endereco preparadas para a proxima etapa.")}>
+                            Propriedades
+                          </Button>
+                        </div>
+                      </div>
+                      <Table<ContactRow>
+                        rowKey="id"
+                        size="small"
+                        pagination={false}
+                        columns={contactColumns}
+                        dataSource={preparedAddresses}
+                        locale={{ emptyText: "Nenhum endereco carregado ainda." }}
+                      />
+                    </section>
+
+                    <section className="supplier-contact-block">
+                      <div className="supplier-contact-block-header">
+                        <Typography.Text strong>Telefones</Typography.Text>
+                        <div className="supplier-contact-block-actions">
+                          <Button size="small" onClick={() => apiMessage.info("Novo telefone preparado para a proxima etapa.")}>
+                            Novo telefone
+                          </Button>
+                          <Button size="small" onClick={() => apiMessage.info("Alteracao de telefone preparada para a proxima etapa.")}>
+                            Alterar
+                          </Button>
+                          <Button size="small" onClick={() => apiMessage.info("Propriedades de telefone preparadas para a proxima etapa.")}>
+                            Propriedades
+                          </Button>
+                        </div>
+                      </div>
+                      <Table<ContactRow>
+                        rowKey="id"
+                        size="small"
+                        pagination={false}
+                        columns={contactColumns}
+                        dataSource={preparedPhones}
+                        locale={{ emptyText: "Nenhum telefone carregado ainda." }}
+                      />
+                    </section>
+
+                    <section className="supplier-contact-block">
+                      <div className="supplier-contact-block-header">
+                        <Typography.Text strong>E-mails</Typography.Text>
+                        <div className="supplier-contact-block-actions">
+                          <Button size="small" onClick={() => apiMessage.info("Novo e-mail preparado para a proxima etapa.")}>
+                            Novo e-mail
+                          </Button>
+                          <Button size="small" onClick={() => apiMessage.info("Alteracao de e-mail preparada para a proxima etapa.")}>
+                            Alterar
+                          </Button>
+                          <Button size="small" onClick={() => apiMessage.info("Propriedades de e-mail preparadas para a proxima etapa.")}>
+                            Propriedades
+                          </Button>
+                        </div>
+                      </div>
+                      <Table<ContactRow>
+                        rowKey="id"
+                        size="small"
+                        pagination={false}
+                        columns={contactColumns}
+                        dataSource={preparedEmails}
+                        locale={{ emptyText: "Nenhum e-mail carregado ainda." }}
+                      />
+                    </section>
+                  </div>
+                ),
+              },
+            ]}
+          />
 
           <div className="terra-password-modal-actions client-modal-actions">
             <Button type="primary" htmlType="submit" loading={isSubmitting}>
