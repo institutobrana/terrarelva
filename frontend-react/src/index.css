@@ -768,6 +768,10 @@ a {
   justify-content: flex-end;
 }
 
+.auxiliary-table-alert {
+  margin: 0 0 12px;
+}
+
 .auxiliary-duration-field {
   display: flex;
   align-items: stretch;

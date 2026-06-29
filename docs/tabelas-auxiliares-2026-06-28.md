@@ -48,6 +48,10 @@
   - barra operacional no shell
   - painel lateral interno com selecao
   - grade principal e rodape
+- Persistencia real iniciada:
+  - `Formas de pagamento` passou a usar banco de dados real
+  - a lista agora pode ser carregada do backend
+  - o modal pode criar e editar registros persistidos
 - Ajuste de entendimento aplicado:
   - o botao `Novo...` e o modal aberto dependem da tabela selecionada
   - o modal de `Motivos de agendamento` deixou de ser tratado como universal
@@ -73,6 +77,14 @@
   - `Tempo de execucao` foi implementado como campo numerico com unidade `min` a direita
   - o campo aceita vazio nesta etapa, mas nao aceita valor negativo
   - nao exibe `Tipo`, `Cor`, `Compromisso produtivo`, `Historico`, `Ocultar agendamento` nem `Considerar falta do paciente`
+- Formas de pagamento:
+  - abre `Nova forma de pagamento`
+  - persiste `id`, `codigo`, `nome`, `descricao`, `ativo`, `criadoEm` e `atualizadoEm`
+  - `Nome` e obrigatorio
+  - `Codigo` pode ser manual; quando vazio, o backend gera codigo automatico simples no formato `FP-001`
+  - `Descricao` e opcional
+  - a lista da tela carrega dados reais do backend
+  - a acao `Editar` foi ligada para abrir o modal preenchido e salvar alteracoes
 - Paleta de cores:
   - foi centralizada em uma constante reutilizavel com 44 cores
   - usada por `Motivos de agendamento` quando `Tipo = Compromisso`
@@ -82,11 +94,33 @@
   - o valor e opcional nesta etapa
   - quando preenchido, deve ser maior ou igual a zero
 - Persistencia:
-  - nesta etapa nao houve persistencia real nem localStorage
-  - `Gravar ...` faz validacao e submit controlado, mantendo o fluxo preparado para backend futuro
+  - nao foi usado `localStorage`
+  - o backend segue o padrao atual do projeto com `pg`, migrations SQL e camada `repository/service`
+  - nesta etapa foi implementada persistencia real apenas para `Formas de pagamento`
+  - tabelas auxiliares simples devem seguir o padrao: `id`, `codigo`, `nome`, `descricao`, `ativo`, `criadoEm`, `atualizadoEm`
+  - tabelas com campos especificos permanecem separadas:
+    - `Motivos de agendamento`: `tipo`, `cor`, `compromissoProdutivo`
+    - `Situacoes de agendamento`: `historico`, `cor`, `ocultarAgendamento`, `considerarFaltaPaciente`
+    - `Fases de procedimento`: `tempoExecucaoMinutos`
 - Preparado para evolucao:
-  - dados reais por tabela auxiliar
-  - cadastro e edicao persistentes
+  - ativacao/inativacao no frontend de `Formas de pagamento`
+  - dados reais para as demais tabelas auxiliares
+  - cadastro e edicao persistentes das tabelas ainda em placeholder
+
+## Backend desta etapa
+
+- Migration criada:
+  - `backend/src/db/migrations/004_create_payment_methods.sql`
+- Tabela criada:
+  - `payment_methods`
+- Rotas/API criadas:
+  - `GET /admin/auxiliary-tables/payment-methods`
+  - `POST /admin/auxiliary-tables/payment-methods`
+  - `PUT /admin/auxiliary-tables/payment-methods/:id`
+  - `PATCH /admin/auxiliary-tables/payment-methods/:id/status`
+- Camadas adicionadas:
+  - `backend/src/repositories/paymentMethodsRepository.js`
+  - `backend/src/services/paymentMethodsService.js`
 
 ## Como validar no navegador
 
@@ -106,3 +140,9 @@
 14. Abrir o modal e validar `Codigo`, `Nome`, `Tempo de execucao` e `Descricao`.
 15. Confirmar que `Tempo de execucao` e numerico e mostra `min` a direita.
 16. Confirmar ausencia de `Tipo`, `Cor`, `Compromisso produtivo`, `Historico`, `Ocultar agendamento` e `Considerar falta do paciente`.
+17. Selecionar `Formas de pagamento` e confirmar o botao `Nova forma`.
+18. Abrir o modal `Nova forma de pagamento`.
+19. Preencher `Codigo: PIX`, `Nome: Pix` e `Descricao: Pagamento via Pix`.
+20. Gravar e confirmar que o item aparece na lista.
+21. Recarregar a pagina e confirmar que o registro continua visivel, vindo do banco.
+22. Selecionar a linha, clicar em `Editar`, alterar os dados e confirmar persistencia apos novo carregamento.

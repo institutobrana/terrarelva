@@ -3,12 +3,19 @@ import {
   EditOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Typography, message } from "antd";
+import { Alert, Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
+import {
+  AuxiliaryTablesApiError,
+  createPaymentMethod,
+  fetchPaymentMethods,
+  type PaymentMethodRecord,
+  updatePaymentMethod,
+} from "@/services/auxiliaryTables/auxiliaryTablesApi";
 
 type AuxiliaryFormKind = "appointment-reason" | "appointment-status" | "procedure-phase" | "simple";
 
@@ -283,11 +290,28 @@ export function TabelasAuxiliaresPage() {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingTable, setIsLoadingTable] = useState(false);
+  const [tableError, setTableError] = useState<string | null>(null);
+  const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodRecord[]>([]);
   const [apiMessage, messageContext] = message.useMessage();
   const [form] = Form.useForm<AuxiliaryModalFormValues>();
 
   const activeTable = auxiliaryTables.find((item) => item.id === selectedTableId) ?? auxiliaryTables[0];
-  const tableRows = useMemo(() => preparedRowsByTable[activeTable.id] ?? [], [activeTable.id]);
+  const isPaymentMethodsTable = activeTable.id === "formas-pagamento";
+  const tableRows = useMemo(() => {
+    if (isPaymentMethodsTable) {
+      return paymentMethods.map<AuxiliaryTableRow>((entry) => ({
+        id: entry.id,
+        code: entry.codigo,
+        name: entry.nome,
+        description: entry.descricao,
+        isActive: entry.ativo,
+      }));
+    }
+
+    return preparedRowsByTable[activeTable.id] ?? [];
+  }, [activeTable.id, isPaymentMethodsTable, paymentMethods]);
   const visibleRows = useMemo(() => tableRows.filter((row) => (showInactive ? true : row.isActive)), [showInactive, tableRows]);
   const selectedRow = visibleRows.find((row) => row.id === selectedRowId) ?? null;
   const selectedReasonType = Form.useWatch("type", form);
@@ -295,6 +319,7 @@ export function TabelasAuxiliaresPage() {
   const isAppointmentReasonForm = activeTable.formKind === "appointment-reason";
   const isAppointmentStatusForm = activeTable.formKind === "appointment-status";
   const isProcedurePhaseForm = activeTable.formKind === "procedure-phase";
+  const isEditing = editingRecordId !== null;
 
   const columns: ColumnsType<AuxiliaryTableRow> = [
     {
@@ -325,24 +350,109 @@ export function TabelasAuxiliaresPage() {
 
   const handleOpenModal = useCallback(() => {
     form.setFieldsValue(buildDefaultValues(activeTable));
+    setEditingRecordId(null);
     setIsModalOpen(true);
   }, [activeTable, form]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setEditingRecordId(null);
     form.resetFields();
   };
+
+  const loadPaymentMethods = useEffectEvent(async () => {
+    setIsLoadingTable(true);
+    setTableError(null);
+
+    try {
+      const payload = await fetchPaymentMethods();
+      setPaymentMethods(payload.paymentMethods);
+      setSelectedRowId((currentSelection) => (
+        payload.paymentMethods.some((entry) => entry.id === currentSelection) ? currentSelection : payload.paymentMethods[0]?.id ?? null
+      ));
+    } catch (error) {
+      const nextMessage = error instanceof AuxiliaryTablesApiError || error instanceof Error
+        ? error.message
+        : "Nao foi possivel carregar as formas de pagamento.";
+      setTableError(nextMessage);
+    } finally {
+      setIsLoadingTable(false);
+    }
+  });
 
   const handleCreateRecord = async () => {
     try {
       setIsSubmitting(true);
       const values = await form.validateFields();
+
+      if (isPaymentMethodsTable) {
+        const payload = {
+          codigo: values.code?.trim() || undefined,
+          nome: values.name.trim(),
+          descricao: values.description?.trim() || undefined,
+        };
+
+        if (editingRecordId) {
+          await updatePaymentMethod(editingRecordId, payload);
+          apiMessage.success("Forma de pagamento atualizada com sucesso.");
+        } else {
+          await createPaymentMethod(payload);
+          apiMessage.success("Forma de pagamento criada com sucesso.");
+        }
+
+        await loadPaymentMethods();
+        handleCloseModal();
+        return;
+      }
+
       apiMessage.success(`${activeTable.label}: cadastro de "${values.name}" validado e preparado para a proxima etapa.`);
       handleCloseModal();
+    } catch (error) {
+      if (error instanceof AuxiliaryTablesApiError) {
+        apiMessage.error(error.message);
+        return;
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const handleOpenEditModal = useEffectEvent(() => {
+    if (!selectedRow) {
+      apiMessage.warning("Selecione um registro para alterar.");
+      return;
+    }
+
+    if (!isPaymentMethodsTable) {
+      apiMessage.info("Edicao preparada para quando houver persistencia real nesta tabela auxiliar.");
+      return;
+    }
+
+    const paymentMethod = paymentMethods.find((entry) => entry.id === selectedRow.id);
+    if (!paymentMethod) {
+      apiMessage.error("Forma de pagamento selecionada nao encontrada.");
+      return;
+    }
+
+    setEditingRecordId(paymentMethod.id);
+    form.setFieldsValue({
+      code: paymentMethod.codigo,
+      name: paymentMethod.nome,
+      description: paymentMethod.descricao ?? "",
+    });
+    setIsModalOpen(true);
+  });
+
+  useEffect(() => {
+    if (isPaymentMethodsTable) {
+      void loadPaymentMethods();
+      return;
+    }
+
+    setTableError(null);
+    setIsLoadingTable(false);
+    setPaymentMethods([]);
+  }, [isPaymentMethodsTable]);
 
   useEffect(() => {
     setShellBandContent(
@@ -354,7 +464,7 @@ export function TabelasAuxiliaresPage() {
           <Button
             icon={<EditOutlined />}
             disabled={!selectedRow}
-            onClick={() => apiMessage.info("Edicao preparada para quando houver base real de tabelas auxiliares.")}
+            onClick={() => void handleOpenEditModal()}
           >
             Editar
           </Button>
@@ -365,7 +475,7 @@ export function TabelasAuxiliaresPage() {
     return () => {
       setShellBandContent(null);
     };
-  }, [activeTable.createLabel, apiMessage, handleOpenModal, selectedRow, setShellBandContent]);
+  }, [activeTable.createLabel, handleOpenModal, selectedRow, setShellBandContent]);
 
   useEffect(() => {
     setSelectedRowId(null);
@@ -419,12 +529,22 @@ export function TabelasAuxiliaresPage() {
 
         <ModuleSectionCard className="auxiliary-main-card">
           <div className="module-table-shell">
+            {tableError ? (
+              <Alert
+                type="error"
+                showIcon
+                message="Falha ao carregar dados"
+                description={tableError}
+                className="auxiliary-table-alert"
+              />
+            ) : null}
             <div className="users-grid-shell">
               <Table<AuxiliaryTableRow>
                 rowKey="id"
                 className="module-table users-admin-table"
                 columns={columns}
                 dataSource={visibleRows}
+                loading={isLoadingTable}
                 pagination={false}
                 rowSelection={{
                   type: "radio",
@@ -464,7 +584,7 @@ export function TabelasAuxiliaresPage() {
       >
         <div className="terra-password-modal-header">
           <Typography.Title level={3} className="terra-password-modal-title">
-            {activeTable.createTitle}
+            {isEditing && isPaymentMethodsTable ? "Alterar forma de pagamento" : activeTable.createTitle}
           </Typography.Title>
         </div>
 
@@ -477,7 +597,15 @@ export function TabelasAuxiliaresPage() {
           onFinish={() => void handleCreateRecord()}
         >
           <Form.Item name="code" label="Codigo">
-            <Input placeholder={isAppointmentStatusForm ? "Codigo da situacao" : "Codigo interno"} />
+            <Input
+              placeholder={
+                isAppointmentStatusForm
+                  ? "Codigo da situacao"
+                  : isPaymentMethodsTable
+                    ? "Codigo interno"
+                    : "Codigo interno"
+              }
+            />
           </Form.Item>
 
           <Form.Item

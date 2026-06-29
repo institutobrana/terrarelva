@@ -14,6 +14,12 @@ import {
   setInternalUserAccess,
 } from "./services/authService.js";
 import { listClients } from "./services/clientsService.js";
+import {
+  createPaymentMethodEntry,
+  listPaymentMethods,
+  setPaymentMethodStatus,
+  updatePaymentMethodEntry,
+} from "./services/paymentMethodsService.js";
 import { listSuppliers } from "./services/suppliersService.js";
 import { readJsonBody, sendJson } from "./utils/http.js";
 
@@ -158,6 +164,59 @@ const server = http.createServer(async (request, response) => {
 
         const user = await setInternalUserAccess(accessMatch[1], body.isActive);
         sendJson(response, 200, { user });
+        return;
+      }
+    }
+
+    if (request.url?.startsWith("/admin/auxiliary-tables/payment-methods")) {
+      const claims = await authenticate(request, response);
+      if (!claims) {
+        return;
+      }
+
+      const requestUrl = new URL(request.url, `http://${request.headers.host ?? `${env.host}:${env.port}`}`);
+
+      if (request.method === "GET" && requestUrl.pathname === "/admin/auxiliary-tables/payment-methods") {
+        const payload = await listPaymentMethods();
+        sendJson(response, 200, payload);
+        return;
+      }
+
+      if (request.method === "POST" && requestUrl.pathname === "/admin/auxiliary-tables/payment-methods") {
+        const body = await readJsonBody(request);
+        const paymentMethod = await createPaymentMethodEntry({
+          codigo: typeof body.codigo === "string" ? body.codigo : "",
+          nome: typeof body.nome === "string" ? body.nome : "",
+          descricao: typeof body.descricao === "string" ? body.descricao : "",
+        });
+
+        sendJson(response, 201, { paymentMethod });
+        return;
+      }
+
+      const updateMatch = requestUrl.pathname.match(/^\/admin\/auxiliary-tables\/payment-methods\/([^/]+)$/);
+      if (request.method === "PUT" && updateMatch) {
+        const body = await readJsonBody(request);
+        const paymentMethod = await updatePaymentMethodEntry(updateMatch[1], {
+          codigo: typeof body.codigo === "string" ? body.codigo : "",
+          nome: typeof body.nome === "string" ? body.nome : "",
+          descricao: typeof body.descricao === "string" ? body.descricao : "",
+        });
+
+        sendJson(response, 200, { paymentMethod });
+        return;
+      }
+
+      const statusMatch = requestUrl.pathname.match(/^\/admin\/auxiliary-tables\/payment-methods\/([^/]+)\/status$/);
+      if (request.method === "PATCH" && statusMatch) {
+        const body = await readJsonBody(request);
+        if (typeof body.ativo !== "boolean") {
+          sendJson(response, 400, { error: "Campo ativo obrigatorio." });
+          return;
+        }
+
+        const paymentMethod = await setPaymentMethodStatus(statusMatch[1], body.ativo);
+        sendJson(response, 200, { paymentMethod });
         return;
       }
     }
