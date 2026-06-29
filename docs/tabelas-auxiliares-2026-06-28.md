@@ -93,6 +93,9 @@
   - o modal `Alterar forma de pagamento` volta a abrir preenchido com o item selecionado
   - o banco continua usando a coluna `is_active`, enquanto API e frontend foram alinhados em `isActive`
   - o modal de edicao passou a usar a propria linha selecionada da grade como fonte unica de verdade para `isActive`, evitando divergencia entre bolinha e checkbox
+  - no modo de edicao, o checkbox `Forma de pagamento ativa` passou a ser controlado por estado React explicito
+  - checkbox marcado = `isActive: true` = bolinha verde
+  - checkbox desmarcado = `isActive: false` = bolinha vermelha
 - Paleta de cores:
   - foi centralizada em uma constante reutilizavel com 44 cores
   - usada por `Motivos de agendamento` quando `Tipo = Compromisso`

@@ -218,6 +218,7 @@ export function TabelasAuxiliaresPage() {
   const [tableError, setTableError] = useState<string | null>(null);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
   const [editingPaymentMethod, setEditingPaymentMethod] = useState<EditingPaymentMethodSnapshot | null>(null);
+  const [editingPaymentMethodIsActive, setEditingPaymentMethodIsActive] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodRecord[]>([]);
   const [openFilterColumn, setOpenFilterColumn] = useState<PaymentMethodColumnKey | null>(null);
   const [columnQueries, setColumnQueries] = useState<Record<PaymentMethodColumnKey, string>>({
@@ -505,6 +506,7 @@ export function TabelasAuxiliaresPage() {
     form.resetFields();
     setEditingRecordId(null);
     setEditingPaymentMethod(null);
+    setEditingPaymentMethodIsActive(false);
     setOpenFilterColumn(null);
     setIsModalOpen(true);
   }, [form]);
@@ -513,6 +515,7 @@ export function TabelasAuxiliaresPage() {
     setIsModalOpen(false);
     setEditingRecordId(null);
     setEditingPaymentMethod(null);
+    setEditingPaymentMethodIsActive(false);
     setOpenFilterColumn(null);
     form.resetFields();
   };
@@ -551,11 +554,8 @@ export function TabelasAuxiliaresPage() {
 
         if (editingRecordId) {
           await updatePaymentMethod(editingRecordId, payload);
-          if (typeof values.isActive === "boolean") {
-            const currentPaymentMethod = paymentMethods.find((entry) => entry.id === editingRecordId);
-            if (!currentPaymentMethod || currentPaymentMethod.isActive !== values.isActive) {
-              await updatePaymentMethodStatus(editingRecordId, values.isActive);
-            }
+          if (editingPaymentMethod && editingPaymentMethod.isActive !== editingPaymentMethodIsActive) {
+            await updatePaymentMethodStatus(editingRecordId, editingPaymentMethodIsActive);
           }
           apiMessage.success("Forma de pagamento atualizada com sucesso.");
         } else {
@@ -604,6 +604,7 @@ export function TabelasAuxiliaresPage() {
       description: selectedRow.description ?? "",
       isActive: selectedRow.isActive,
     });
+    setEditingPaymentMethodIsActive(Boolean(selectedRow.isActive));
     setOpenFilterColumn(null);
     setIsModalOpen(true);
   });
@@ -689,8 +690,8 @@ export function TabelasAuxiliaresPage() {
         code: editingPaymentMethod.code,
         name: editingPaymentMethod.name,
         description: editingPaymentMethod.description,
-        isActive: editingPaymentMethod.isActive,
       });
+      setEditingPaymentMethodIsActive(editingPaymentMethod.isActive);
       return;
     }
 
@@ -832,8 +833,13 @@ export function TabelasAuxiliaresPage() {
           </Form.Item>
 
           {isPaymentMethodsTable && isEditing ? (
-            <Form.Item name="isActive" valuePropName="checked">
-              <Checkbox>Forma de pagamento ativa</Checkbox>
+            <Form.Item>
+              <Checkbox
+                checked={editingPaymentMethodIsActive}
+                onChange={(event) => setEditingPaymentMethodIsActive(event.target.checked)}
+              >
+                Forma de pagamento ativa
+              </Checkbox>
             </Form.Item>
           ) : null}
 
