@@ -224,25 +224,37 @@ export function TabelasAuxiliaresPage() {
       title: "Codigo",
       dataIndex: "code",
       key: "code",
-      width: 120,
-      render: (value: string | null) => value ?? "Preparado",
+      width: 104,
+      render: (value: string | null) => <span className="auxiliary-table-code">{value ?? "Preparado"}</span>,
     },
     {
       title: "Nome",
       dataIndex: "name",
       key: "name",
+      width: "34%",
       render: (_, row) => (
-        <Space direction="vertical" size={2}>
-          <Typography.Text strong>{row.name}</Typography.Text>
-          <Typography.Text type="secondary">{row.isActive ? "Ativo" : "Inativo"}</Typography.Text>
-        </Space>
+        <div className="auxiliary-table-name-cell">
+          <Typography.Text strong className="auxiliary-table-name-text">{row.name}</Typography.Text>
+          <span
+            className={`auxiliary-table-status-dot${row.isActive ? " is-active" : " is-inactive"}`}
+            aria-label={row.isActive ? "Ativo" : "Inativo"}
+            title={row.isActive ? "Ativo" : "Inativo"}
+          />
+        </div>
       ),
     },
     {
       title: "Descricao",
       dataIndex: "description",
       key: "description",
-      render: (value: string | null) => value ?? "Preparado para backend",
+      width: "100%",
+      render: (value: string | null) => {
+        if (isPaymentMethodsTable) {
+          return <span className="auxiliary-table-description">{value ?? ""}</span>;
+        }
+
+        return <span className="auxiliary-table-description">{value ?? "Preparado para backend"}</span>;
+      },
     },
   ];
 
@@ -439,11 +451,13 @@ export function TabelasAuxiliaresPage() {
             <div className="users-grid-shell">
               <Table<AuxiliaryTableRow>
                 rowKey="id"
-                className="module-table users-admin-table"
+                className="module-table users-admin-table auxiliary-compact-table"
                 columns={columns}
                 dataSource={visibleRows}
                 loading={isLoadingTable}
                 pagination={false}
+                size="small"
+                tableLayout="fixed"
                 rowSelection={{
                   type: "radio",
                   selectedRowKeys: selectedRowId ? [selectedRowId] : [],
