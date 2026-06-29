@@ -1,4 +1,5 @@
 import {
+  CheckOutlined,
   CloseOutlined,
   EditOutlined,
   FilterOutlined,
@@ -71,6 +72,8 @@ type SortState = {
   key: PaymentMethodColumnKey | null;
   order: "asc" | "desc" | null;
 };
+
+type PaymentMethodVisibleColumns = Record<PaymentMethodColumnKey | "status", boolean>;
 
 const auxiliaryTables: AuxiliaryTableDefinition[] = [
   {
@@ -211,6 +214,12 @@ export function TabelasAuxiliaresPage() {
     description: "",
   });
   const [sortState, setSortState] = useState<SortState>({ key: null, order: null });
+  const [visibleColumns, setVisibleColumns] = useState<PaymentMethodVisibleColumns>({
+    code: true,
+    name: true,
+    description: true,
+    status: true,
+  });
   const [apiMessage, messageContext] = message.useMessage();
   const [form] = Form.useForm<AuxiliaryModalFormValues>();
 
@@ -284,58 +293,68 @@ export function TabelasAuxiliaresPage() {
   const isAppointmentStatusForm = activeTable.formKind === "appointment-status";
   const isEditing = editingRecordId !== null;
 
-  const renderFilterDropdown = (columnKey: PaymentMethodColumnKey, label: string) => (
+  const renderFilterDropdown = useCallback((columnKey: PaymentMethodColumnKey, label: string) => (
     <div className="auxiliary-filter-menu" onClick={(event) => event.stopPropagation()}>
       <Typography.Text strong className="auxiliary-filter-menu-title">
         {label}
       </Typography.Text>
-      <Input
-        size="small"
-        placeholder="Filtrar..."
-        value={columnQueries[columnKey]}
-        onChange={(event) => setColumnQueries((current) => ({ ...current, [columnKey]: event.target.value }))}
-      />
-      <div className="auxiliary-filter-menu-actions">
-        <Button
-          size="small"
-          onClick={() => {
-            setSortState({ key: columnKey, order: "asc" });
-            setOpenFilterColumn(null);
-          }}
-        >
-          Crescente
-        </Button>
-        <Button
-          size="small"
-          onClick={() => {
-            setSortState({ key: columnKey, order: "desc" });
-            setOpenFilterColumn(null);
-          }}
-        >
-          Decrescente
-        </Button>
-        <Button
-          size="small"
-          onClick={() => {
-            setColumnQueries((current) => ({ ...current, [columnKey]: "" }));
-            if (sortState.key === columnKey) {
-              setSortState({ key: null, order: null });
-            }
-            setOpenFilterColumn(null);
-          }}
-        >
-          Limpar
-        </Button>
-      </div>
-      <div className="auxiliary-filter-menu-footer">
-        <Button size="small" type="primary" onClick={() => setOpenFilterColumn(null)}>
-          Aplicar
-        </Button>
+      <button
+        type="button"
+        className="auxiliary-filter-menu-item"
+        onClick={() => {
+          setSortState({ key: columnKey, order: "asc" });
+          setOpenFilterColumn(null);
+        }}
+      >
+        Ordem Ascendente
+        {sortState.key === columnKey && sortState.order === "asc" ? <CheckOutlined /> : null}
+      </button>
+      <button
+        type="button"
+        className="auxiliary-filter-menu-item"
+        onClick={() => {
+          setSortState({ key: columnKey, order: "desc" });
+          setOpenFilterColumn(null);
+        }}
+      >
+        Ordem Descendente
+        {sortState.key === columnKey && sortState.order === "desc" ? <CheckOutlined /> : null}
+      </button>
+      <div className="auxiliary-filter-menu-separator" />
+      <div className="auxiliary-filter-menu-subtitle">Colunas</div>
+      <div className="auxiliary-filter-menu-columns">
+        {([
+          ["code", "Codigo"],
+          ["name", "Nome"],
+          ["description", "Descricao"],
+          ["status", "Status"],
+        ] as const).map(([key, columnLabel]) => {
+          const visibleKey = key as keyof PaymentMethodVisibleColumns;
+          const enabledMainColumns = (["code", "name", "description"] as const).filter((entry) => visibleColumns[entry]).length;
+          const disableToggle = visibleKey !== "status" && visibleColumns[visibleKey] && enabledMainColumns === 1;
+
+          return (
+            <label key={key} className={`auxiliary-filter-menu-checkbox${disableToggle ? " is-disabled" : ""}`}>
+              <input
+                type="checkbox"
+                checked={visibleColumns[visibleKey]}
+                disabled={disableToggle}
+                onChange={() => {
+                  setVisibleColumns((current) => ({
+                    ...current,
+                    [visibleKey]: !current[visibleKey],
+                  }));
+                }}
+              />
+              <span>{columnLabel}</span>
+            </label>
+          );
+        })}
       </div>
     </div>
-  );
+  ), [sortState, visibleColumns]);
 
-  const renderFilterTitle = (columnKey: PaymentMethodColumnKey, label: string) => {
+  const renderFilterTitle = useCallback((columnKey: PaymentMethodColumnKey, label: string) => {
     if (!isPaymentMethodsTable) {
       return label;
     }
@@ -363,47 +382,53 @@ export function TabelasAuxiliaresPage() {
         </Dropdown>
       </div>
     );
-  };
+  }, [columnQueries, isPaymentMethodsTable, openFilterColumn, renderFilterDropdown, sortState]);
 
-  const baseColumns: ColumnsType<AuxiliaryTableRow> = [
-    {
-      title: renderFilterTitle("code", "Codigo"),
-      dataIndex: "code",
-      key: "code",
-      width: 104,
-      render: (value: string | null) => <span className="auxiliary-table-code">{value ?? "Preparado"}</span>,
-    },
-    {
-      title: renderFilterTitle("name", "Nome"),
-      dataIndex: "name",
-      key: "name",
-      width: isPaymentMethodsTable ? "30%" : "34%",
-      render: (_, row) => (
-        <div className="auxiliary-table-name-cell">
-          <Typography.Text strong className="auxiliary-table-name-text">{row.name}</Typography.Text>
-        </div>
-      ),
-    },
-    {
-      title: renderFilterTitle("description", "Descricao"),
-      dataIndex: "description",
-      key: "description",
-      width: "100%",
-      render: (value: string | null) => {
-        if (isPaymentMethodsTable) {
-          return <span className="auxiliary-table-description">{value ?? ""}</span>;
-        }
+  const columns: ColumnsType<AuxiliaryTableRow> = useMemo(() => {
+    const nextColumns: ColumnsType<AuxiliaryTableRow> = [];
 
-        return <span className="auxiliary-table-description">{value ?? "Preparado para backend"}</span>;
-      },
-    },
-  ];
+    if (visibleColumns.code) {
+      nextColumns.push({
+        title: renderFilterTitle("code", "Codigo"),
+        dataIndex: "code",
+        key: "code",
+        width: 104,
+        render: (value: string | null) => <span className="auxiliary-table-code">{value ?? "Preparado"}</span>,
+      });
+    }
 
-  const columns: ColumnsType<AuxiliaryTableRow> = !isPaymentMethodsTable
-    ? baseColumns
-    : [
-      ...baseColumns,
-      {
+    if (visibleColumns.name) {
+      nextColumns.push({
+        title: renderFilterTitle("name", "Nome"),
+        dataIndex: "name",
+        key: "name",
+        width: isPaymentMethodsTable ? "30%" : "34%",
+        render: (_, row) => (
+          <div className="auxiliary-table-name-cell">
+            <Typography.Text strong className="auxiliary-table-name-text">{row.name}</Typography.Text>
+          </div>
+        ),
+      });
+    }
+
+    if (visibleColumns.description) {
+      nextColumns.push({
+        title: renderFilterTitle("description", "Descricao"),
+        dataIndex: "description",
+        key: "description",
+        width: "100%",
+        render: (value: string | null) => {
+          if (isPaymentMethodsTable) {
+            return <span className="auxiliary-table-description">{value ?? ""}</span>;
+          }
+
+          return <span className="auxiliary-table-description">{value ?? "Preparado para backend"}</span>;
+        },
+      });
+    }
+
+    if (isPaymentMethodsTable && visibleColumns.status) {
+      nextColumns.push({
         title: "",
         dataIndex: "isActive",
         key: "status",
@@ -419,15 +444,18 @@ export function TabelasAuxiliaresPage() {
             />
           </span>
         ),
-      },
-    ];
+      });
+    }
+
+    return nextColumns;
+  }, [isPaymentMethodsTable, renderFilterTitle, visibleColumns]);
 
   const handleOpenModal = useCallback(() => {
-    form.setFieldsValue(buildDefaultValues(activeTable));
+    form.resetFields();
     setEditingRecordId(null);
     setOpenFilterColumn(null);
     setIsModalOpen(true);
-  }, [activeTable, form]);
+  }, [form]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -517,12 +545,6 @@ export function TabelasAuxiliaresPage() {
     }
 
     setEditingRecordId(paymentMethod.id);
-    form.setFieldsValue({
-      code: paymentMethod.codigo,
-      name: paymentMethod.nome,
-      description: paymentMethod.descricao ?? "",
-      isActive: paymentMethod.ativo,
-    });
     setOpenFilterColumn(null);
     setIsModalOpen(true);
   });
@@ -585,6 +607,29 @@ export function TabelasAuxiliaresPage() {
       form.setFieldValue("productiveCommitment", true);
     }
   }, [activeTable.formKind, form, isCommitmentType]);
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      return;
+    }
+
+    if (isPaymentMethodsTable && editingRecordId) {
+      const paymentMethod = paymentMethods.find((entry) => entry.id === editingRecordId);
+      if (!paymentMethod) {
+        return;
+      }
+
+      form.setFieldsValue({
+        code: paymentMethod.codigo,
+        name: paymentMethod.nome,
+        description: paymentMethod.descricao ?? "",
+        isActive: paymentMethod.ativo,
+      });
+      return;
+    }
+
+    form.setFieldsValue(buildDefaultValues(activeTable));
+  }, [activeTable, editingRecordId, form, isModalOpen, isPaymentMethodsTable, paymentMethods]);
 
   return (
     <div className="module-page-shell users-admin-page">
@@ -682,7 +727,6 @@ export function TabelasAuxiliaresPage() {
           layout="vertical"
           preserve={false}
           className="terra-password-form client-modal-form auxiliary-modal-form"
-          initialValues={buildDefaultValues(activeTable)}
           onFinish={() => void handleCreateRecord()}
         >
           <Form.Item name="code" label="Codigo">

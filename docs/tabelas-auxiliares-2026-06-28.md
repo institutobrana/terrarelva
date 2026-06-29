@@ -90,6 +90,7 @@
   - o checkbox `Forma de pagamento ativa` aparece apenas na edicao
   - a edicao grava os dados basicos via `PUT` e o status via `PATCH /status` quando houver mudanca
   - a lista recarrega do backend apos salvar para refletir o estado persistido
+  - o modal `Alterar forma de pagamento` volta a abrir preenchido com o item selecionado
 - Paleta de cores:
   - foi centralizada em uma constante reutilizavel com 44 cores
   - usada por `Motivos de agendamento` quando `Tipo = Compromisso`
@@ -107,11 +108,12 @@
   - itens ativos usam bolinha verde
   - itens inativos usam bolinha vermelha
   - o status fica alinhado no lado direito da linha
-  - o cabecalho de `Codigo`, `Nome` e `Descricao` ganhou menu compacto com:
-    - ordenacao crescente
-    - ordenacao decrescente
-    - limpar ordenacao/filtro
-    - filtro textual simples no frontend
+  - o cabecalho de `Codigo`, `Nome` e `Descricao` ganhou menu compacto no estilo EasyDental com:
+    - `Ordem Ascendente`
+    - `Ordem Descendente`
+    - `Colunas`
+    - selecao de colunas visiveis
+  - o menu nao usa mais botoes grandes nem campo textual de filtro
 - Preparado para evolucao:
   - ativacao/inativacao no frontend de `Formas de pagamento`
   - dados reais para as demais tabelas auxiliares
@@ -186,7 +188,13 @@
 10. Rodar `npm run db:seed-payment-methods` novamente e confirmar que nao aparecem duplicados na lista.
 11. Editar um item ativo, desmarcar `Forma de pagamento ativa`, gravar e confirmar bolinha vermelha apos recarregar.
 12. Editar novamente, marcar `Forma de pagamento ativa`, gravar e confirmar bolinha verde apos recarregar.
-13. Abrir o menu de filtro em `Codigo`, `Nome` ou `Descricao` e validar ordenacao crescente, decrescente e limpar.
+13. Selecionar uma linha, clicar em `Editar` e confirmar que o modal abre preenchido com o item selecionado.
+14. Abrir o menu de cabecalho em `Codigo`, `Nome` ou `Descricao` e validar:
+    - `Ordem Ascendente`
+    - `Ordem Descendente`
+    - menu `Colunas`
+15. Ocultar `Descricao` e confirmar que a coluna some.
+16. Reexibir `Descricao` e confirmar que a coluna volta.
 
 ## Como validar no backend
 
