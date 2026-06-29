@@ -96,6 +96,7 @@
   - no modo de edicao, o checkbox `Forma de pagamento ativa` passou a ser controlado por estado React explicito
   - checkbox marcado = `isActive: true` = bolinha verde
   - checkbox desmarcado = `isActive: false` = bolinha vermelha
+  - ao desativar um item com `Visualizar inativos` desligado, a tela passa a exibir inativos automaticamente apos salvar para manter o item visivel com bolinha vermelha
 - Paleta de cores:
   - foi centralizada em uma constante reutilizavel com 44 cores
   - usada por `Motivos de agendamento` quando `Tipo = Compromisso`

@@ -554,8 +554,12 @@ export function TabelasAuxiliaresPage() {
 
         if (editingRecordId) {
           await updatePaymentMethod(editingRecordId, payload);
-          if (editingPaymentMethod && editingPaymentMethod.isActive !== editingPaymentMethodIsActive) {
+          const statusChanged = editingPaymentMethod && editingPaymentMethod.isActive !== editingPaymentMethodIsActive;
+          if (statusChanged) {
             await updatePaymentMethodStatus(editingRecordId, editingPaymentMethodIsActive);
+            if (!editingPaymentMethodIsActive && !showInactive) {
+              setShowInactive(true);
+            }
           }
           apiMessage.success("Forma de pagamento atualizada com sucesso.");
         } else {
