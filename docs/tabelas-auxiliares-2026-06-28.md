@@ -11,6 +11,7 @@
 - A barra superior agora muda conforme a tabela auxiliar selecionada na lateral.
 - Exemplos implementados nesta etapa:
   - `Motivos de agendamento` -> `Novo motivo`
+  - `Situacoes de agendamento` -> `Nova situacao`
   - `Segmentos de fornecedor` -> `Novo segmento`
   - demais tabelas usam configuracao simples preparada por item
 
@@ -59,6 +60,16 @@
   - abre `Novo segmento de fornecedor`
   - campos incluidos: `Codigo`, `Nome` e `Descricao`
   - nao exibe `Tipo`, `Cor` nem `Compromisso produtivo`
+- Situacoes de agendamento:
+  - abre `Nova situacao de agendamento`
+  - campos incluidos: `Codigo`, `Nome`, `Descricao`, `Historico`, `Cor`, `Ocultar agendamento` e `Considerar falta do paciente`
+  - nao exibe `Tipo` nem `Compromisso produtivo`
+  - reutiliza a mesma paleta de 44 cores em 3 linhas usada por `Motivos de agendamento`
+  - os checkboxes iniciam desmarcados
+- Paleta de cores:
+  - foi centralizada em uma constante reutilizavel com 44 cores
+  - usada por `Motivos de agendamento` quando `Tipo = Compromisso`
+  - usada tambem por `Situacoes de agendamento`
 - Persistencia:
   - nesta etapa nao houve persistencia real nem localStorage
   - `Gravar ...` faz validacao e submit controlado, mantendo o fluxo preparado para backend futuro
@@ -76,3 +87,7 @@
 6. Em `Compromisso`, confirmar paleta habilitada com 44 cores, checkbox habilitado e marcado por padrao e obrigatoriedade de cor.
 7. Fechar o modal, selecionar `Segmentos de fornecedor` e confirmar o botao `Novo segmento`.
 8. Abrir o modal e validar que aparecem apenas `Codigo`, `Nome` e `Descricao`.
+9. Selecionar `Situacoes de agendamento` e confirmar o botao `Nova situacao`.
+10. Abrir o modal e validar `Codigo`, `Nome`, `Descricao`, `Historico`, `Cor`, `Ocultar agendamento` e `Considerar falta do paciente`.
+11. Confirmar que a paleta de 44 cores fica habilitada desde o inicio.
+12. Confirmar que os dois checkboxes iniciam desmarcados.

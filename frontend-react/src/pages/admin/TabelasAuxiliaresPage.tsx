@@ -10,9 +10,18 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
 
-type AuxiliaryFormKind = "appointment-reason" | "simple";
+type AuxiliaryFormKind = "appointment-reason" | "appointment-status" | "simple";
 
-type AuxiliaryField = "code" | "name" | "description" | "type" | "color" | "productiveCommitment";
+type AuxiliaryField =
+  | "code"
+  | "name"
+  | "description"
+  | "type"
+  | "color"
+  | "productiveCommitment"
+  | "history"
+  | "hideAppointment"
+  | "considerPatientNoShow";
 
 type AuxiliaryTableDefinition = {
   id: string;
@@ -40,6 +49,9 @@ type AuxiliaryModalFormValues = {
   type?: "agendamento" | "compromisso";
   color?: string;
   productiveCommitment?: boolean;
+  history?: string;
+  hideAppointment?: boolean;
+  considerPatientNoShow?: boolean;
 };
 
 const auxiliaryTables: AuxiliaryTableDefinition[] = [
@@ -80,8 +92,8 @@ const auxiliaryTables: AuxiliaryTableDefinition[] = [
     createLabel: "Nova situacao",
     createTitle: "Nova situacao de agendamento",
     submitLabel: "Gravar situacao",
-    formKind: "simple",
-    fields: ["code", "name", "description"],
+    formKind: "appointment-status",
+    fields: ["code", "name", "description", "history", "color", "hideAppointment", "considerPatientNoShow"],
   },
   {
     id: "segmentos-fornecedor",
@@ -234,6 +246,18 @@ function buildDefaultValues(table: AuxiliaryTableDefinition): AuxiliaryModalForm
     };
   }
 
+  if (table.formKind === "appointment-status") {
+    return {
+      code: "",
+      name: "",
+      description: "",
+      history: "",
+      color: undefined,
+      hideAppointment: false,
+      considerPatientNoShow: false,
+    };
+  }
+
   return {
     code: "",
     name: "",
@@ -257,6 +281,8 @@ export function TabelasAuxiliaresPage() {
   const selectedRow = visibleRows.find((row) => row.id === selectedRowId) ?? null;
   const selectedReasonType = Form.useWatch("type", form);
   const isCommitmentType = selectedReasonType === "compromisso";
+  const isAppointmentReasonForm = activeTable.formKind === "appointment-reason";
+  const isAppointmentStatusForm = activeTable.formKind === "appointment-status";
 
   const columns: ColumnsType<AuxiliaryTableRow> = [
     {
@@ -422,7 +448,7 @@ export function TabelasAuxiliaresPage() {
         centered
         width={760}
         destroyOnHidden
-        className="terra-password-modal client-modal auxiliary-modal"
+        className={`terra-password-modal client-modal auxiliary-modal${isAppointmentStatusForm ? " auxiliary-status-modal" : ""}`}
       >
         <div className="terra-password-modal-header">
           <Typography.Title level={3} className="terra-password-modal-title">
@@ -439,7 +465,7 @@ export function TabelasAuxiliaresPage() {
           onFinish={() => void handleCreateRecord()}
         >
           <Form.Item name="code" label="Codigo">
-            <Input placeholder="Codigo interno" />
+            <Input placeholder={isAppointmentStatusForm ? "Codigo da situacao" : "Codigo interno"} />
           </Form.Item>
 
           <Form.Item
@@ -447,14 +473,17 @@ export function TabelasAuxiliaresPage() {
             label="Nome"
             rules={[{ required: true, message: "Informe o nome." }]}
           >
-            <Input placeholder="Nome do cadastro" />
+            <Input placeholder={isAppointmentStatusForm ? "Nome da situacao" : "Nome do cadastro"} />
           </Form.Item>
 
           <Form.Item name="description" label="Descricao">
-            <Input.TextArea rows={3} placeholder="Descricao operacional" />
+            <Input.TextArea
+              rows={3}
+              placeholder={isAppointmentStatusForm ? "Descricao da situacao" : "Descricao operacional"}
+            />
           </Form.Item>
 
-          {activeTable.formKind === "appointment-reason" ? (
+          {isAppointmentReasonForm ? (
             <>
               <Form.Item
                 name="type"
@@ -510,7 +539,45 @@ export function TabelasAuxiliaresPage() {
             </>
           ) : null}
 
-          <div className="terra-password-modal-actions client-modal-actions">
+          {isAppointmentStatusForm ? (
+            <>
+              <Form.Item name="history" label="Historico">
+                <Input.TextArea rows={3} placeholder="Texto para inclusao automatica no historico do paciente" />
+              </Form.Item>
+
+              <Form.Item name="color" label="Cor">
+                <div className="auxiliary-color-grid" role="radiogroup" aria-label="Selecao de cor da situacao">
+                  {reasonColorOptions.map((color) => {
+                    const isActive = form.getFieldValue("color") === color;
+
+                    return (
+                      <button
+                        key={color}
+                        type="button"
+                        className={`auxiliary-color-swatch${isActive ? " is-active" : ""}`}
+                        style={{ backgroundColor: color }}
+                        aria-label={`Selecionar cor ${color}`}
+                        aria-pressed={isActive}
+                        onClick={() => form.setFieldValue("color", color)}
+                      />
+                    );
+                  })}
+                </div>
+              </Form.Item>
+
+              <div className="auxiliary-status-checkboxes">
+                <Form.Item name="hideAppointment" valuePropName="checked">
+                  <Checkbox>Ocultar agendamento</Checkbox>
+                </Form.Item>
+
+                <Form.Item name="considerPatientNoShow" valuePropName="checked">
+                  <Checkbox>Considerar falta do paciente</Checkbox>
+                </Form.Item>
+              </div>
+            </>
+          ) : null}
+
+          <div className={`terra-password-modal-actions client-modal-actions${isAppointmentStatusForm ? " auxiliary-status-actions" : ""}`}>
             <Button type="primary" htmlType="submit" loading={isSubmitting}>
               {activeTable.submitLabel}
             </Button>

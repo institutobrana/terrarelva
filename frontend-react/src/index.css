@@ -749,6 +749,25 @@ a {
   box-shadow: 0 0 0 2px rgba(67, 98, 69, 0.18);
 }
 
+.auxiliary-status-modal .terra-password-modal-title.ant-typography {
+  text-align: center;
+  color: #4c7564;
+}
+
+.auxiliary-status-checkboxes {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.auxiliary-status-checkboxes .ant-form-item {
+  margin-bottom: 0;
+}
+
+.auxiliary-status-actions {
+  justify-content: flex-end;
+}
+
 .bank-account-form .ant-input,
 .bank-account-form .ant-select-selector {
   min-height: 38px !important;
