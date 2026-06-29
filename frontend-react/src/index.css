@@ -1288,7 +1288,27 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  width: 100%;
+}
+
+.auxiliary-table-color-cell,
+.auxiliary-table-lock-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.auxiliary-table-color-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(67, 98, 69, 0.18);
+  background: rgba(213, 206, 191, 0.52);
+}
+
+.auxiliary-table-color-swatch.is-empty {
+  opacity: 0.22;
 }
 
 .auxiliary-table-status-lock {
@@ -1324,6 +1344,11 @@ a {
 
 .auxiliary-compact-table .auxiliary-table-status-column {
   padding-inline: 6px !important;
+}
+
+.auxiliary-compact-table .auxiliary-table-technical-column,
+.auxiliary-compact-table .auxiliary-table-status-column {
+  padding-inline: 4px !important;
 }
 
 .cashflow-shell-toolbar {

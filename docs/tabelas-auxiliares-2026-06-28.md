@@ -104,15 +104,20 @@
     - `Motivos de agendamento`: `tipo`, `cor`, `compromissoProdutivo`
     - `Situacoes de agendamento`: `historico`, `cor`, `ocultarAgendamento`, `considerarFaltaCliente`
 - Status visual e filtros:
-  - a grade de `Formas de pagamento` ganhou uma coluna final compacta de status
+  - a grade passou a separar colunas tecnicas finais em `Cor`, `Bloqueio` e `Status`
+  - em `Formas de pagamento`, a grade fica: `Codigo | Nome | Descricao | Bloqueio | Status`
+  - em `Motivos de agendamento` e `Situacoes de agendamento`, a grade fica: `Codigo | Nome | Descricao | Cor | Bloqueio | Status`
+  - a coluna `Cor` aparece somente nas tabelas que realmente usam cor
   - itens ativos usam bolinha verde
   - itens inativos usam bolinha vermelha
-  - o status fica alinhado no lado direito da linha
+  - o status fica alinhado na ultima coluna da direita
   - o cabecalho de `Codigo`, `Nome` e `Descricao` ganhou menu compacto no estilo EasyDental com:
     - `Ordem Ascendente`
     - `Ordem Descendente`
     - `Colunas`
     - selecao de colunas visiveis
+  - em `Formas de pagamento`, o menu `Colunas` mostra `Codigo`, `Nome`, `Descricao`, `Bloqueio` e `Status`
+  - em tabelas com cor, o menu `Colunas` tambem mostra `Cor`
   - o menu nao usa mais botoes grandes nem campo textual de filtro
 - Preparado para evolucao:
   - ativacao/inativacao no frontend de `Formas de pagamento`
@@ -195,6 +200,8 @@
     - menu `Colunas`
 15. Ocultar `Descricao` e confirmar que a coluna some.
 16. Reexibir `Descricao` e confirmar que a coluna volta.
+17. Em `Formas de pagamento`, confirmar grade como `Codigo | Nome | Descricao | Bloqueio | Status`.
+18. Em `Motivos de agendamento` e `Situacoes de agendamento`, confirmar grade como `Codigo | Nome | Descricao | Cor | Bloqueio | Status`.
 
 ## Como validar no backend
 

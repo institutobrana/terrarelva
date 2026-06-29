@@ -43,6 +43,7 @@ type AuxiliaryTableDefinition = {
   submitLabel: string;
   formKind: AuxiliaryFormKind;
   fields: AuxiliaryField[];
+  hasColorColumn?: boolean;
 };
 
 type AuxiliaryTableRow = {
@@ -73,7 +74,7 @@ type SortState = {
   order: "asc" | "desc" | null;
 };
 
-type PaymentMethodVisibleColumns = Record<PaymentMethodColumnKey | "status", boolean>;
+type AuxiliaryVisibleColumns = Record<PaymentMethodColumnKey | "color" | "lock" | "status", boolean>;
 
 const auxiliaryTables: AuxiliaryTableDefinition[] = [
   {
@@ -85,6 +86,7 @@ const auxiliaryTables: AuxiliaryTableDefinition[] = [
     submitLabel: "Gravar motivo",
     formKind: "appointment-reason",
     fields: ["code", "name", "description", "type", "color", "productiveCommitment"],
+    hasColorColumn: true,
   },
   {
     id: "situacoes-agendamento",
@@ -95,6 +97,7 @@ const auxiliaryTables: AuxiliaryTableDefinition[] = [
     submitLabel: "Gravar situacao",
     formKind: "appointment-status",
     fields: ["code", "name", "description", "history", "color", "hideAppointment", "considerPatientNoShow"],
+    hasColorColumn: true,
   },
   {
     id: "tipos-indicacao",
@@ -214,10 +217,12 @@ export function TabelasAuxiliaresPage() {
     description: "",
   });
   const [sortState, setSortState] = useState<SortState>({ key: null, order: null });
-  const [visibleColumns, setVisibleColumns] = useState<PaymentMethodVisibleColumns>({
+  const [visibleColumns, setVisibleColumns] = useState<AuxiliaryVisibleColumns>({
     code: true,
     name: true,
     description: true,
+    color: true,
+    lock: true,
     status: true,
   });
   const [apiMessage, messageContext] = message.useMessage();
@@ -225,6 +230,7 @@ export function TabelasAuxiliaresPage() {
 
   const activeTable = auxiliaryTables.find((item) => item.id === selectedTableId) ?? auxiliaryTables[0];
   const isPaymentMethodsTable = activeTable.id === "formas-pagamento";
+  const hasColorColumn = activeTable.hasColorColumn === true;
   const tableRows = useMemo(() => {
     if (isPaymentMethodsTable) {
       return paymentMethods.map<AuxiliaryTableRow>((entry) => ({
@@ -292,6 +298,10 @@ export function TabelasAuxiliaresPage() {
   const isAppointmentReasonForm = activeTable.formKind === "appointment-reason";
   const isAppointmentStatusForm = activeTable.formKind === "appointment-status";
   const isEditing = editingRecordId !== null;
+  const selectedPaymentMethod = useMemo(
+    () => (isPaymentMethodsTable ? paymentMethods.find((entry) => entry.id === selectedRowId) ?? null : null),
+    [isPaymentMethodsTable, paymentMethods, selectedRowId],
+  );
 
   const renderFilterDropdown = useCallback((columnKey: PaymentMethodColumnKey, label: string) => (
     <div className="auxiliary-filter-menu" onClick={(event) => event.stopPropagation()}>
@@ -327,11 +337,16 @@ export function TabelasAuxiliaresPage() {
           ["code", "Codigo"],
           ["name", "Nome"],
           ["description", "Descricao"],
+          ...(hasColorColumn ? ([["color", "Cor"]] as const) : []),
+          ["lock", "Bloqueio"],
           ["status", "Status"],
         ] as const).map(([key, columnLabel]) => {
-          const visibleKey = key as keyof PaymentMethodVisibleColumns;
+          const visibleKey = key as keyof AuxiliaryVisibleColumns;
           const enabledMainColumns = (["code", "name", "description"] as const).filter((entry) => visibleColumns[entry]).length;
-          const disableToggle = visibleKey !== "status" && visibleColumns[visibleKey] && enabledMainColumns === 1;
+          const disableToggle =
+            (visibleKey === "code" || visibleKey === "name" || visibleKey === "description")
+            && visibleColumns[visibleKey]
+            && enabledMainColumns === 1;
 
           return (
             <label key={key} className={`auxiliary-filter-menu-checkbox${disableToggle ? " is-disabled" : ""}`}>
@@ -352,7 +367,7 @@ export function TabelasAuxiliaresPage() {
         })}
       </div>
     </div>
-  ), [sortState, visibleColumns]);
+  ), [hasColorColumn, sortState, visibleColumns]);
 
   const renderFilterTitle = useCallback((columnKey: PaymentMethodColumnKey, label: string) => {
     if (!isPaymentMethodsTable) {
@@ -427,17 +442,48 @@ export function TabelasAuxiliaresPage() {
       });
     }
 
-    if (isPaymentMethodsTable && visibleColumns.status) {
+    if (hasColorColumn && visibleColumns.color) {
+      nextColumns.push({
+        title: "Cor",
+        dataIndex: "color",
+        key: "color",
+        width: 54,
+        align: "center",
+        className: "auxiliary-table-technical-column",
+        render: () => (
+          <span className="auxiliary-table-color-cell">
+            <span className="auxiliary-table-color-swatch is-empty" aria-hidden="true" />
+          </span>
+        ),
+      });
+    }
+
+    if (visibleColumns.lock) {
+      nextColumns.push({
+        title: "",
+        dataIndex: "lock",
+        key: "lock",
+        width: 52,
+        align: "center",
+        className: "auxiliary-table-technical-column",
+        render: () => (
+          <span className="auxiliary-table-lock-cell" title="Bloqueio">
+            <LockOutlined className="auxiliary-table-status-lock" />
+          </span>
+        ),
+      });
+    }
+
+    if (visibleColumns.status) {
       nextColumns.push({
         title: "",
         dataIndex: "isActive",
         key: "status",
-        width: 64,
+        width: 46,
         align: "center",
         className: "auxiliary-table-status-column",
         render: (value: boolean) => (
           <span className="auxiliary-table-status-indicator" title={value ? "Ativo" : "Inativo"}>
-            <LockOutlined className="auxiliary-table-status-lock" />
             <span
               className={`auxiliary-table-status-dot${value ? " is-active" : " is-inactive"}`}
               aria-label={value ? "Ativo" : "Inativo"}
@@ -448,7 +494,7 @@ export function TabelasAuxiliaresPage() {
     }
 
     return nextColumns;
-  }, [isPaymentMethodsTable, renderFilterTitle, visibleColumns]);
+  }, [hasColorColumn, isPaymentMethodsTable, renderFilterTitle, visibleColumns]);
 
   const handleOpenModal = useCallback(() => {
     form.resetFields();
@@ -538,14 +584,19 @@ export function TabelasAuxiliaresPage() {
       return;
     }
 
-    const paymentMethod = paymentMethods.find((entry) => entry.id === selectedRow.id);
-    if (!paymentMethod) {
+    if (!selectedPaymentMethod) {
       apiMessage.error("Forma de pagamento selecionada nao encontrada.");
       return;
     }
 
-    setEditingRecordId(paymentMethod.id);
+    setEditingRecordId(selectedPaymentMethod.id);
     setOpenFilterColumn(null);
+    form.setFieldsValue({
+      code: selectedPaymentMethod.codigo,
+      name: selectedPaymentMethod.nome,
+      description: selectedPaymentMethod.descricao ?? "",
+      isActive: selectedPaymentMethod.ativo,
+    });
     setIsModalOpen(true);
   });
 
@@ -588,6 +639,14 @@ export function TabelasAuxiliaresPage() {
     setOpenFilterColumn(null);
     setColumnQueries({ code: "", name: "", description: "" });
     setSortState({ key: null, order: null });
+    setVisibleColumns({
+      code: true,
+      name: true,
+      description: true,
+      color: true,
+      lock: true,
+      status: true,
+    });
   }, [selectedTableId]);
 
   useEffect(() => {
@@ -614,22 +673,21 @@ export function TabelasAuxiliaresPage() {
     }
 
     if (isPaymentMethodsTable && editingRecordId) {
-      const paymentMethod = paymentMethods.find((entry) => entry.id === editingRecordId);
-      if (!paymentMethod) {
+      if (!selectedPaymentMethod) {
         return;
       }
 
       form.setFieldsValue({
-        code: paymentMethod.codigo,
-        name: paymentMethod.nome,
-        description: paymentMethod.descricao ?? "",
-        isActive: paymentMethod.ativo,
+        code: selectedPaymentMethod.codigo,
+        name: selectedPaymentMethod.nome,
+        description: selectedPaymentMethod.descricao ?? "",
+        isActive: selectedPaymentMethod.ativo,
       });
       return;
     }
 
     form.setFieldsValue(buildDefaultValues(activeTable));
-  }, [activeTable, editingRecordId, form, isModalOpen, isPaymentMethodsTable, paymentMethods]);
+  }, [activeTable, editingRecordId, form, isModalOpen, isPaymentMethodsTable, selectedPaymentMethod]);
 
   return (
     <div className="module-page-shell users-admin-page">
@@ -714,6 +772,7 @@ export function TabelasAuxiliaresPage() {
         centered
         width={760}
         destroyOnHidden
+        forceRender
         className={`terra-password-modal client-modal auxiliary-modal${isAppointmentStatusForm ? " auxiliary-status-modal" : ""}`}
       >
         <div className="terra-password-modal-header">
