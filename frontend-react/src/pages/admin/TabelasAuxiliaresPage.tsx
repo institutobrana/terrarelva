@@ -1,9 +1,11 @@
 import {
   CloseOutlined,
   EditOutlined,
+  FilterOutlined,
+  LockOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Alert, Button, Checkbox, Form, Input, Modal, Select, Space, Table, Typography, message } from "antd";
+import { Alert, Button, Checkbox, Dropdown, Form, Input, Modal, Select, Space, Table, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useCallback, useEffect, useEffectEvent, useMemo, useState } from "react";
 
@@ -61,6 +63,13 @@ type AuxiliaryModalFormValues = {
   history?: string;
   hideAppointment?: boolean;
   considerPatientNoShow?: boolean;
+};
+
+type PaymentMethodColumnKey = "code" | "name" | "description";
+
+type SortState = {
+  key: PaymentMethodColumnKey | null;
+  order: "asc" | "desc" | null;
 };
 
 const auxiliaryTables: AuxiliaryTableDefinition[] = [
@@ -195,6 +204,13 @@ export function TabelasAuxiliaresPage() {
   const [tableError, setTableError] = useState<string | null>(null);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodRecord[]>([]);
+  const [openFilterColumn, setOpenFilterColumn] = useState<PaymentMethodColumnKey | null>(null);
+  const [columnQueries, setColumnQueries] = useState<Record<PaymentMethodColumnKey, string>>({
+    code: "",
+    name: "",
+    description: "",
+  });
+  const [sortState, setSortState] = useState<SortState>({ key: null, order: null });
   const [apiMessage, messageContext] = message.useMessage();
   const [form] = Form.useForm<AuxiliaryModalFormValues>();
 
@@ -213,82 +229,210 @@ export function TabelasAuxiliaresPage() {
 
     return preparedRowsByTable[activeTable.id] ?? [];
   }, [activeTable.id, isPaymentMethodsTable, paymentMethods]);
-  const visibleRows = useMemo(() => tableRows.filter((row) => (showInactive ? true : row.isActive)), [showInactive, tableRows]);
-  const selectedRow = visibleRows.find((row) => row.id === selectedRowId) ?? null;
+  const filteredRows = useMemo(() => {
+    const nextRows = tableRows.filter((row) => {
+      if (!showInactive && !row.isActive) {
+        return false;
+      }
+
+      if (!isPaymentMethodsTable) {
+        return true;
+      }
+
+      return (["code", "name", "description"] as PaymentMethodColumnKey[]).every((key) => {
+        const query = columnQueries[key].trim().toLowerCase();
+        if (!query) {
+          return true;
+        }
+
+        const value =
+          key === "code"
+            ? row.code ?? ""
+            : key === "name"
+              ? row.name
+              : row.description ?? "";
+
+        return value.toLowerCase().includes(query);
+      });
+    });
+
+    if (!isPaymentMethodsTable || !sortState.key || !sortState.order) {
+      return nextRows;
+    }
+
+    return [...nextRows].sort((left, right) => {
+      const getValue = (row: AuxiliaryTableRow) => {
+        if (sortState.key === "code") {
+          return row.code ?? "";
+        }
+
+        if (sortState.key === "description") {
+          return row.description ?? "";
+        }
+
+        return row.name;
+      };
+
+      const comparison = getValue(left).localeCompare(getValue(right), "pt-BR", { sensitivity: "base" });
+      return sortState.order === "asc" ? comparison : -comparison;
+    });
+  }, [columnQueries, isPaymentMethodsTable, showInactive, sortState, tableRows]);
+  const selectedRow = filteredRows.find((row) => row.id === selectedRowId) ?? null;
   const selectedReasonType = Form.useWatch("type", form);
   const isCommitmentType = selectedReasonType === "compromisso";
   const isAppointmentReasonForm = activeTable.formKind === "appointment-reason";
   const isAppointmentStatusForm = activeTable.formKind === "appointment-status";
   const isEditing = editingRecordId !== null;
 
-  const columns: ColumnsType<AuxiliaryTableRow> = useMemo(() => {
-    const baseColumns: ColumnsType<AuxiliaryTableRow> = [
-      {
-        title: "Codigo",
-        dataIndex: "code",
-        key: "code",
-        width: 104,
-        render: (value: string | null) => <span className="auxiliary-table-code">{value ?? "Preparado"}</span>,
-      },
-      {
-        title: "Nome",
-        dataIndex: "name",
-        key: "name",
-        width: isPaymentMethodsTable ? "30%" : "34%",
-        render: (_, row) => (
-          <div className="auxiliary-table-name-cell">
-            <Typography.Text strong className="auxiliary-table-name-text">{row.name}</Typography.Text>
-          </div>
-        ),
-      },
-      {
-        title: "Descricao",
-        dataIndex: "description",
-        key: "description",
-        width: "100%",
-        render: (value: string | null) => {
-          if (isPaymentMethodsTable) {
-            return <span className="auxiliary-table-description">{value ?? ""}</span>;
-          }
+  const renderFilterDropdown = (columnKey: PaymentMethodColumnKey, label: string) => (
+    <div className="auxiliary-filter-menu" onClick={(event) => event.stopPropagation()}>
+      <Typography.Text strong className="auxiliary-filter-menu-title">
+        {label}
+      </Typography.Text>
+      <Input
+        size="small"
+        placeholder="Filtrar..."
+        value={columnQueries[columnKey]}
+        onChange={(event) => setColumnQueries((current) => ({ ...current, [columnKey]: event.target.value }))}
+      />
+      <div className="auxiliary-filter-menu-actions">
+        <Button
+          size="small"
+          onClick={() => {
+            setSortState({ key: columnKey, order: "asc" });
+            setOpenFilterColumn(null);
+          }}
+        >
+          Crescente
+        </Button>
+        <Button
+          size="small"
+          onClick={() => {
+            setSortState({ key: columnKey, order: "desc" });
+            setOpenFilterColumn(null);
+          }}
+        >
+          Decrescente
+        </Button>
+        <Button
+          size="small"
+          onClick={() => {
+            setColumnQueries((current) => ({ ...current, [columnKey]: "" }));
+            if (sortState.key === columnKey) {
+              setSortState({ key: null, order: null });
+            }
+            setOpenFilterColumn(null);
+          }}
+        >
+          Limpar
+        </Button>
+      </div>
+      <div className="auxiliary-filter-menu-footer">
+        <Button size="small" type="primary" onClick={() => setOpenFilterColumn(null)}>
+          Aplicar
+        </Button>
+      </div>
+    </div>
+  );
 
-          return <span className="auxiliary-table-description">{value ?? "Preparado para backend"}</span>;
-        },
-      },
-    ];
-
+  const renderFilterTitle = (columnKey: PaymentMethodColumnKey, label: string) => {
     if (!isPaymentMethodsTable) {
-      return baseColumns;
+      return label;
     }
 
-    return [
+    const hasQuery = columnQueries[columnKey].trim().length > 0;
+    const isSorted = sortState.key === columnKey && sortState.order;
+
+    return (
+      <div className="auxiliary-filter-header">
+        <span>{label}</span>
+        <Dropdown
+          trigger={["click"]}
+          open={openFilterColumn === columnKey}
+          onOpenChange={(nextOpen) => setOpenFilterColumn(nextOpen ? columnKey : null)}
+          dropdownRender={() => renderFilterDropdown(columnKey, label)}
+        >
+          <button
+            type="button"
+            className={`auxiliary-filter-trigger${hasQuery || isSorted ? " is-active" : ""}`}
+            aria-label={`Abrir filtro de ${label}`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <FilterOutlined />
+          </button>
+        </Dropdown>
+      </div>
+    );
+  };
+
+  const baseColumns: ColumnsType<AuxiliaryTableRow> = [
+    {
+      title: renderFilterTitle("code", "Codigo"),
+      dataIndex: "code",
+      key: "code",
+      width: 104,
+      render: (value: string | null) => <span className="auxiliary-table-code">{value ?? "Preparado"}</span>,
+    },
+    {
+      title: renderFilterTitle("name", "Nome"),
+      dataIndex: "name",
+      key: "name",
+      width: isPaymentMethodsTable ? "30%" : "34%",
+      render: (_, row) => (
+        <div className="auxiliary-table-name-cell">
+          <Typography.Text strong className="auxiliary-table-name-text">{row.name}</Typography.Text>
+        </div>
+      ),
+    },
+    {
+      title: renderFilterTitle("description", "Descricao"),
+      dataIndex: "description",
+      key: "description",
+      width: "100%",
+      render: (value: string | null) => {
+        if (isPaymentMethodsTable) {
+          return <span className="auxiliary-table-description">{value ?? ""}</span>;
+        }
+
+        return <span className="auxiliary-table-description">{value ?? "Preparado para backend"}</span>;
+      },
+    },
+  ];
+
+  const columns: ColumnsType<AuxiliaryTableRow> = !isPaymentMethodsTable
+    ? baseColumns
+    : [
       ...baseColumns,
       {
         title: "",
         dataIndex: "isActive",
         key: "status",
-        width: 44,
+        width: 64,
         align: "center",
         className: "auxiliary-table-status-column",
         render: (value: boolean) => (
-          <span
-            className={`auxiliary-table-status-dot${value ? " is-active" : " is-inactive"}`}
-            aria-label={value ? "Ativo" : "Inativo"}
-            title={value ? "Ativo" : "Inativo"}
-          />
+          <span className="auxiliary-table-status-indicator" title={value ? "Ativo" : "Inativo"}>
+            <LockOutlined className="auxiliary-table-status-lock" />
+            <span
+              className={`auxiliary-table-status-dot${value ? " is-active" : " is-inactive"}`}
+              aria-label={value ? "Ativo" : "Inativo"}
+            />
+          </span>
         ),
       },
     ];
-  }, [isPaymentMethodsTable]);
 
   const handleOpenModal = useCallback(() => {
     form.setFieldsValue(buildDefaultValues(activeTable));
     setEditingRecordId(null);
+    setOpenFilterColumn(null);
     setIsModalOpen(true);
   }, [activeTable, form]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingRecordId(null);
+    setOpenFilterColumn(null);
     form.resetFields();
   };
 
@@ -379,6 +523,7 @@ export function TabelasAuxiliaresPage() {
       description: paymentMethod.descricao ?? "",
       isActive: paymentMethod.ativo,
     });
+    setOpenFilterColumn(null);
     setIsModalOpen(true);
   });
 
@@ -418,6 +563,9 @@ export function TabelasAuxiliaresPage() {
 
   useEffect(() => {
     setSelectedRowId(null);
+    setOpenFilterColumn(null);
+    setColumnQueries({ code: "", name: "", description: "" });
+    setSortState({ key: null, order: null });
   }, [selectedTableId]);
 
   useEffect(() => {
@@ -482,7 +630,7 @@ export function TabelasAuxiliaresPage() {
                 rowKey="id"
                 className="module-table users-admin-table auxiliary-compact-table"
                 columns={columns}
-                dataSource={visibleRows}
+                dataSource={filteredRows}
                 loading={isLoadingTable}
                 pagination={false}
                 size="small"
@@ -504,7 +652,7 @@ export function TabelasAuxiliaresPage() {
                         Visualizar inativos
                       </Checkbox>
                     </Space>
-                    <Typography.Text strong>Total de registros: {visibleRows.length}</Typography.Text>
+                    <Typography.Text strong>Total de registros: {filteredRows.length}</Typography.Text>
                   </div>
                 )}
               />

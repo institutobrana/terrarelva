@@ -84,6 +84,12 @@
   - `Descricao` e opcional
   - a lista da tela carrega dados reais do backend
   - a acao `Editar` foi ligada para abrir o modal preenchido e salvar alteracoes
+  - recebeu carga inicial padrao via seed idempotente
+  - a coluna `Descricao` permanece vazia nos registros padrao
+  - novo cadastro nasce ativo automaticamente
+  - o checkbox `Forma de pagamento ativa` aparece apenas na edicao
+  - a edicao grava os dados basicos via `PUT` e o status via `PATCH /status` quando houver mudanca
+  - a lista recarrega do backend apos salvar para refletir o estado persistido
 - Paleta de cores:
   - foi centralizada em uma constante reutilizavel com 44 cores
   - usada por `Motivos de agendamento` quando `Tipo = Compromisso`
@@ -96,6 +102,16 @@
   - tabelas com campos especificos permanecem separadas:
     - `Motivos de agendamento`: `tipo`, `cor`, `compromissoProdutivo`
     - `Situacoes de agendamento`: `historico`, `cor`, `ocultarAgendamento`, `considerarFaltaCliente`
+- Status visual e filtros:
+  - a grade de `Formas de pagamento` ganhou uma coluna final compacta de status
+  - itens ativos usam bolinha verde
+  - itens inativos usam bolinha vermelha
+  - o status fica alinhado no lado direito da linha
+  - o cabecalho de `Codigo`, `Nome` e `Descricao` ganhou menu compacto com:
+    - ordenacao crescente
+    - ordenacao decrescente
+    - limpar ordenacao/filtro
+    - filtro textual simples no frontend
 - Preparado para evolucao:
   - ativacao/inativacao no frontend de `Formas de pagamento`
   - dados reais para as demais tabelas auxiliares
@@ -116,6 +132,29 @@
 - Camadas adicionadas:
   - `backend/src/repositories/paymentMethodsRepository.js`
   - `backend/src/services/paymentMethodsService.js`
+- Seed adicionado:
+  - `backend/src/scripts/seed-payment-methods.js`
+  - comando: `npm run db:seed-payment-methods`
+
+## Seed de formas de pagamento
+
+- Registros padrao inseridos:
+  - `BOL` -> `Boleto bancário`
+  - `CHE` -> `Cheque`
+  - `CON` -> `Débito em conta`
+  - `CRE` -> `Cartão de crédito`
+  - `DEB` -> `Cartão de débito`
+  - `DIN` -> `Dinheiro`
+  - `PIX` -> `Pix`
+  - `PRE` -> `Cheque pré-datado`
+  - `TER` -> `Cheque de terceiro`
+  - `TRF` -> `Transferência`
+- A descricao e salva vazia (`""`) para todos os registros padrao.
+- O seed evita duplicidade usando `ON CONFLICT (code) DO UPDATE`.
+- Se o codigo ja existir:
+  - o nome e atualizado para o padrao esperado
+  - a descricao e normalizada para vazia
+  - o registro permanece ativo
 
 ## Como validar no navegador
 
@@ -144,3 +183,14 @@
 7. Gravar e confirmar que o item aparece na lista.
 8. Recarregar a pagina e confirmar que o registro continua visivel, vindo do banco.
 9. Selecionar a linha, clicar em `Editar`, alterar os dados e confirmar persistencia apos novo carregamento.
+10. Rodar `npm run db:seed-payment-methods` novamente e confirmar que nao aparecem duplicados na lista.
+11. Editar um item ativo, desmarcar `Forma de pagamento ativa`, gravar e confirmar bolinha vermelha apos recarregar.
+12. Editar novamente, marcar `Forma de pagamento ativa`, gravar e confirmar bolinha verde apos recarregar.
+13. Abrir o menu de filtro em `Codigo`, `Nome` ou `Descricao` e validar ordenacao crescente, decrescente e limpar.
+
+## Como validar no backend
+
+1. Rodar `npm run db:migrate`.
+2. Rodar `npm run db:seed-payment-methods`.
+3. Rodar o mesmo seed novamente e confirmar que continua existindo apenas um registro por codigo.
+4. Validar a listagem de `Formas de pagamento` no banco ou pelo endpoint `GET /admin/auxiliary-tables/payment-methods`.

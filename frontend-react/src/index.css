@@ -1184,21 +1184,86 @@ a {
   color: #2f3e36;
 }
 
+.auxiliary-filter-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.auxiliary-filter-trigger {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(229, 237, 224, 0.28);
+  color: #72806a;
+  cursor: pointer;
+}
+
+.auxiliary-filter-trigger.is-active,
+.auxiliary-filter-trigger:hover {
+  background: rgba(106, 132, 93, 0.18);
+  color: #36513d;
+}
+
+.auxiliary-filter-menu {
+  width: 220px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 253, 248, 0.98);
+  box-shadow: 0 12px 28px rgba(56, 53, 41, 0.14);
+}
+
+.auxiliary-filter-menu-title {
+  display: block;
+  margin-bottom: 8px;
+  color: #36513d;
+}
+
+.auxiliary-filter-menu-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.auxiliary-filter-menu-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.auxiliary-table-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.auxiliary-table-status-lock {
+  color: #95a08c;
+  font-size: 0.78rem;
+}
+
 .auxiliary-table-status-dot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 999px;
   flex: 0 0 auto;
   background: #b7b3aa;
-  box-shadow: 0 0 0 1px rgba(67, 98, 69, 0.12);
+  border: 1px solid rgba(67, 98, 69, 0.18);
+  box-shadow: 0 0 0 1px rgba(67, 98, 69, 0.08);
 }
 
 .auxiliary-table-status-dot.is-active {
-  background: #6a845d;
+  background: #4f8a44;
 }
 
 .auxiliary-table-status-dot.is-inactive {
-  background: #c45a54;
+  background: #d14f47;
 }
 
 .auxiliary-table-description {
