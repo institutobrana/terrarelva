@@ -238,7 +238,7 @@ export function TabelasAuxiliaresPage() {
         code: entry.codigo,
         name: entry.nome,
         description: entry.descricao,
-        isActive: entry.ativo,
+        isActive: entry.isActive,
       }));
     }
 
@@ -546,7 +546,7 @@ export function TabelasAuxiliaresPage() {
           await updatePaymentMethod(editingRecordId, payload);
           if (typeof values.isActive === "boolean") {
             const currentPaymentMethod = paymentMethods.find((entry) => entry.id === editingRecordId);
-            if (!currentPaymentMethod || currentPaymentMethod.ativo !== values.isActive) {
+            if (!currentPaymentMethod || currentPaymentMethod.isActive !== values.isActive) {
               await updatePaymentMethodStatus(editingRecordId, values.isActive);
             }
           }
@@ -595,7 +595,7 @@ export function TabelasAuxiliaresPage() {
       code: selectedPaymentMethod.codigo,
       name: selectedPaymentMethod.nome,
       description: selectedPaymentMethod.descricao ?? "",
-      isActive: selectedPaymentMethod.ativo,
+      isActive: selectedPaymentMethod.isActive,
     });
     setIsModalOpen(true);
   });
@@ -681,7 +681,7 @@ export function TabelasAuxiliaresPage() {
         code: selectedPaymentMethod.codigo,
         name: selectedPaymentMethod.nome,
         description: selectedPaymentMethod.descricao ?? "",
-        isActive: selectedPaymentMethod.ativo,
+        isActive: selectedPaymentMethod.isActive,
       });
       return;
     }

@@ -32,7 +32,7 @@ function toPaymentMethod(row) {
     codigo: row.code,
     nome: row.name,
     descricao: row.description,
-    ativo: row.is_active,
+    isActive: row.is_active,
     criadoEm: row.created_at,
     atualizadoEm: row.updated_at,
   };

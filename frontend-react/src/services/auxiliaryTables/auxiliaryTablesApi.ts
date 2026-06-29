@@ -6,7 +6,18 @@ export type PaymentMethodRecord = {
   codigo: string;
   nome: string;
   descricao: string | null;
-  ativo: boolean;
+  isActive: boolean;
+  criadoEm: string;
+  atualizadoEm: string;
+};
+
+type PaymentMethodApiRecord = {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao: string | null;
+  isActive?: boolean;
+  ativo?: boolean;
   criadoEm: string;
   atualizadoEm: string;
 };
@@ -50,12 +61,29 @@ async function parseResponse<T>(response: Response): Promise<T> {
   return response.json();
 }
 
+function normalizePaymentMethod(record: PaymentMethodApiRecord): PaymentMethodRecord {
+  return {
+    id: record.id,
+    codigo: record.codigo,
+    nome: record.nome,
+    descricao: record.descricao,
+    isActive: typeof record.isActive === "boolean" ? record.isActive : Boolean(record.ativo),
+    criadoEm: record.criadoEm,
+    atualizadoEm: record.atualizadoEm,
+  };
+}
+
 export async function fetchPaymentMethods() {
   const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/payment-methods`, {
     headers: getAuthHeaders(),
   });
 
-  return parseResponse<{ paymentMethods: PaymentMethodRecord[]; total: number }>(response);
+  const payload = await parseResponse<{ paymentMethods: PaymentMethodApiRecord[]; total: number }>(response);
+
+  return {
+    total: payload.total,
+    paymentMethods: payload.paymentMethods.map(normalizePaymentMethod),
+  };
 }
 
 export async function createPaymentMethod(payload: PaymentMethodPayload) {
@@ -65,7 +93,11 @@ export async function createPaymentMethod(payload: PaymentMethodPayload) {
     body: JSON.stringify(payload),
   });
 
-  return parseResponse<{ paymentMethod: PaymentMethodRecord }>(response);
+  const result = await parseResponse<{ paymentMethod: PaymentMethodApiRecord }>(response);
+
+  return {
+    paymentMethod: normalizePaymentMethod(result.paymentMethod),
+  };
 }
 
 export async function updatePaymentMethod(id: string, payload: PaymentMethodPayload) {
@@ -75,15 +107,23 @@ export async function updatePaymentMethod(id: string, payload: PaymentMethodPayl
     body: JSON.stringify(payload),
   });
 
-  return parseResponse<{ paymentMethod: PaymentMethodRecord }>(response);
+  const result = await parseResponse<{ paymentMethod: PaymentMethodApiRecord }>(response);
+
+  return {
+    paymentMethod: normalizePaymentMethod(result.paymentMethod),
+  };
 }
 
-export async function updatePaymentMethodStatus(id: string, ativo: boolean) {
+export async function updatePaymentMethodStatus(id: string, isActive: boolean) {
   const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/payment-methods/${id}/status`, {
     method: "PATCH",
     headers: getAuthHeaders(),
-    body: JSON.stringify({ ativo }),
+    body: JSON.stringify({ isActive }),
   });
 
-  return parseResponse<{ paymentMethod: PaymentMethodRecord }>(response);
+  const result = await parseResponse<{ paymentMethod: PaymentMethodApiRecord }>(response);
+
+  return {
+    paymentMethod: normalizePaymentMethod(result.paymentMethod),
+  };
 }

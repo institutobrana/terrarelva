@@ -210,12 +210,18 @@ const server = http.createServer(async (request, response) => {
       const statusMatch = requestUrl.pathname.match(/^\/admin\/auxiliary-tables\/payment-methods\/([^/]+)\/status$/);
       if (request.method === "PATCH" && statusMatch) {
         const body = await readJsonBody(request);
-        if (typeof body.ativo !== "boolean") {
-          sendJson(response, 400, { error: "Campo ativo obrigatorio." });
+        const isActive = typeof body.isActive === "boolean"
+          ? body.isActive
+          : typeof body.ativo === "boolean"
+            ? body.ativo
+            : null;
+
+        if (typeof isActive !== "boolean") {
+          sendJson(response, 400, { error: "Campo isActive obrigatorio." });
           return;
         }
 
-        const paymentMethod = await setPaymentMethodStatus(statusMatch[1], body.ativo);
+        const paymentMethod = await setPaymentMethodStatus(statusMatch[1], isActive);
         sendJson(response, 200, { paymentMethod });
         return;
       }
