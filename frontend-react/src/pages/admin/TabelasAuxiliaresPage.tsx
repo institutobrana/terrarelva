@@ -15,6 +15,7 @@ import {
   fetchPaymentMethods,
   type PaymentMethodRecord,
   updatePaymentMethod,
+  updatePaymentMethodStatus,
 } from "@/services/auxiliaryTables/auxiliaryTablesApi";
 
 type AuxiliaryFormKind = "appointment-reason" | "appointment-status" | "simple";
@@ -53,6 +54,7 @@ type AuxiliaryModalFormValues = {
   code?: string;
   name: string;
   description?: string;
+  isActive?: boolean;
   type?: "agendamento" | "compromisso";
   color?: string;
   productiveCommitment?: boolean;
@@ -219,44 +221,64 @@ export function TabelasAuxiliaresPage() {
   const isAppointmentStatusForm = activeTable.formKind === "appointment-status";
   const isEditing = editingRecordId !== null;
 
-  const columns: ColumnsType<AuxiliaryTableRow> = [
-    {
-      title: "Codigo",
-      dataIndex: "code",
-      key: "code",
-      width: 104,
-      render: (value: string | null) => <span className="auxiliary-table-code">{value ?? "Preparado"}</span>,
-    },
-    {
-      title: "Nome",
-      dataIndex: "name",
-      key: "name",
-      width: "34%",
-      render: (_, row) => (
-        <div className="auxiliary-table-name-cell">
-          <Typography.Text strong className="auxiliary-table-name-text">{row.name}</Typography.Text>
-          <span
-            className={`auxiliary-table-status-dot${row.isActive ? " is-active" : " is-inactive"}`}
-            aria-label={row.isActive ? "Ativo" : "Inativo"}
-            title={row.isActive ? "Ativo" : "Inativo"}
-          />
-        </div>
-      ),
-    },
-    {
-      title: "Descricao",
-      dataIndex: "description",
-      key: "description",
-      width: "100%",
-      render: (value: string | null) => {
-        if (isPaymentMethodsTable) {
-          return <span className="auxiliary-table-description">{value ?? ""}</span>;
-        }
-
-        return <span className="auxiliary-table-description">{value ?? "Preparado para backend"}</span>;
+  const columns: ColumnsType<AuxiliaryTableRow> = useMemo(() => {
+    const baseColumns: ColumnsType<AuxiliaryTableRow> = [
+      {
+        title: "Codigo",
+        dataIndex: "code",
+        key: "code",
+        width: 104,
+        render: (value: string | null) => <span className="auxiliary-table-code">{value ?? "Preparado"}</span>,
       },
-    },
-  ];
+      {
+        title: "Nome",
+        dataIndex: "name",
+        key: "name",
+        width: isPaymentMethodsTable ? "30%" : "34%",
+        render: (_, row) => (
+          <div className="auxiliary-table-name-cell">
+            <Typography.Text strong className="auxiliary-table-name-text">{row.name}</Typography.Text>
+          </div>
+        ),
+      },
+      {
+        title: "Descricao",
+        dataIndex: "description",
+        key: "description",
+        width: "100%",
+        render: (value: string | null) => {
+          if (isPaymentMethodsTable) {
+            return <span className="auxiliary-table-description">{value ?? ""}</span>;
+          }
+
+          return <span className="auxiliary-table-description">{value ?? "Preparado para backend"}</span>;
+        },
+      },
+    ];
+
+    if (!isPaymentMethodsTable) {
+      return baseColumns;
+    }
+
+    return [
+      ...baseColumns,
+      {
+        title: "",
+        dataIndex: "isActive",
+        key: "status",
+        width: 44,
+        align: "center",
+        className: "auxiliary-table-status-column",
+        render: (value: boolean) => (
+          <span
+            className={`auxiliary-table-status-dot${value ? " is-active" : " is-inactive"}`}
+            aria-label={value ? "Ativo" : "Inativo"}
+            title={value ? "Ativo" : "Inativo"}
+          />
+        ),
+      },
+    ];
+  }, [isPaymentMethodsTable]);
 
   const handleOpenModal = useCallback(() => {
     form.setFieldsValue(buildDefaultValues(activeTable));
@@ -304,6 +326,12 @@ export function TabelasAuxiliaresPage() {
 
         if (editingRecordId) {
           await updatePaymentMethod(editingRecordId, payload);
+          if (typeof values.isActive === "boolean") {
+            const currentPaymentMethod = paymentMethods.find((entry) => entry.id === editingRecordId);
+            if (!currentPaymentMethod || currentPaymentMethod.ativo !== values.isActive) {
+              await updatePaymentMethodStatus(editingRecordId, values.isActive);
+            }
+          }
           apiMessage.success("Forma de pagamento atualizada com sucesso.");
         } else {
           await createPaymentMethod(payload);
@@ -349,6 +377,7 @@ export function TabelasAuxiliaresPage() {
       code: paymentMethod.codigo,
       name: paymentMethod.nome,
       description: paymentMethod.descricao ?? "",
+      isActive: paymentMethod.ativo,
     });
     setIsModalOpen(true);
   });
@@ -542,6 +571,12 @@ export function TabelasAuxiliaresPage() {
               }
             />
           </Form.Item>
+
+          {isPaymentMethodsTable && isEditing ? (
+            <Form.Item name="isActive" valuePropName="checked">
+              <Checkbox>Forma de pagamento ativa</Checkbox>
+            </Form.Item>
+          ) : null}
 
           {isAppointmentReasonForm ? (
             <>
