@@ -67,6 +67,14 @@ type AuxiliaryModalFormValues = {
   considerPatientNoShow?: boolean;
 };
 
+type EditingPaymentMethodSnapshot = {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  isActive: boolean;
+};
+
 type PaymentMethodColumnKey = "code" | "name" | "description";
 
 type SortState = {
@@ -209,6 +217,7 @@ export function TabelasAuxiliaresPage() {
   const [isLoadingTable, setIsLoadingTable] = useState(false);
   const [tableError, setTableError] = useState<string | null>(null);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
+  const [editingPaymentMethod, setEditingPaymentMethod] = useState<EditingPaymentMethodSnapshot | null>(null);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodRecord[]>([]);
   const [openFilterColumn, setOpenFilterColumn] = useState<PaymentMethodColumnKey | null>(null);
   const [columnQueries, setColumnQueries] = useState<Record<PaymentMethodColumnKey, string>>({
@@ -298,10 +307,6 @@ export function TabelasAuxiliaresPage() {
   const isAppointmentReasonForm = activeTable.formKind === "appointment-reason";
   const isAppointmentStatusForm = activeTable.formKind === "appointment-status";
   const isEditing = editingRecordId !== null;
-  const selectedPaymentMethod = useMemo(
-    () => (isPaymentMethodsTable ? paymentMethods.find((entry) => entry.id === selectedRowId) ?? null : null),
-    [isPaymentMethodsTable, paymentMethods, selectedRowId],
-  );
 
   const renderFilterDropdown = useCallback((columnKey: PaymentMethodColumnKey, label: string) => (
     <div className="auxiliary-filter-menu" onClick={(event) => event.stopPropagation()}>
@@ -499,6 +504,7 @@ export function TabelasAuxiliaresPage() {
   const handleOpenModal = useCallback(() => {
     form.resetFields();
     setEditingRecordId(null);
+    setEditingPaymentMethod(null);
     setOpenFilterColumn(null);
     setIsModalOpen(true);
   }, [form]);
@@ -506,6 +512,7 @@ export function TabelasAuxiliaresPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingRecordId(null);
+    setEditingPaymentMethod(null);
     setOpenFilterColumn(null);
     form.resetFields();
   };
@@ -584,19 +591,20 @@ export function TabelasAuxiliaresPage() {
       return;
     }
 
-    if (!selectedPaymentMethod) {
+    if (!selectedRow) {
       apiMessage.error("Forma de pagamento selecionada nao encontrada.");
       return;
     }
 
-    setEditingRecordId(selectedPaymentMethod.id);
-    setOpenFilterColumn(null);
-    form.setFieldsValue({
-      code: selectedPaymentMethod.codigo,
-      name: selectedPaymentMethod.nome,
-      description: selectedPaymentMethod.descricao ?? "",
-      isActive: selectedPaymentMethod.isActive,
+    setEditingRecordId(selectedRow.id);
+    setEditingPaymentMethod({
+      id: selectedRow.id,
+      code: selectedRow.code ?? "",
+      name: selectedRow.name,
+      description: selectedRow.description ?? "",
+      isActive: selectedRow.isActive,
     });
+    setOpenFilterColumn(null);
     setIsModalOpen(true);
   });
 
@@ -673,21 +681,21 @@ export function TabelasAuxiliaresPage() {
     }
 
     if (isPaymentMethodsTable && editingRecordId) {
-      if (!selectedPaymentMethod) {
+      if (!editingPaymentMethod || editingPaymentMethod.id !== editingRecordId) {
         return;
       }
 
       form.setFieldsValue({
-        code: selectedPaymentMethod.codigo,
-        name: selectedPaymentMethod.nome,
-        description: selectedPaymentMethod.descricao ?? "",
-        isActive: selectedPaymentMethod.isActive,
+        code: editingPaymentMethod.code,
+        name: editingPaymentMethod.name,
+        description: editingPaymentMethod.description,
+        isActive: editingPaymentMethod.isActive,
       });
       return;
     }
 
     form.setFieldsValue(buildDefaultValues(activeTable));
-  }, [activeTable, editingRecordId, form, isModalOpen, isPaymentMethodsTable, selectedPaymentMethod]);
+  }, [activeTable, editingPaymentMethod, editingRecordId, form, isModalOpen, isPaymentMethodsTable]);
 
   return (
     <div className="module-page-shell users-admin-page">

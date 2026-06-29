@@ -92,6 +92,7 @@
   - a lista recarrega do backend apos salvar para refletir o estado persistido
   - o modal `Alterar forma de pagamento` volta a abrir preenchido com o item selecionado
   - o banco continua usando a coluna `is_active`, enquanto API e frontend foram alinhados em `isActive`
+  - o modal de edicao passou a usar a propria linha selecionada da grade como fonte unica de verdade para `isActive`, evitando divergencia entre bolinha e checkbox
 - Paleta de cores:
   - foi centralizada em uma constante reutilizavel com 44 cores
   - usada por `Motivos de agendamento` quando `Tipo = Compromisso`
