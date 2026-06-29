@@ -13,6 +13,7 @@
   - `Motivos de agendamento` -> `Novo motivo`
   - `Situacoes de agendamento` -> `Nova situacao`
   - `Segmentos de fornecedor` -> `Novo segmento`
+  - `Fases de procedimento` -> `Nova fase`
   - demais tabelas usam configuracao simples preparada por item
 
 ## Painel lateral interno
@@ -66,10 +67,20 @@
   - nao exibe `Tipo` nem `Compromisso produtivo`
   - reutiliza a mesma paleta de 44 cores em 3 linhas usada por `Motivos de agendamento`
   - os checkboxes iniciam desmarcados
+- Fases de procedimento:
+  - abre `Nova fase de procedimento`
+  - campos incluidos: `Codigo`, `Nome`, `Tempo de execucao` e `Descricao`
+  - `Tempo de execucao` foi implementado como campo numerico com unidade `min` a direita
+  - o campo aceita vazio nesta etapa, mas nao aceita valor negativo
+  - nao exibe `Tipo`, `Cor`, `Compromisso produtivo`, `Historico`, `Ocultar agendamento` nem `Considerar falta do paciente`
 - Paleta de cores:
   - foi centralizada em uma constante reutilizavel com 44 cores
   - usada por `Motivos de agendamento` quando `Tipo = Compromisso`
   - usada tambem por `Situacoes de agendamento`
+- Regra de tempo:
+  - `Tempo de execucao` representa minutos medios de execucao
+  - o valor e opcional nesta etapa
+  - quando preenchido, deve ser maior ou igual a zero
 - Persistencia:
   - nesta etapa nao houve persistencia real nem localStorage
   - `Gravar ...` faz validacao e submit controlado, mantendo o fluxo preparado para backend futuro
@@ -91,3 +102,7 @@
 10. Abrir o modal e validar `Codigo`, `Nome`, `Descricao`, `Historico`, `Cor`, `Ocultar agendamento` e `Considerar falta do paciente`.
 11. Confirmar que a paleta de 44 cores fica habilitada desde o inicio.
 12. Confirmar que os dois checkboxes iniciam desmarcados.
+13. Selecionar `Fases de procedimento` e confirmar o botao `Nova fase`.
+14. Abrir o modal e validar `Codigo`, `Nome`, `Tempo de execucao` e `Descricao`.
+15. Confirmar que `Tempo de execucao` e numerico e mostra `min` a direita.
+16. Confirmar ausencia de `Tipo`, `Cor`, `Compromisso produtivo`, `Historico`, `Ocultar agendamento` e `Considerar falta do paciente`.

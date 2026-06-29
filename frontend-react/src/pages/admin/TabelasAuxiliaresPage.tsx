@@ -3,14 +3,14 @@ import {
   EditOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, Modal, Select, Space, Table, Typography, message } from "antd";
+import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
 
-type AuxiliaryFormKind = "appointment-reason" | "appointment-status" | "simple";
+type AuxiliaryFormKind = "appointment-reason" | "appointment-status" | "procedure-phase" | "simple";
 
 type AuxiliaryField =
   | "code"
@@ -21,7 +21,8 @@ type AuxiliaryField =
   | "productiveCommitment"
   | "history"
   | "hideAppointment"
-  | "considerPatientNoShow";
+  | "considerPatientNoShow"
+  | "executionTimeMinutes";
 
 type AuxiliaryTableDefinition = {
   id: string;
@@ -52,6 +53,7 @@ type AuxiliaryModalFormValues = {
   history?: string;
   hideAppointment?: boolean;
   considerPatientNoShow?: boolean;
+  executionTimeMinutes?: number | null;
 };
 
 const auxiliaryTables: AuxiliaryTableDefinition[] = [
@@ -131,9 +133,9 @@ const auxiliaryTables: AuxiliaryTableDefinition[] = [
     emptyMessage: "Nenhuma fase de procedimento carregada ainda.",
     createLabel: "Nova fase",
     createTitle: "Nova fase de procedimento",
-    submitLabel: "Gravar fase",
-    formKind: "simple",
-    fields: ["code", "name", "description"],
+    submitLabel: "Gravar fases",
+    formKind: "procedure-phase",
+    fields: ["code", "name", "executionTimeMinutes", "description"],
   },
   {
     id: "grupos-material",
@@ -258,6 +260,15 @@ function buildDefaultValues(table: AuxiliaryTableDefinition): AuxiliaryModalForm
     };
   }
 
+  if (table.formKind === "procedure-phase") {
+    return {
+      code: "",
+      name: "",
+      executionTimeMinutes: null,
+      description: "",
+    };
+  }
+
   return {
     code: "",
     name: "",
@@ -283,6 +294,7 @@ export function TabelasAuxiliaresPage() {
   const isCommitmentType = selectedReasonType === "compromisso";
   const isAppointmentReasonForm = activeTable.formKind === "appointment-reason";
   const isAppointmentStatusForm = activeTable.formKind === "appointment-status";
+  const isProcedurePhaseForm = activeTable.formKind === "procedure-phase";
 
   const columns: ColumnsType<AuxiliaryTableRow> = [
     {
@@ -448,7 +460,7 @@ export function TabelasAuxiliaresPage() {
         centered
         width={760}
         destroyOnHidden
-        className={`terra-password-modal client-modal auxiliary-modal${isAppointmentStatusForm ? " auxiliary-status-modal" : ""}`}
+        className={`terra-password-modal client-modal auxiliary-modal${isAppointmentStatusForm || isProcedurePhaseForm ? " auxiliary-status-modal" : ""}`}
       >
         <div className="terra-password-modal-header">
           <Typography.Title level={3} className="terra-password-modal-title">
@@ -473,13 +485,54 @@ export function TabelasAuxiliaresPage() {
             label="Nome"
             rules={[{ required: true, message: "Informe o nome." }]}
           >
-            <Input placeholder={isAppointmentStatusForm ? "Nome da situacao" : "Nome do cadastro"} />
+            <Input
+              placeholder={
+                isAppointmentStatusForm
+                  ? "Nome da situacao"
+                  : isProcedurePhaseForm
+                    ? "Nome da fase"
+                    : "Nome do cadastro"
+              }
+            />
           </Form.Item>
+
+          {isProcedurePhaseForm ? (
+            <Form.Item
+              name="executionTimeMinutes"
+              label="Tempo de execucao"
+              rules={[
+                {
+                  validator: (_, value) => {
+                    if (value === null || value === undefined || value === "") {
+                      return Promise.resolve();
+                    }
+
+                    if (Number(value) >= 0) {
+                      return Promise.resolve();
+                    }
+
+                    return Promise.reject(new Error("Informe um tempo maior ou igual a zero."));
+                  },
+                },
+              ]}
+            >
+              <div className="auxiliary-duration-field">
+                <InputNumber min={0} precision={0} placeholder="Tempo medio de execucao" className="auxiliary-duration-input" />
+                <span className="auxiliary-duration-unit">min</span>
+              </div>
+            </Form.Item>
+          ) : null}
 
           <Form.Item name="description" label="Descricao">
             <Input.TextArea
               rows={3}
-              placeholder={isAppointmentStatusForm ? "Descricao da situacao" : "Descricao operacional"}
+              placeholder={
+                isAppointmentStatusForm
+                  ? "Descricao da situacao"
+                  : isProcedurePhaseForm
+                    ? "Descricao da fase"
+                    : "Descricao operacional"
+              }
             />
           </Form.Item>
 
@@ -577,7 +630,7 @@ export function TabelasAuxiliaresPage() {
             </>
           ) : null}
 
-          <div className={`terra-password-modal-actions client-modal-actions${isAppointmentStatusForm ? " auxiliary-status-actions" : ""}`}>
+          <div className={`terra-password-modal-actions client-modal-actions${isAppointmentStatusForm || isProcedurePhaseForm ? " auxiliary-status-actions" : ""}`}>
             <Button type="primary" htmlType="submit" loading={isSubmitting}>
               {activeTable.submitLabel}
             </Button>
