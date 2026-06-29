@@ -9,25 +9,13 @@ import {
   SearchOutlined,
   SolutionOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, DatePicker, Dropdown, Form, Input, Modal, Select, Space, Table, Tabs, Typography, message } from "antd";
+import { Alert, Button, Checkbox, DatePicker, Dropdown, Form, Input, Modal, Select, Space, Table, Tabs, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
-
-type ClientRow = {
-  id: string;
-  name: string;
-  phone: string | null;
-  code: string | null;
-  birthDate: string | null;
-  status: string | null;
-  provider: string | null;
-  isActive: boolean;
-};
-
-const preparedRows: ClientRow[] = [];
+import { fetchClients, RegistryApiError, type ClientRecord } from "@/services/registry/registryApi";
 
 const clientSearchCriteria = [
   { key: "nome-cliente", label: "Nome do cliente" },
@@ -150,19 +138,46 @@ function formatDate(value: string | null) {
 export function CadastroClientesPage() {
   const { setShellBandContent } = useAdminShellBand();
   const [form] = Form.useForm<ClientFormValues>();
+  const [clients, setClients] = useState<ClientRecord[]>([]);
   const [showInactive, setShowInactive] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [searchCriterion, setSearchCriterion] = useState("nome-cliente");
   const [search, setSearch] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiMessage, messageContext] = message.useMessage();
+
+  const loadClients = useEffectEvent(async () => {
+    setIsLoading(true);
+    setLoadError(null);
+
+    try {
+      const payload = await fetchClients();
+      setClients(payload.clients);
+      setSelectedRowId((currentSelection) => (
+        payload.clients.some((entry) => entry.id === currentSelection) ? currentSelection : payload.clients[0]?.id ?? null
+      ));
+    } catch (error) {
+      const nextMessage = error instanceof RegistryApiError || error instanceof Error
+        ? error.message
+        : "Nao foi possivel carregar os clientes.";
+      setLoadError(nextMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  });
+
+  useEffect(() => {
+    void loadClients();
+  }, []);
 
   const visibleRows = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return preparedRows.filter((row) => {
+    return clients.filter((row) => {
       if (!showInactive && !row.isActive) {
         return false;
       }
@@ -171,12 +186,19 @@ export function CadastroClientesPage() {
         return true;
       }
 
-      return [row.name, row.phone ?? "", row.code ?? "", row.provider ?? ""].join(" ").toLowerCase().includes(normalizedSearch);
+      return [
+        row.fullName,
+        row.primaryPhone ?? "",
+        row.internalCode ?? "",
+        row.responsibleName ?? "",
+        row.primaryEmail ?? "",
+        row.cpf ?? "",
+      ].join(" ").toLowerCase().includes(normalizedSearch);
     });
-  }, [search, showInactive]);
+  }, [clients, search, showInactive]);
 
   const selectedRow = visibleRows.find((row) => row.id === selectedRowId) ?? null;
-  const selectedLabel = selectedRow?.name ?? "Nenhum cliente selecionado";
+  const selectedLabel = selectedRow?.fullName ?? "Nenhum cliente selecionado";
   const disableSelectionActions = !selectedRow;
 
   const contactPlaceholderColumns: ColumnsType<ContactPlaceholderRow> = [
@@ -212,28 +234,28 @@ export function CadastroClientesPage() {
     }
   }
 
-  const columns: ColumnsType<ClientRow> = [
+  const columns: ColumnsType<ClientRecord> = [
     {
       title: "Cliente",
-      dataIndex: "name",
+      dataIndex: "fullName",
       key: "name",
       render: (_, row) => (
         <Space direction="vertical" size={2}>
-          <Typography.Text strong>{row.name}</Typography.Text>
+          <Typography.Text strong>{row.fullName}</Typography.Text>
           <Typography.Text type="secondary">{row.isActive ? "Ativo" : "Inativo"}</Typography.Text>
         </Space>
       ),
     },
     {
       title: "Telefone",
-      dataIndex: "phone",
+      dataIndex: "primaryPhone",
       key: "phone",
       width: 160,
       render: (value: string | null) => value ?? "Preparado",
     },
     {
       title: "Codigo",
-      dataIndex: "code",
+      dataIndex: "internalCode",
       key: "code",
       width: 130,
       render: (value: string | null) => value ?? "Preparado",
@@ -247,14 +269,14 @@ export function CadastroClientesPage() {
     },
     {
       title: "Situacao",
-      dataIndex: "status",
+      dataIndex: "statusText",
       key: "status",
       width: 140,
       render: (value: string | null) => value ?? "Preparado",
     },
     {
       title: "Prestador",
-      dataIndex: "provider",
+      dataIndex: "responsibleName",
       key: "provider",
       width: 180,
       render: (value: string | null) => value ?? "Preparado para backend",
@@ -283,15 +305,15 @@ export function CadastroClientesPage() {
                 }
 
                 form.setFieldsValue({
-                  name: selectedRow.name,
+                  name: selectedRow.fullName,
                   sex: "selecionar",
                   birthDate: undefined,
-                  code: selectedRow.code ?? undefined,
-                  cpf: undefined,
-                  documentType: undefined,
-                  documentNumber: undefined,
-                  responsibleName: undefined,
-                  status: selectedRow.status ?? "ativo",
+                  code: selectedRow.internalCode ?? undefined,
+                  cpf: selectedRow.cpf ?? undefined,
+                  documentType: selectedRow.documentTypeText ?? undefined,
+                  documentNumber: selectedRow.documentNumber ?? undefined,
+                  responsibleName: selectedRow.responsibleName ?? undefined,
+                  status: selectedRow.statusText ?? "ativo",
                   benefitPrimary: "sem-beneficio",
                   beneficiaryCode: undefined,
                   benefitValidUntil: undefined,
@@ -314,9 +336,9 @@ export function CadastroClientesPage() {
                   maritalStatus: undefined,
                   spouseName: undefined,
                   indicationType: undefined,
-                  provider: selectedRow.provider ?? undefined,
+                  provider: undefined,
                   publicVisibility: false,
-                  notes: undefined,
+                  notes: selectedRow.notes ?? undefined,
                 });
                 setIsEditModalOpen(true);
               }}
@@ -386,11 +408,16 @@ export function CadastroClientesPage() {
     <div className="module-page-shell users-admin-page">
       {messageContext}
 
+      {loadError ? (
+        <Alert type="error" showIcon message="Falha ao carregar clientes" description={loadError} />
+      ) : null}
+
       <ModuleSectionCard>
         <div className="module-table-shell">
           <div className="users-grid-shell">
-            <Table<ClientRow>
+            <Table<ClientRecord>
               rowKey="id"
+              loading={isLoading}
               className="module-table users-admin-table"
               columns={columns}
               dataSource={visibleRows}

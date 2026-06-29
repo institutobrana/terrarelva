@@ -13,6 +13,8 @@ import {
   listInternalUsers,
   setInternalUserAccess,
 } from "./services/authService.js";
+import { listClients } from "./services/clientsService.js";
+import { listSuppliers } from "./services/suppliersService.js";
 import { readJsonBody, sendJson } from "./utils/http.js";
 
 const server = http.createServer(async (request, response) => {
@@ -86,6 +88,32 @@ const server = http.createServer(async (request, response) => {
 
       sendJson(response, 200, { success: true });
       return;
+    }
+
+    if (request.url?.startsWith("/admin/clients")) {
+      const claims = await authenticate(request, response);
+      if (!claims) {
+        return;
+      }
+
+      if (request.method === "GET" && request.url === "/admin/clients") {
+        const payload = await listClients();
+        sendJson(response, 200, payload);
+        return;
+      }
+    }
+
+    if (request.url?.startsWith("/admin/suppliers")) {
+      const claims = await authenticate(request, response);
+      if (!claims) {
+        return;
+      }
+
+      if (request.method === "GET" && request.url === "/admin/suppliers") {
+        const payload = await listSuppliers();
+        sendJson(response, 200, payload);
+        return;
+      }
     }
 
     if (request.url?.startsWith("/admin/users")) {

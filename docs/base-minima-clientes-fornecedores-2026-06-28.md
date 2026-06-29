@@ -93,3 +93,14 @@ Todos os relacionamentos usam `ON DELETE CASCADE`.
   - `SELECT trade_name, segment_text, cpf_cnpj FROM suppliers;`
 - Listar e-mails de fornecedores:
   - `SELECT supplier_id, email_type_text, email FROM supplier_emails;`
+
+## Etapa funcional posterior
+
+- Endpoints protegidos criados:
+  - `GET /admin/clients`
+  - `GET /admin/suppliers`
+- Os retornos trazem:
+  - dados principais das tabelas base
+  - telefone principal resumido
+  - e-mail principal resumido
+- As grades de `Cadastro -> Clientes` e `Cadastro -> Fornecedores` passaram a consumir esses endpoints reais.

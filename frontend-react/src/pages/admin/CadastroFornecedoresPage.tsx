@@ -6,23 +6,13 @@ import {
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, Modal, Select, Table, Tabs, Typography, message } from "antd";
+import { Alert, Button, Checkbox, Form, Input, Modal, Select, Table, Tabs, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
-
-type SupplierRow = {
-  id: string;
-  name: string;
-  segment: string | null;
-  document: string | null;
-  phone: string | null;
-  email: string | null;
-};
-
-const preparedRows: SupplierRow[] = [];
+import { fetchSuppliers, RegistryApiError, type SupplierRecord } from "@/services/registry/registryApi";
 
 const segmentOptions = [
   { label: "Todos os segmentos", value: "all" },
@@ -83,28 +73,55 @@ const preparedEmails: ContactRow[] = [];
 export function CadastroFornecedoresPage() {
   const { setShellBandContent } = useAdminShellBand();
   const [form] = Form.useForm<SupplierFormValues>();
+  const [suppliers, setSuppliers] = useState<SupplierRecord[]>([]);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [selectedSegment, setSelectedSegment] = useState("all");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiMessage, messageContext] = message.useMessage();
+
+  const loadSuppliers = useEffectEvent(async () => {
+    setIsLoading(true);
+    setLoadError(null);
+
+    try {
+      const payload = await fetchSuppliers();
+      setSuppliers(payload.suppliers);
+      setSelectedRowId((currentSelection) => (
+        payload.suppliers.some((entry) => entry.id === currentSelection) ? currentSelection : payload.suppliers[0]?.id ?? null
+      ));
+    } catch (error) {
+      const nextMessage = error instanceof RegistryApiError || error instanceof Error
+        ? error.message
+        : "Nao foi possivel carregar os fornecedores.";
+      setLoadError(nextMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  });
+
+  useEffect(() => {
+    void loadSuppliers();
+  }, []);
 
   const visibleRows = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return preparedRows.filter((row) => {
-      const matchesSegment = selectedSegment === "all" || row.segment === selectedSegment;
+    return suppliers.filter((row) => {
+      const matchesSegment = selectedSegment === "all" || row.segmentText === selectedSegment;
       const matchesSearch = !normalizedSearch
-        || [row.name, row.segment ?? "", row.document ?? "", row.phone ?? "", row.email ?? ""]
+        || [row.tradeName, row.segmentText ?? "", row.cpfCnpj ?? "", row.primaryPhone ?? "", row.primaryEmail ?? ""]
           .join(" ")
           .toLowerCase()
           .includes(normalizedSearch);
 
       return matchesSegment && matchesSearch;
     });
-  }, [search, selectedSegment]);
+  }, [search, selectedSegment, suppliers]);
 
   const selectedRow = visibleRows.find((row) => row.id === selectedRowId) ?? null;
   const disableSelectionActions = !selectedRow;
@@ -143,37 +160,37 @@ export function CadastroFornecedoresPage() {
     }
   }
 
-  const columns: ColumnsType<SupplierRow> = [
+  const columns: ColumnsType<SupplierRecord> = [
     {
       title: "Nome do fornecedor",
-      dataIndex: "name",
+      dataIndex: "tradeName",
       key: "name",
       render: (value: string) => <Typography.Text strong>{value}</Typography.Text>,
     },
     {
       title: "Segmento",
-      dataIndex: "segment",
+      dataIndex: "segmentText",
       key: "segment",
       width: 180,
       render: (value: string | null) => value ?? "Preparado",
     },
     {
       title: "CPF/CNPJ",
-      dataIndex: "document",
+      dataIndex: "cpfCnpj",
       key: "document",
       width: 180,
       render: (value: string | null) => value ?? "Preparado",
     },
     {
       title: "Telefone",
-      dataIndex: "phone",
+      dataIndex: "primaryPhone",
       key: "phone",
       width: 160,
       render: (value: string | null) => value ?? "Preparado",
     },
     {
       title: "E-mail",
-      dataIndex: "email",
+      dataIndex: "primaryEmail",
       key: "email",
       width: 220,
       render: (value: string | null) => value ?? "Preparado para backend",
@@ -202,15 +219,15 @@ export function CadastroFornecedoresPage() {
                 }
 
                 form.setFieldsValue({
-                  supplierName: selectedRow.name,
-                  companyName: undefined,
-                  document: selectedRow.document ?? undefined,
-                  stateRegistration: undefined,
-                  portal: undefined,
-                  segment: selectedRow.segment ?? undefined,
-                  paymentDetails: undefined,
-                  notes: undefined,
-                  isActive: true,
+                  supplierName: selectedRow.tradeName,
+                  companyName: selectedRow.companyName ?? undefined,
+                  document: selectedRow.cpfCnpj ?? undefined,
+                  stateRegistration: selectedRow.stateRegistration ?? undefined,
+                  portal: selectedRow.website ?? undefined,
+                  segment: selectedRow.segmentText ?? undefined,
+                  paymentDetails: selectedRow.paymentDetails ?? undefined,
+                  notes: selectedRow.notes ?? undefined,
+                  isActive: selectedRow.isActive,
                   phonePrimaryType: undefined,
                   phonePrimaryDdd: undefined,
                   phonePrimaryNumber: undefined,
@@ -220,7 +237,7 @@ export function CadastroFornecedoresPage() {
                   phoneSecondaryNumber: undefined,
                   phoneSecondaryExtension: undefined,
                   emailPrimaryType: undefined,
-                  emailPrimaryAddress: selectedRow.email ?? undefined,
+                  emailPrimaryAddress: selectedRow.primaryEmail ?? undefined,
                 });
                 setIsEditModalOpen(true);
               }}
@@ -266,11 +283,16 @@ export function CadastroFornecedoresPage() {
     <div className="module-page-shell users-admin-page">
       {messageContext}
 
+      {loadError ? (
+        <Alert type="error" showIcon message="Falha ao carregar fornecedores" description={loadError} />
+      ) : null}
+
       <ModuleSectionCard>
         <div className="module-table-shell">
           <div className="users-grid-shell">
-            <Table<SupplierRow>
+            <Table<SupplierRecord>
               rowKey="id"
+              loading={isLoading}
               className="module-table users-admin-table"
               columns={columns}
               dataSource={visibleRows}
