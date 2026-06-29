@@ -772,41 +772,6 @@ a {
   margin: 0 0 12px;
 }
 
-.auxiliary-duration-field {
-  display: flex;
-  align-items: stretch;
-  width: min(280px, 100%);
-}
-
-.auxiliary-duration-input {
-  flex: 1;
-}
-
-.auxiliary-duration-input .ant-input-number {
-  width: 100%;
-}
-
-.auxiliary-duration-input.ant-input-number {
-  width: 100%;
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-}
-
-.auxiliary-duration-unit {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 48px;
-  padding: 0 12px;
-  border: 1px solid rgba(145, 136, 113, 0.72);
-  border-left: 0;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-  background: rgba(240, 235, 227, 0.92);
-  color: var(--shell-brand-strong);
-  font-size: 0.78rem;
-  font-weight: 700;
-}
 
 .bank-account-form .ant-input,
 .bank-account-form .ant-select-selector {

@@ -9,32 +9,37 @@
 - O modulo usa o mesmo slot `terra-shell-band` do shell admin.
 - O botao de criacao nao e fixo para a tela inteira.
 - A barra superior agora muda conforme a tabela auxiliar selecionada na lateral.
-- Exemplos implementados nesta etapa:
+- Lista lateral final valida para o Terra Relva:
   - `Motivos de agendamento` -> `Novo motivo`
   - `Situacoes de agendamento` -> `Nova situacao`
+  - `Tipos de indicacao` -> `Novo tipo`
   - `Segmentos de fornecedor` -> `Novo segmento`
-  - `Fases de procedimento` -> `Nova fase`
-  - demais tabelas usam configuracao simples preparada por item
+  - `Formas de pagamento` -> `Nova forma`
+  - `Grupos de material` -> `Novo grupo`
+  - `Ocupacao/profissao do cliente` -> `Nova ocupacao`
 
 ## Painel lateral interno
 
-- Foi criado um painel lateral interno com a lista inicial de tabelas auxiliares:
+- A lateral foi ajustada para exibir somente as tabelas auxiliares validas do Terra Relva:
   - Motivos de agendamento
-  - Tipos de indicacao
-  - Motivos de retorno
   - Situacoes de agendamento
+  - Tipos de indicacao
   - Segmentos de fornecedor
   - Formas de pagamento
-  - Especialidades
-  - Fases de procedimento
   - Grupos de material
+- Ocupacao/profissao do cliente
+- Tabelas removidas/ocultadas da lateral nesta etapa:
+  - Motivos de retorno
   - Motivos de finalizacao do tratamento
   - Solucoes irrigadoras
+  - Especialidades
   - Cimentos obturadores
   - Limas memorias
   - Sistemas de instrumentacao
   - Medicacoes intracanais
-  - Ocupacao/profissao do paciente
+  - Fases de procedimento
+- Ajuste de linguagem:
+  - `Ocupacao/profissao do paciente` foi substituido por `Ocupacao/profissao do cliente`
 
 ## Grade principal
 
@@ -67,16 +72,10 @@
   - nao exibe `Tipo`, `Cor` nem `Compromisso produtivo`
 - Situacoes de agendamento:
   - abre `Nova situacao de agendamento`
-  - campos incluidos: `Codigo`, `Nome`, `Descricao`, `Historico`, `Cor`, `Ocultar agendamento` e `Considerar falta do paciente`
+  - campos incluidos: `Codigo`, `Nome`, `Descricao`, `Historico`, `Cor`, `Ocultar agendamento` e `Considerar falta do cliente`
   - nao exibe `Tipo` nem `Compromisso produtivo`
   - reutiliza a mesma paleta de 44 cores em 3 linhas usada por `Motivos de agendamento`
   - os checkboxes iniciam desmarcados
-- Fases de procedimento:
-  - abre `Nova fase de procedimento`
-  - campos incluidos: `Codigo`, `Nome`, `Tempo de execucao` e `Descricao`
-  - `Tempo de execucao` foi implementado como campo numerico com unidade `min` a direita
-  - o campo aceita vazio nesta etapa, mas nao aceita valor negativo
-  - nao exibe `Tipo`, `Cor`, `Compromisso produtivo`, `Historico`, `Ocultar agendamento` nem `Considerar falta do paciente`
 - Formas de pagamento:
   - abre `Nova forma de pagamento`
   - persiste `id`, `codigo`, `nome`, `descricao`, `ativo`, `criadoEm` e `atualizadoEm`
@@ -89,10 +88,6 @@
   - foi centralizada em uma constante reutilizavel com 44 cores
   - usada por `Motivos de agendamento` quando `Tipo = Compromisso`
   - usada tambem por `Situacoes de agendamento`
-- Regra de tempo:
-  - `Tempo de execucao` representa minutos medios de execucao
-  - o valor e opcional nesta etapa
-  - quando preenchido, deve ser maior ou igual a zero
 - Persistencia:
   - nao foi usado `localStorage`
   - o backend segue o padrao atual do projeto com `pg`, migrations SQL e camada `repository/service`
@@ -100,12 +95,12 @@
   - tabelas auxiliares simples devem seguir o padrao: `id`, `codigo`, `nome`, `descricao`, `ativo`, `criadoEm`, `atualizadoEm`
   - tabelas com campos especificos permanecem separadas:
     - `Motivos de agendamento`: `tipo`, `cor`, `compromissoProdutivo`
-    - `Situacoes de agendamento`: `historico`, `cor`, `ocultarAgendamento`, `considerarFaltaPaciente`
-    - `Fases de procedimento`: `tempoExecucaoMinutos`
+    - `Situacoes de agendamento`: `historico`, `cor`, `ocultarAgendamento`, `considerarFaltaCliente`
 - Preparado para evolucao:
   - ativacao/inativacao no frontend de `Formas de pagamento`
   - dados reais para as demais tabelas auxiliares
   - cadastro e edicao persistentes das tabelas ainda em placeholder
+  - renomeacao tecnica interna de `considerarFaltaPaciente` para `considerarFaltaCliente`, se essa troca for feita no backend sem risco
 
 ## Backend desta etapa
 
@@ -125,24 +120,27 @@
 ## Como validar no navegador
 
 1. Abrir `Configuracoes -> Tabelas auxiliares`.
-2. Selecionar `Motivos de agendamento`.
-3. Confirmar que a barra superior mostra `Novo motivo`.
-4. Abrir o modal e validar `Codigo`, `Nome`, `Descricao`, `Tipo`, `Cor` e `Compromisso produtivo`.
-5. Em `Agendamento`, confirmar paleta apagada/desabilitada, checkbox desabilitado/desmarcado e ausencia de obrigatoriedade de cor.
-6. Em `Compromisso`, confirmar paleta habilitada com 44 cores, checkbox habilitado e marcado por padrao e obrigatoriedade de cor.
-7. Fechar o modal, selecionar `Segmentos de fornecedor` e confirmar o botao `Novo segmento`.
-8. Abrir o modal e validar que aparecem apenas `Codigo`, `Nome` e `Descricao`.
-9. Selecionar `Situacoes de agendamento` e confirmar o botao `Nova situacao`.
-10. Abrir o modal e validar `Codigo`, `Nome`, `Descricao`, `Historico`, `Cor`, `Ocultar agendamento` e `Considerar falta do paciente`.
-11. Confirmar que a paleta de 44 cores fica habilitada desde o inicio.
-12. Confirmar que os dois checkboxes iniciam desmarcados.
-13. Selecionar `Fases de procedimento` e confirmar o botao `Nova fase`.
-14. Abrir o modal e validar `Codigo`, `Nome`, `Tempo de execucao` e `Descricao`.
-15. Confirmar que `Tempo de execucao` e numerico e mostra `min` a direita.
-16. Confirmar ausencia de `Tipo`, `Cor`, `Compromisso produtivo`, `Historico`, `Ocultar agendamento` e `Considerar falta do paciente`.
-17. Selecionar `Formas de pagamento` e confirmar o botao `Nova forma`.
-18. Abrir o modal `Nova forma de pagamento`.
-19. Preencher `Codigo: PIX`, `Nome: Pix` e `Descricao: Pagamento via Pix`.
-20. Gravar e confirmar que o item aparece na lista.
-21. Recarregar a pagina e confirmar que o registro continua visivel, vindo do banco.
-22. Selecionar a linha, clicar em `Editar`, alterar os dados e confirmar persistencia apos novo carregamento.
+2. Confirmar que a lateral exibe somente:
+   - `Motivos de agendamento`
+   - `Situacoes de agendamento`
+   - `Tipos de indicacao`
+   - `Segmentos de fornecedor`
+   - `Formas de pagamento`
+   - `Grupos de material`
+   - `Ocupacao/profissao do cliente`
+3. Confirmar que nao aparecem mais:
+   - `Motivos de retorno`
+   - `Motivos de finalizacao do tratamento`
+   - `Solucoes irrigadoras`
+   - `Especialidades`
+   - `Cimentos obturadores`
+   - `Limas memorias`
+   - `Sistemas de instrumentacao`
+   - `Medicacoes intracanais`
+   - `Fases de procedimento`
+4. Selecionar `Formas de pagamento` e confirmar o botao `Nova forma`.
+5. Abrir o modal `Nova forma de pagamento`.
+6. Preencher `Codigo: PIX`, `Nome: Pix` e `Descricao: Pagamento via Pix`.
+7. Gravar e confirmar que o item aparece na lista.
+8. Recarregar a pagina e confirmar que o registro continua visivel, vindo do banco.
+9. Selecionar a linha, clicar em `Editar`, alterar os dados e confirmar persistencia apos novo carregamento.

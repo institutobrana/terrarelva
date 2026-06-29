@@ -3,7 +3,7 @@ import {
   EditOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Alert, Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Typography, message } from "antd";
+import { Alert, Button, Checkbox, Form, Input, Modal, Select, Space, Table, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useCallback, useEffect, useEffectEvent, useMemo, useState } from "react";
 
@@ -17,7 +17,7 @@ import {
   updatePaymentMethod,
 } from "@/services/auxiliaryTables/auxiliaryTablesApi";
 
-type AuxiliaryFormKind = "appointment-reason" | "appointment-status" | "procedure-phase" | "simple";
+type AuxiliaryFormKind = "appointment-reason" | "appointment-status" | "simple";
 
 type AuxiliaryField =
   | "code"
@@ -28,8 +28,7 @@ type AuxiliaryField =
   | "productiveCommitment"
   | "history"
   | "hideAppointment"
-  | "considerPatientNoShow"
-  | "executionTimeMinutes";
+  | "considerPatientNoShow";
 
 type AuxiliaryTableDefinition = {
   id: string;
@@ -60,7 +59,6 @@ type AuxiliaryModalFormValues = {
   history?: string;
   hideAppointment?: boolean;
   considerPatientNoShow?: boolean;
-  executionTimeMinutes?: number | null;
 };
 
 const auxiliaryTables: AuxiliaryTableDefinition[] = [
@@ -75,26 +73,6 @@ const auxiliaryTables: AuxiliaryTableDefinition[] = [
     fields: ["code", "name", "description", "type", "color", "productiveCommitment"],
   },
   {
-    id: "tipos-indicacao",
-    label: "Tipos de indicacao",
-    emptyMessage: "Nenhum tipo de indicacao carregado ainda.",
-    createLabel: "Novo tipo",
-    createTitle: "Novo tipo de indicacao",
-    submitLabel: "Gravar tipo",
-    formKind: "simple",
-    fields: ["code", "name", "description"],
-  },
-  {
-    id: "motivos-retorno",
-    label: "Motivos de retorno",
-    emptyMessage: "Nenhum motivo de retorno carregado ainda.",
-    createLabel: "Novo motivo",
-    createTitle: "Novo motivo de retorno",
-    submitLabel: "Gravar motivo",
-    formKind: "simple",
-    fields: ["code", "name", "description"],
-  },
-  {
     id: "situacoes-agendamento",
     label: "Situacoes de agendamento",
     emptyMessage: "Nenhuma situacao de agendamento carregada ainda.",
@@ -103,6 +81,16 @@ const auxiliaryTables: AuxiliaryTableDefinition[] = [
     submitLabel: "Gravar situacao",
     formKind: "appointment-status",
     fields: ["code", "name", "description", "history", "color", "hideAppointment", "considerPatientNoShow"],
+  },
+  {
+    id: "tipos-indicacao",
+    label: "Tipos de indicacao",
+    emptyMessage: "Nenhum tipo de indicacao carregado ainda.",
+    createLabel: "Novo tipo",
+    createTitle: "Novo tipo de indicacao",
+    submitLabel: "Gravar tipo",
+    formKind: "simple",
+    fields: ["code", "name", "description"],
   },
   {
     id: "segmentos-fornecedor",
@@ -125,26 +113,6 @@ const auxiliaryTables: AuxiliaryTableDefinition[] = [
     fields: ["code", "name", "description"],
   },
   {
-    id: "especialidades",
-    label: "Especialidades",
-    emptyMessage: "Nenhuma especialidade carregada ainda.",
-    createLabel: "Nova especialidade",
-    createTitle: "Nova especialidade",
-    submitLabel: "Gravar especialidade",
-    formKind: "simple",
-    fields: ["code", "name", "description"],
-  },
-  {
-    id: "fases-procedimento",
-    label: "Fases de procedimento",
-    emptyMessage: "Nenhuma fase de procedimento carregada ainda.",
-    createLabel: "Nova fase",
-    createTitle: "Nova fase de procedimento",
-    submitLabel: "Gravar fases",
-    formKind: "procedure-phase",
-    fields: ["code", "name", "executionTimeMinutes", "description"],
-  },
-  {
     id: "grupos-material",
     label: "Grupos de material",
     emptyMessage: "Nenhum grupo de material carregado ainda.",
@@ -155,71 +123,11 @@ const auxiliaryTables: AuxiliaryTableDefinition[] = [
     fields: ["code", "name", "description"],
   },
   {
-    id: "motivos-finalizacao",
-    label: "Motivos de finalizacao do tratamento",
-    emptyMessage: "Nenhum motivo de finalizacao carregado ainda.",
-    createLabel: "Novo motivo",
-    createTitle: "Novo motivo de finalizacao do tratamento",
-    submitLabel: "Gravar motivo",
-    formKind: "simple",
-    fields: ["code", "name", "description"],
-  },
-  {
-    id: "solucoes-irrigadoras",
-    label: "Solucoes irrigadoras",
-    emptyMessage: "Nenhuma solucao irrigadora carregada ainda.",
-    createLabel: "Nova solucao",
-    createTitle: "Nova solucao irrigadora",
-    submitLabel: "Gravar solucao",
-    formKind: "simple",
-    fields: ["code", "name", "description"],
-  },
-  {
-    id: "cimentos-obturadores",
-    label: "Cimentos obturadores",
-    emptyMessage: "Nenhum cimento obturador carregado ainda.",
-    createLabel: "Novo cimento",
-    createTitle: "Novo cimento obturador",
-    submitLabel: "Gravar cimento",
-    formKind: "simple",
-    fields: ["code", "name", "description"],
-  },
-  {
-    id: "limas-memorias",
-    label: "Limas memorias",
-    emptyMessage: "Nenhuma lima memoria carregada ainda.",
-    createLabel: "Nova lima",
-    createTitle: "Nova lima memoria",
-    submitLabel: "Gravar lima",
-    formKind: "simple",
-    fields: ["code", "name", "description"],
-  },
-  {
-    id: "sistemas-instrumentacao",
-    label: "Sistemas de instrumentacao",
-    emptyMessage: "Nenhum sistema de instrumentacao carregado ainda.",
-    createLabel: "Novo sistema",
-    createTitle: "Novo sistema de instrumentacao",
-    submitLabel: "Gravar sistema",
-    formKind: "simple",
-    fields: ["code", "name", "description"],
-  },
-  {
-    id: "medicacoes-intracanais",
-    label: "Medicacoes intracanais",
-    emptyMessage: "Nenhuma medicacao intracanal carregada ainda.",
-    createLabel: "Nova medicacao",
-    createTitle: "Nova medicacao intracanal",
-    submitLabel: "Gravar medicacao",
-    formKind: "simple",
-    fields: ["code", "name", "description"],
-  },
-  {
-    id: "ocupacao-paciente",
-    label: "Ocupacao/profissao do paciente",
-    emptyMessage: "Nenhuma ocupacao/profissao carregada ainda.",
+    id: "ocupacao-cliente",
+    label: "Ocupacao/profissao do cliente",
+    emptyMessage: "Nenhuma ocupacao/profissao do cliente carregada ainda.",
     createLabel: "Nova ocupacao",
-    createTitle: "Nova ocupacao/profissao do paciente",
+    createTitle: "Nova ocupacao/profissao do cliente",
     submitLabel: "Gravar ocupacao",
     formKind: "simple",
     fields: ["code", "name", "description"],
@@ -267,15 +175,6 @@ function buildDefaultValues(table: AuxiliaryTableDefinition): AuxiliaryModalForm
     };
   }
 
-  if (table.formKind === "procedure-phase") {
-    return {
-      code: "",
-      name: "",
-      executionTimeMinutes: null,
-      description: "",
-    };
-  }
-
   return {
     code: "",
     name: "",
@@ -286,7 +185,7 @@ function buildDefaultValues(table: AuxiliaryTableDefinition): AuxiliaryModalForm
 export function TabelasAuxiliaresPage() {
   const { setShellBandContent } = useAdminShellBand();
   const [showInactive, setShowInactive] = useState(false);
-  const [selectedTableId, setSelectedTableId] = useState("especialidades");
+  const [selectedTableId, setSelectedTableId] = useState("motivos-agendamento");
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -318,7 +217,6 @@ export function TabelasAuxiliaresPage() {
   const isCommitmentType = selectedReasonType === "compromisso";
   const isAppointmentReasonForm = activeTable.formKind === "appointment-reason";
   const isAppointmentStatusForm = activeTable.formKind === "appointment-status";
-  const isProcedurePhaseForm = activeTable.formKind === "procedure-phase";
   const isEditing = editingRecordId !== null;
 
   const columns: ColumnsType<AuxiliaryTableRow> = [
@@ -580,7 +478,7 @@ export function TabelasAuxiliaresPage() {
         centered
         width={760}
         destroyOnHidden
-        className={`terra-password-modal client-modal auxiliary-modal${isAppointmentStatusForm || isProcedurePhaseForm ? " auxiliary-status-modal" : ""}`}
+        className={`terra-password-modal client-modal auxiliary-modal${isAppointmentStatusForm ? " auxiliary-status-modal" : ""}`}
       >
         <div className="terra-password-modal-header">
           <Typography.Title level={3} className="terra-password-modal-title">
@@ -601,9 +499,7 @@ export function TabelasAuxiliaresPage() {
               placeholder={
                 isAppointmentStatusForm
                   ? "Codigo da situacao"
-                  : isPaymentMethodsTable
-                    ? "Codigo interno"
-                    : "Codigo interno"
+                  : "Codigo interno"
               }
             />
           </Form.Item>
@@ -617,39 +513,10 @@ export function TabelasAuxiliaresPage() {
               placeholder={
                 isAppointmentStatusForm
                   ? "Nome da situacao"
-                  : isProcedurePhaseForm
-                    ? "Nome da fase"
-                    : "Nome do cadastro"
+                  : "Nome do cadastro"
               }
             />
           </Form.Item>
-
-          {isProcedurePhaseForm ? (
-            <Form.Item
-              name="executionTimeMinutes"
-              label="Tempo de execucao"
-              rules={[
-                {
-                  validator: (_, value) => {
-                    if (value === null || value === undefined || value === "") {
-                      return Promise.resolve();
-                    }
-
-                    if (Number(value) >= 0) {
-                      return Promise.resolve();
-                    }
-
-                    return Promise.reject(new Error("Informe um tempo maior ou igual a zero."));
-                  },
-                },
-              ]}
-            >
-              <div className="auxiliary-duration-field">
-                <InputNumber min={0} precision={0} placeholder="Tempo medio de execucao" className="auxiliary-duration-input" />
-                <span className="auxiliary-duration-unit">min</span>
-              </div>
-            </Form.Item>
-          ) : null}
 
           <Form.Item name="description" label="Descricao">
             <Input.TextArea
@@ -657,9 +524,7 @@ export function TabelasAuxiliaresPage() {
               placeholder={
                 isAppointmentStatusForm
                   ? "Descricao da situacao"
-                  : isProcedurePhaseForm
-                    ? "Descricao da fase"
-                    : "Descricao operacional"
+                  : "Descricao operacional"
               }
             />
           </Form.Item>
@@ -752,13 +617,13 @@ export function TabelasAuxiliaresPage() {
                 </Form.Item>
 
                 <Form.Item name="considerPatientNoShow" valuePropName="checked">
-                  <Checkbox>Considerar falta do paciente</Checkbox>
+                  <Checkbox>Considerar falta do cliente</Checkbox>
                 </Form.Item>
               </div>
             </>
           ) : null}
 
-          <div className={`terra-password-modal-actions client-modal-actions${isAppointmentStatusForm || isProcedurePhaseForm ? " auxiliary-status-actions" : ""}`}>
+          <div className={`terra-password-modal-actions client-modal-actions${isAppointmentStatusForm ? " auxiliary-status-actions" : ""}`}>
             <Button type="primary" htmlType="submit" loading={isSubmitting}>
               {activeTable.submitLabel}
             </Button>
