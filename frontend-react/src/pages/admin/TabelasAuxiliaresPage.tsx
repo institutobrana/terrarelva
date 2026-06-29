@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import { Alert, Button, Checkbox, Dropdown, Form, Input, Modal, Select, Space, Table, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useCallback, useEffect, useEffectEvent, useMemo, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 
 import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
@@ -83,6 +83,16 @@ type SortState = {
 };
 
 type AuxiliaryVisibleColumns = Record<PaymentMethodColumnKey | "color" | "lock" | "status", boolean>;
+
+const paymentMethodsShowInactiveStorageKey = "terra-relva-payment-methods-show-inactive";
+
+function readStoredPaymentMethodsShowInactive() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return window.localStorage.getItem(paymentMethodsShowInactiveStorageKey) === "true";
+}
 
 const auxiliaryTables: AuxiliaryTableDefinition[] = [
   {
@@ -209,7 +219,7 @@ function buildDefaultValues(table: AuxiliaryTableDefinition): AuxiliaryModalForm
 
 export function TabelasAuxiliaresPage() {
   const { setShellBandContent } = useAdminShellBand();
-  const [showInactive, setShowInactive] = useState(false);
+  const [showInactive, setShowInactive] = useState(readStoredPaymentMethodsShowInactive);
   const [selectedTableId, setSelectedTableId] = useState("motivos-agendamento");
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -219,6 +229,7 @@ export function TabelasAuxiliaresPage() {
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
   const [editingPaymentMethod, setEditingPaymentMethod] = useState<EditingPaymentMethodSnapshot | null>(null);
   const [editingPaymentMethodIsActive, setEditingPaymentMethodIsActive] = useState(false);
+  const editingPaymentMethodIsActiveRef = useRef(false);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodRecord[]>([]);
   const [openFilterColumn, setOpenFilterColumn] = useState<PaymentMethodColumnKey | null>(null);
   const [columnQueries, setColumnQueries] = useState<Record<PaymentMethodColumnKey, string>>({
@@ -302,6 +313,11 @@ export function TabelasAuxiliaresPage() {
       return sortState.order === "asc" ? comparison : -comparison;
     });
   }, [columnQueries, isPaymentMethodsTable, showInactive, sortState, tableRows]);
+
+  const setEditingPaymentMethodActiveState = useCallback((value: boolean) => {
+    editingPaymentMethodIsActiveRef.current = value;
+    setEditingPaymentMethodIsActive(value);
+  }, []);
   const selectedRow = filteredRows.find((row) => row.id === selectedRowId) ?? null;
   const selectedReasonType = Form.useWatch("type", form);
   const isCommitmentType = selectedReasonType === "compromisso";
@@ -506,16 +522,16 @@ export function TabelasAuxiliaresPage() {
     form.resetFields();
     setEditingRecordId(null);
     setEditingPaymentMethod(null);
-    setEditingPaymentMethodIsActive(false);
+    setEditingPaymentMethodActiveState(false);
     setOpenFilterColumn(null);
     setIsModalOpen(true);
-  }, [form]);
+  }, [form, setEditingPaymentMethodActiveState]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingRecordId(null);
     setEditingPaymentMethod(null);
-    setEditingPaymentMethodIsActive(false);
+    setEditingPaymentMethodActiveState(false);
     setOpenFilterColumn(null);
     form.resetFields();
   };
@@ -541,23 +557,39 @@ export function TabelasAuxiliaresPage() {
   });
 
   const handleCreateRecord = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
     try {
       setIsSubmitting(true);
-      const values = await form.validateFields();
 
       if (isPaymentMethodsTable) {
+        const values = form.getFieldsValue(["code", "name", "description"]);
+        const normalizedName = typeof values.name === "string" ? values.name.trim() : "";
+        if (!normalizedName) {
+          form.setFields([
+            {
+              name: "name",
+              errors: ["Informe o nome."],
+            },
+          ]);
+          return;
+        }
+
         const payload = {
-          codigo: values.code?.trim() || undefined,
-          nome: values.name.trim(),
-          descricao: values.description?.trim() || undefined,
+          codigo: typeof values.code === "string" ? values.code.trim() || undefined : undefined,
+          nome: normalizedName,
+          descricao: typeof values.description === "string" ? values.description.trim() || undefined : undefined,
         };
 
         if (editingRecordId) {
+          const nextIsActive = editingPaymentMethodIsActiveRef.current;
           await updatePaymentMethod(editingRecordId, payload);
-          const statusChanged = editingPaymentMethod && editingPaymentMethod.isActive !== editingPaymentMethodIsActive;
+          const statusChanged = editingPaymentMethod ? editingPaymentMethod.isActive !== nextIsActive : false;
           if (statusChanged) {
-            await updatePaymentMethodStatus(editingRecordId, editingPaymentMethodIsActive);
-            if (!editingPaymentMethodIsActive && !showInactive) {
+            await updatePaymentMethodStatus(editingRecordId, nextIsActive);
+            if (!nextIsActive && !showInactive) {
               setShowInactive(true);
             }
           }
@@ -572,6 +604,8 @@ export function TabelasAuxiliaresPage() {
         return;
       }
 
+      const values = await form.validateFields();
+
       apiMessage.success(`${activeTable.label}: cadastro de "${values.name}" validado e preparado para a proxima etapa.`);
       handleCloseModal();
     } catch (error) {
@@ -579,9 +613,77 @@ export function TabelasAuxiliaresPage() {
         apiMessage.error(error.message);
         return;
       }
+
+      if (error instanceof Error) {
+        apiMessage.error(error.message);
+        return;
+      }
+
+      apiMessage.error("Nao foi possivel concluir a gravacao.");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSavePaymentMethodEdit = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    if (!isPaymentMethodsTable || !editingRecordId) {
+      await handleCreateRecord();
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      await form.validateFields(["name"]);
+      const values = form.getFieldsValue(["code", "name", "description"]);
+      const payload = {
+        codigo: typeof values.code === "string" ? values.code.trim() || undefined : undefined,
+        nome: typeof values.name === "string" ? values.name.trim() : "",
+        descricao: typeof values.description === "string" ? values.description.trim() || undefined : undefined,
+      };
+      const nextIsActive = editingPaymentMethodIsActiveRef.current;
+      const statusChanged = editingPaymentMethod ? editingPaymentMethod.isActive !== nextIsActive : false;
+
+      await updatePaymentMethod(editingRecordId, payload);
+
+      if (statusChanged) {
+        await updatePaymentMethodStatus(editingRecordId, nextIsActive);
+        if (!nextIsActive && !showInactive) {
+          setShowInactive(true);
+        }
+      }
+
+      await loadPaymentMethods();
+      apiMessage.success("Forma de pagamento atualizada com sucesso.");
+      handleCloseModal();
+    } catch (error) {
+      if (error instanceof AuxiliaryTablesApiError) {
+        apiMessage.error(error.message);
+        return;
+      }
+
+      if (error instanceof Error) {
+        apiMessage.error(error.message);
+        return;
+      }
+
+      apiMessage.error("Nao foi possivel concluir a gravacao.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveGenericModal = async () => {
+    if (isSubmitting) {
+      return;
+    }
+
+    await form.validateFields();
+    await handleCreateRecord();
   };
 
   const handleOpenEditModal = useEffectEvent(() => {
@@ -608,7 +710,7 @@ export function TabelasAuxiliaresPage() {
       description: selectedRow.description ?? "",
       isActive: selectedRow.isActive,
     });
-    setEditingPaymentMethodIsActive(Boolean(selectedRow.isActive));
+    setEditingPaymentMethodActiveState(Boolean(selectedRow.isActive));
     setOpenFilterColumn(null);
     setIsModalOpen(true);
   });
@@ -623,6 +725,14 @@ export function TabelasAuxiliaresPage() {
     setIsLoadingTable(false);
     setPaymentMethods([]);
   }, [isPaymentMethodsTable]);
+
+  useEffect(() => {
+    if (!isPaymentMethodsTable || typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(paymentMethodsShowInactiveStorageKey, showInactive ? "true" : "false");
+  }, [isPaymentMethodsTable, showInactive]);
 
   useEffect(() => {
     setShellBandContent(
@@ -695,12 +805,12 @@ export function TabelasAuxiliaresPage() {
         name: editingPaymentMethod.name,
         description: editingPaymentMethod.description,
       });
-      setEditingPaymentMethodIsActive(editingPaymentMethod.isActive);
+      setEditingPaymentMethodActiveState(editingPaymentMethod.isActive);
       return;
     }
 
     form.setFieldsValue(buildDefaultValues(activeTable));
-  }, [activeTable, editingPaymentMethod, editingRecordId, form, isModalOpen, isPaymentMethodsTable]);
+  }, [activeTable, editingPaymentMethod, editingRecordId, form, isModalOpen, isPaymentMethodsTable, setEditingPaymentMethodActiveState]);
 
   return (
     <div className="module-page-shell users-admin-page">
@@ -779,7 +889,14 @@ export function TabelasAuxiliaresPage() {
 
       <Modal
         open={isModalOpen}
-        footer={null}
+        footer={isPaymentMethodsTable ? [
+          <Button key="save-payment-method" type="primary" loading={isSubmitting} onClick={() => void handleSavePaymentMethodEdit()}>
+            {activeTable.submitLabel}
+          </Button>,
+          <Button key="cancel-payment-method" onClick={handleCloseModal}>
+            Cancelar
+          </Button>,
+        ] : null}
         onCancel={handleCloseModal}
         closeIcon={<CloseOutlined />}
         centered
@@ -799,7 +916,6 @@ export function TabelasAuxiliaresPage() {
           layout="vertical"
           preserve={false}
           className="terra-password-form client-modal-form auxiliary-modal-form"
-          onFinish={() => void handleCreateRecord()}
         >
           <Form.Item name="code" label="Codigo">
             <Input
@@ -840,7 +956,7 @@ export function TabelasAuxiliaresPage() {
             <Form.Item>
               <Checkbox
                 checked={editingPaymentMethodIsActive}
-                onChange={(event) => setEditingPaymentMethodIsActive(event.target.checked)}
+                onChange={(event) => setEditingPaymentMethodActiveState(event.target.checked)}
               >
                 Forma de pagamento ativa
               </Checkbox>
@@ -941,12 +1057,19 @@ export function TabelasAuxiliaresPage() {
             </>
           ) : null}
 
-          <div className={`terra-password-modal-actions client-modal-actions${isAppointmentStatusForm ? " auxiliary-status-actions" : ""}`}>
-            <Button type="primary" htmlType="submit" loading={isSubmitting}>
-              {activeTable.submitLabel}
-            </Button>
-            <Button onClick={handleCloseModal}>Cancelar</Button>
-          </div>
+          {isPaymentMethodsTable ? null : (
+            <div className={`terra-password-modal-actions client-modal-actions${isAppointmentStatusForm ? " auxiliary-status-actions" : ""}`}>
+              <Button
+                type="primary"
+                htmlType="button"
+                loading={isSubmitting}
+                onClick={() => void handleSaveGenericModal()}
+              >
+                {activeTable.submitLabel}
+              </Button>
+              <Button onClick={handleCloseModal}>Cancelar</Button>
+            </div>
+          )}
         </Form>
       </Modal>
     </div>
