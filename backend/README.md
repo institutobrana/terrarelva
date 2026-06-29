@@ -13,4 +13,5 @@ Backend minimo para autenticacao interna com PostgreSQL.
 
 - `npm run db:migrate`
 - `npm run db:seed-admin -- "Nome" email@terrarelva.com senha-forte`
+- `npm run db:seed-clients-suppliers`
 - `npm run dev`
