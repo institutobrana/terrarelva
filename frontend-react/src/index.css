@@ -707,14 +707,20 @@ a {
 
 .auxiliary-color-grid {
   display: grid;
-  grid-template-columns: repeat(8, 32px);
+  grid-template-columns: repeat(15, 28px);
   gap: 8px;
   align-items: center;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.auxiliary-color-grid.is-disabled {
+  opacity: 0.38;
 }
 
 .auxiliary-color-swatch {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border: 1px solid rgba(66, 86, 61, 0.28);
   border-radius: 6px;
   cursor: pointer;
@@ -724,9 +730,18 @@ a {
     border-color 0.18s ease;
 }
 
+.auxiliary-color-swatch:disabled {
+  cursor: not-allowed;
+}
+
 .auxiliary-color-swatch:hover {
   transform: translateY(-1px);
   border-color: rgba(67, 98, 69, 0.56);
+}
+
+.auxiliary-color-swatch:disabled:hover {
+  transform: none;
+  border-color: rgba(66, 86, 61, 0.28);
 }
 
 .auxiliary-color-swatch.is-active {

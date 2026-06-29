@@ -7,9 +7,12 @@
 ## Barra superior
 
 - O modulo usa o mesmo slot `terra-shell-band` do shell admin.
-- Comandos entregues nesta etapa:
-  - `Novo motivo`
-  - `Editar`
+- O botao de criacao nao e fixo para a tela inteira.
+- A barra superior agora muda conforme a tabela auxiliar selecionada na lateral.
+- Exemplos implementados nesta etapa:
+  - `Motivos de agendamento` -> `Novo motivo`
+  - `Segmentos de fornecedor` -> `Novo segmento`
+  - demais tabelas usam configuracao simples preparada por item
 
 ## Painel lateral interno
 
@@ -43,12 +46,33 @@
   - barra operacional no shell
   - painel lateral interno com selecao
   - grade principal e rodape
-- Ajuste complementar:
-  - o comando `Novo motivo` agora abre o modal `Novo motivo de agendamento`
+- Ajuste de entendimento aplicado:
+  - o botao `Novo...` e o modal aberto dependem da tabela selecionada
+  - o modal de `Motivos de agendamento` deixou de ser tratado como universal
+- Motivos de agendamento:
+  - abre `Novo motivo de agendamento`
   - campos incluidos: `Codigo`, `Nome`, `Descricao`, `Tipo`, `Cor` e `Compromisso produtivo`
-  - `Tipo` ficou como seletor controlado com valor inicial `Agendamento`
-  - `Cor` passou a usar uma grade simples de cores selecionaveis
-  - `Gravar motivo` faz validacao e submit controlado, sem persistencia real nesta rodada
+  - `Tipo` possui exatamente `Agendamento` e `Compromisso`
+  - quando `Tipo = Agendamento`, a paleta fica apagada/desabilitada, `Cor` deixa de ser obrigatoria e `Compromisso produtivo` fica desabilitado e desmarcado
+  - quando `Tipo = Compromisso`, a paleta fica habilitada com 44 cores em 3 linhas (15 + 15 + 14), `Cor` passa a ser obrigatoria e `Compromisso produtivo` fica marcado por padrao, mas pode ser desmarcado
+- Segmentos de fornecedor:
+  - abre `Novo segmento de fornecedor`
+  - campos incluidos: `Codigo`, `Nome` e `Descricao`
+  - nao exibe `Tipo`, `Cor` nem `Compromisso produtivo`
+- Persistencia:
+  - nesta etapa nao houve persistencia real nem localStorage
+  - `Gravar ...` faz validacao e submit controlado, mantendo o fluxo preparado para backend futuro
 - Preparado para evolucao:
   - dados reais por tabela auxiliar
   - cadastro e edicao persistentes
+
+## Como validar no navegador
+
+1. Abrir `Configuracoes -> Tabelas auxiliares`.
+2. Selecionar `Motivos de agendamento`.
+3. Confirmar que a barra superior mostra `Novo motivo`.
+4. Abrir o modal e validar `Codigo`, `Nome`, `Descricao`, `Tipo`, `Cor` e `Compromisso produtivo`.
+5. Em `Agendamento`, confirmar paleta apagada/desabilitada, checkbox desabilitado/desmarcado e ausencia de obrigatoriedade de cor.
+6. Em `Compromisso`, confirmar paleta habilitada com 44 cores, checkbox habilitado e marcado por padrao e obrigatoriedade de cor.
+7. Fechar o modal, selecionar `Segmentos de fornecedor` e confirmar o botao `Novo segmento`.
+8. Abrir o modal e validar que aparecem apenas `Codigo`, `Nome` e `Descricao`.
