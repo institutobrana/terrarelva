@@ -8,7 +8,7 @@
 
 - O modulo usa o mesmo slot `terra-shell-band` do shell admin.
 - Comandos entregues nesta etapa:
-  - `Nova especialidade`
+  - `Novo motivo`
   - `Editar`
 
 ## Painel lateral interno
@@ -43,6 +43,12 @@
   - barra operacional no shell
   - painel lateral interno com selecao
   - grade principal e rodape
+- Ajuste complementar:
+  - o comando `Novo motivo` agora abre o modal `Novo motivo de agendamento`
+  - campos incluidos: `Codigo`, `Nome`, `Descricao`, `Tipo`, `Cor` e `Compromisso produtivo`
+  - `Tipo` ficou como seletor controlado com valor inicial `Agendamento`
+  - `Cor` passou a usar uma grade simples de cores selecionaveis
+  - `Gravar motivo` faz validacao e submit controlado, sem persistencia real nesta rodada
 - Preparado para evolucao:
   - dados reais por tabela auxiliar
   - cadastro e edicao persistentes

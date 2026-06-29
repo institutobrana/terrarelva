@@ -1,8 +1,9 @@
 import {
+  CloseOutlined,
   EditOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Space, Table, Typography, message } from "antd";
+import { Button, Checkbox, Form, Input, Modal, Select, Space, Table, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useMemo, useState } from "react";
 
@@ -21,6 +22,15 @@ type AuxiliaryTableRow = {
   name: string;
   description: string | null;
   isActive: boolean;
+};
+
+type AppointmentReasonFormValues = {
+  code?: string;
+  name: string;
+  description?: string;
+  type: string;
+  color: string;
+  productiveCommitment: boolean;
 };
 
 const auxiliaryTables: AuxiliaryTableDefinition[] = [
@@ -46,17 +56,51 @@ const preparedRowsByTable: Record<string, AuxiliaryTableRow[]> = {
   especialidades: [],
 };
 
+const reasonTypeOptions = [
+  { label: "Agendamento", value: "agendamento" },
+];
+
+const reasonColorOptions = [
+  "#5A7652",
+  "#6E875F",
+  "#8C6A4D",
+  "#C58940",
+  "#B14E4A",
+  "#5F7D95",
+  "#8B5CF6",
+  "#D96C8A",
+];
+
 export function TabelasAuxiliaresPage() {
   const { setShellBandContent } = useAdminShellBand();
   const [showInactive, setShowInactive] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState("especialidades");
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiMessage, messageContext] = message.useMessage();
+  const [form] = Form.useForm<AppointmentReasonFormValues>();
 
   const activeTable = auxiliaryTables.find((item) => item.id === selectedTableId) ?? auxiliaryTables[0];
   const tableRows = useMemo(() => preparedRowsByTable[activeTable.id] ?? [], [activeTable.id]);
   const visibleRows = useMemo(() => tableRows.filter((row) => (showInactive ? true : row.isActive)), [showInactive, tableRows]);
   const selectedRow = visibleRows.find((row) => row.id === selectedRowId) ?? null;
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
+
+  const handleCreateReason = async () => {
+    try {
+      setIsSubmitting(true);
+      const values = await form.validateFields();
+      apiMessage.success(`Motivo "${values.name}" validado e preparado para gravacao na proxima etapa.`);
+      handleCloseModal();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const columns: ColumnsType<AuxiliaryTableRow> = [
     {
@@ -92,9 +136,9 @@ export function TabelasAuxiliaresPage() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => apiMessage.info("Cadastro de nova especialidade preparado para a proxima etapa.")}
+            onClick={() => setIsModalOpen(true)}
           >
-            Nova especialidade
+            Novo motivo
           </Button>
           <Button
             icon={<EditOutlined />}
@@ -178,6 +222,95 @@ export function TabelasAuxiliaresPage() {
           </div>
         </ModuleSectionCard>
       </div>
+
+      <Modal
+        open={isModalOpen}
+        footer={null}
+        onCancel={handleCloseModal}
+        closeIcon={<CloseOutlined />}
+        centered
+        width={760}
+        destroyOnHidden
+        className="terra-password-modal client-modal auxiliary-modal"
+      >
+        <div className="terra-password-modal-header">
+          <Typography.Title level={3} className="terra-password-modal-title">
+            Novo motivo de agendamento
+          </Typography.Title>
+        </div>
+
+        <Form<AppointmentReasonFormValues>
+          form={form}
+          layout="vertical"
+          preserve={false}
+          className="terra-password-form client-modal-form auxiliary-modal-form"
+          initialValues={{
+            type: "agendamento",
+            color: reasonColorOptions[0],
+            productiveCommitment: false,
+          }}
+          onFinish={() => void handleCreateReason()}
+        >
+          <Form.Item name="code" label="Codigo">
+            <Input placeholder="Codigo interno do motivo" />
+          </Form.Item>
+
+          <Form.Item
+            name="name"
+            label="Nome"
+            rules={[{ required: true, message: "Informe o nome do motivo." }]}
+          >
+            <Input placeholder="Nome do motivo" />
+          </Form.Item>
+
+          <Form.Item name="description" label="Descricao">
+            <Input.TextArea rows={3} placeholder="Descricao operacional do motivo" />
+          </Form.Item>
+
+          <Form.Item
+            name="type"
+            label="Tipo"
+            rules={[{ required: true, message: "Selecione o tipo do motivo." }]}
+          >
+            <Select options={reasonTypeOptions} />
+          </Form.Item>
+
+          <Form.Item
+            name="color"
+            label="Cor"
+            rules={[{ required: true, message: "Selecione uma cor para o motivo." }]}
+          >
+            <div className="auxiliary-color-grid" role="radiogroup" aria-label="Selecao de cor do motivo">
+              {reasonColorOptions.map((color) => {
+                const isActive = form.getFieldValue("color") === color;
+
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    className={`auxiliary-color-swatch${isActive ? " is-active" : ""}`}
+                    style={{ backgroundColor: color }}
+                    aria-label={`Selecionar cor ${color}`}
+                    aria-pressed={isActive}
+                    onClick={() => form.setFieldValue("color", color)}
+                  />
+                );
+              })}
+            </div>
+          </Form.Item>
+
+          <Form.Item name="productiveCommitment" valuePropName="checked">
+            <Checkbox>Compromisso produtivo</Checkbox>
+          </Form.Item>
+
+          <div className="terra-password-modal-actions client-modal-actions">
+            <Button type="primary" htmlType="submit" loading={isSubmitting}>
+              Gravar motivo
+            </Button>
+            <Button onClick={handleCloseModal}>Cancelar</Button>
+          </div>
+        </Form>
+      </Modal>
     </div>
   );
 }

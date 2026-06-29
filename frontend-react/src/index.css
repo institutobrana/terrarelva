@@ -701,6 +701,39 @@ a {
   max-width: 760px;
 }
 
+.auxiliary-modal .ant-modal-content {
+  max-width: 760px;
+}
+
+.auxiliary-color-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 32px);
+  gap: 8px;
+  align-items: center;
+}
+
+.auxiliary-color-swatch {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(66, 86, 61, 0.28);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.auxiliary-color-swatch:hover {
+  transform: translateY(-1px);
+  border-color: rgba(67, 98, 69, 0.56);
+}
+
+.auxiliary-color-swatch.is-active {
+  border-color: rgba(37, 53, 45, 0.95);
+  box-shadow: 0 0 0 2px rgba(67, 98, 69, 0.18);
+}
+
 .bank-account-form .ant-input,
 .bank-account-form .ant-select-selector {
   min-height: 38px !important;
