@@ -83,6 +83,16 @@ type SortState = {
 };
 
 type AuxiliaryVisibleColumns = Record<PaymentMethodColumnKey | "color" | "lock" | "status", boolean>;
+type AuxiliaryColumnKey = PaymentMethodColumnKey | "color" | "lock" | "status";
+
+const auxiliaryColumnOptions: ReadonlyArray<{ key: AuxiliaryColumnKey; label: string }> = [
+  { key: "code", label: "Codigo" },
+  { key: "name", label: "Nome" },
+  { key: "description", label: "Descricao" },
+  { key: "color", label: "Cor" },
+  { key: "lock", label: "Bloqueio" },
+  { key: "status", label: "Status" },
+];
 
 const paymentMethodsShowInactiveStorageKey = "terra-relva-payment-methods-show-inactive";
 
@@ -231,7 +241,7 @@ export function TabelasAuxiliaresPage() {
   const [editingPaymentMethodIsActive, setEditingPaymentMethodIsActive] = useState(false);
   const editingPaymentMethodIsActiveRef = useRef(false);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodRecord[]>([]);
-  const [openFilterColumn, setOpenFilterColumn] = useState<PaymentMethodColumnKey | null>(null);
+  const [openFilterColumn, setOpenFilterColumn] = useState<AuxiliaryColumnKey | null>(null);
   const [columnQueries, setColumnQueries] = useState<Record<PaymentMethodColumnKey, string>>({
     code: "",
     name: "",
@@ -251,7 +261,6 @@ export function TabelasAuxiliaresPage() {
 
   const activeTable = auxiliaryTables.find((item) => item.id === selectedTableId) ?? auxiliaryTables[0];
   const isPaymentMethodsTable = activeTable.id === "formas-pagamento";
-  const hasColorColumn = activeTable.hasColorColumn === true;
   const tableRows = useMemo(() => {
     if (isPaymentMethodsTable) {
       return paymentMethods.map<AuxiliaryTableRow>((entry) => ({
@@ -325,79 +334,77 @@ export function TabelasAuxiliaresPage() {
   const isAppointmentStatusForm = activeTable.formKind === "appointment-status";
   const isEditing = editingRecordId !== null;
 
-  const renderFilterDropdown = useCallback((columnKey: PaymentMethodColumnKey, label: string) => (
-    <div className="auxiliary-filter-menu" onClick={(event) => event.stopPropagation()}>
-      <Typography.Text strong className="auxiliary-filter-menu-title">
-        {label}
-      </Typography.Text>
-      <button
-        type="button"
-        className="auxiliary-filter-menu-item"
-        onClick={() => {
-          setSortState({ key: columnKey, order: "asc" });
-          setOpenFilterColumn(null);
-        }}
-      >
-        Ordem Ascendente
-        {sortState.key === columnKey && sortState.order === "asc" ? <CheckOutlined /> : null}
-      </button>
-      <button
-        type="button"
-        className="auxiliary-filter-menu-item"
-        onClick={() => {
-          setSortState({ key: columnKey, order: "desc" });
-          setOpenFilterColumn(null);
-        }}
-      >
-        Ordem Descendente
-        {sortState.key === columnKey && sortState.order === "desc" ? <CheckOutlined /> : null}
-      </button>
-      <div className="auxiliary-filter-menu-separator" />
-      <div className="auxiliary-filter-menu-subtitle">Colunas</div>
-      <div className="auxiliary-filter-menu-columns">
-        {([
-          ["code", "Codigo"],
-          ["name", "Nome"],
-          ["description", "Descricao"],
-          ...(hasColorColumn ? ([["color", "Cor"]] as const) : []),
-          ["lock", "Bloqueio"],
-          ["status", "Status"],
-        ] as const).map(([key, columnLabel]) => {
-          const visibleKey = key as keyof AuxiliaryVisibleColumns;
-          const enabledMainColumns = (["code", "name", "description"] as const).filter((entry) => visibleColumns[entry]).length;
-          const disableToggle =
-            (visibleKey === "code" || visibleKey === "name" || visibleKey === "description")
-            && visibleColumns[visibleKey]
-            && enabledMainColumns === 1;
+  const renderFilterDropdown = useCallback((columnKey: AuxiliaryColumnKey, label: string) => {
+    const supportsOrdering = columnKey === "code" || columnKey === "name" || columnKey === "description";
 
-          return (
-            <label key={key} className={`auxiliary-filter-menu-checkbox${disableToggle ? " is-disabled" : ""}`}>
-              <input
-                type="checkbox"
-                checked={visibleColumns[visibleKey]}
-                disabled={disableToggle}
-                onChange={() => {
-                  setVisibleColumns((current) => ({
-                    ...current,
-                    [visibleKey]: !current[visibleKey],
-                  }));
-                }}
-              />
-              <span>{columnLabel}</span>
-            </label>
-          );
-        })}
+    return (
+      <div className="auxiliary-filter-menu" onClick={(event) => event.stopPropagation()}>
+        <Typography.Text strong className="auxiliary-filter-menu-title">
+          {label}
+        </Typography.Text>
+        {supportsOrdering ? (
+          <>
+            <button
+              type="button"
+              className="auxiliary-filter-menu-item"
+              onClick={() => {
+                setSortState({ key: columnKey, order: "asc" });
+                setOpenFilterColumn(null);
+              }}
+            >
+              Ordem Ascendente
+              {sortState.key === columnKey && sortState.order === "asc" ? <CheckOutlined /> : null}
+            </button>
+            <button
+              type="button"
+              className="auxiliary-filter-menu-item"
+              onClick={() => {
+                setSortState({ key: columnKey, order: "desc" });
+                setOpenFilterColumn(null);
+              }}
+            >
+              Ordem Descendente
+              {sortState.key === columnKey && sortState.order === "desc" ? <CheckOutlined /> : null}
+            </button>
+            <div className="auxiliary-filter-menu-separator" />
+          </>
+        ) : null}
+        <div className="auxiliary-filter-menu-subtitle">Colunas</div>
+        <div className="auxiliary-filter-menu-columns">
+          {auxiliaryColumnOptions.map(({ key, label: columnLabel }) => {
+            const visibleKey = key as keyof AuxiliaryVisibleColumns;
+            const enabledMainColumns = (["code", "name", "description"] as const).filter((entry) => visibleColumns[entry]).length;
+            const disableToggle =
+              (visibleKey === "code" || visibleKey === "name" || visibleKey === "description")
+              && visibleColumns[visibleKey]
+              && enabledMainColumns === 1;
+
+            return (
+              <label key={key} className={`auxiliary-filter-menu-checkbox${disableToggle ? " is-disabled" : ""}`}>
+                <input
+                  type="checkbox"
+                  checked={visibleColumns[visibleKey]}
+                  disabled={disableToggle}
+                  onChange={() => {
+                    setVisibleColumns((current) => ({
+                      ...current,
+                      [visibleKey]: !current[visibleKey],
+                    }));
+                  }}
+                />
+                <span>{columnLabel}</span>
+              </label>
+            );
+          })}
+        </div>
       </div>
-    </div>
-  ), [hasColorColumn, sortState, visibleColumns]);
+    );
+  }, [sortState, visibleColumns]);
 
-  const renderFilterTitle = useCallback((columnKey: PaymentMethodColumnKey, label: string) => {
-    if (!isPaymentMethodsTable) {
-      return label;
-    }
-
-    const hasQuery = columnQueries[columnKey].trim().length > 0;
-    const isSorted = sortState.key === columnKey && sortState.order;
+  const renderFilterTitle = useCallback((columnKey: AuxiliaryColumnKey, label: string) => {
+    const isMainFilterColumn = columnKey === "code" || columnKey === "name" || columnKey === "description";
+    const hasQuery = isMainFilterColumn && columnQueries[columnKey].trim().length > 0;
+    const isSorted = isMainFilterColumn && sortState.key === columnKey && sortState.order;
 
     return (
       <div className="auxiliary-filter-header">
@@ -419,7 +426,7 @@ export function TabelasAuxiliaresPage() {
         </Dropdown>
       </div>
     );
-  }, [columnQueries, isPaymentMethodsTable, openFilterColumn, renderFilterDropdown, sortState]);
+  }, [columnQueries, openFilterColumn, renderFilterDropdown, sortState]);
 
   const columns: ColumnsType<AuxiliaryTableRow> = useMemo(() => {
     const nextColumns: ColumnsType<AuxiliaryTableRow> = [];
@@ -464,9 +471,9 @@ export function TabelasAuxiliaresPage() {
       });
     }
 
-    if (hasColorColumn && visibleColumns.color) {
+    if (visibleColumns.color) {
       nextColumns.push({
-        title: "Cor",
+        title: renderFilterTitle("color", "Cor"),
         dataIndex: "color",
         key: "color",
         width: 54,
@@ -482,7 +489,7 @@ export function TabelasAuxiliaresPage() {
 
     if (visibleColumns.lock) {
       nextColumns.push({
-        title: "",
+        title: renderFilterTitle("lock", "Bloqueio"),
         dataIndex: "lock",
         key: "lock",
         width: 52,
@@ -498,7 +505,7 @@ export function TabelasAuxiliaresPage() {
 
     if (visibleColumns.status) {
       nextColumns.push({
-        title: "",
+        title: renderFilterTitle("status", "Status"),
         dataIndex: "isActive",
         key: "status",
         width: 46,
@@ -516,7 +523,7 @@ export function TabelasAuxiliaresPage() {
     }
 
     return nextColumns;
-  }, [hasColorColumn, isPaymentMethodsTable, renderFilterTitle, visibleColumns]);
+  }, [isPaymentMethodsTable, renderFilterTitle, visibleColumns]);
 
   const handleOpenModal = useCallback(() => {
     form.resetFields();
