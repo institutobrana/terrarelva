@@ -8,6 +8,8 @@ export type AuxiliarySimpleTableApiId =
   | "material-groups"
   | "occupations";
 
+export type AuxiliarySpecialTableApiId = "appointment-reasons" | "appointment-statuses";
+
 export type AuxiliarySimpleRecord = {
   id: string;
   codigo: string;
@@ -31,6 +33,62 @@ type AuxiliarySimpleApiRecord = {
 
 export type PaymentMethodRecord = AuxiliarySimpleRecord;
 
+export type AppointmentReasonRecord = {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao: string | null;
+  tipo: "agendamento" | "compromisso";
+  cor: string | null;
+  compromissoProdutivo: boolean;
+  isActive: boolean;
+  criadoEm: string;
+  atualizadoEm: string;
+};
+
+export type AppointmentStatusRecord = {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao: string | null;
+  historico: string | null;
+  cor: string | null;
+  ocultarAgendamento: boolean;
+  considerarFaltaCliente: boolean;
+  isActive: boolean;
+  criadoEm: string;
+  atualizadoEm: string;
+};
+
+type AppointmentReasonApiRecord = {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao: string | null;
+  tipo: "agendamento" | "compromisso";
+  cor: string | null;
+  compromissoProdutivo?: boolean;
+  isActive?: boolean;
+  ativo?: boolean;
+  criadoEm: string;
+  atualizadoEm: string;
+};
+
+type AppointmentStatusApiRecord = {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao: string | null;
+  historico: string | null;
+  cor: string | null;
+  ocultarAgendamento?: boolean;
+  considerarFaltaCliente?: boolean;
+  isActive?: boolean;
+  ativo?: boolean;
+  criadoEm: string;
+  atualizadoEm: string;
+};
+
 export type AuxiliarySimplePayload = {
   codigo?: string;
   nome: string;
@@ -38,6 +96,25 @@ export type AuxiliarySimplePayload = {
 };
 
 export type PaymentMethodPayload = AuxiliarySimplePayload;
+
+export type AppointmentReasonPayload = {
+  codigo?: string;
+  nome: string;
+  descricao?: string;
+  tipo: "agendamento" | "compromisso";
+  cor?: string;
+  compromissoProdutivo?: boolean;
+};
+
+export type AppointmentStatusPayload = {
+  codigo?: string;
+  nome: string;
+  descricao?: string;
+  historico?: string;
+  cor?: string;
+  ocultarAgendamento?: boolean;
+  considerarFaltaCliente?: boolean;
+};
 
 type CollectionResponseConfig = {
   collectionKey: string;
@@ -64,6 +141,17 @@ const responseConfigByTable: Record<AuxiliarySimpleTableApiId, CollectionRespons
   occupations: {
     collectionKey: "occupations",
     itemKey: "occupation",
+  },
+};
+
+const appointmentResponseConfigByTable: Record<AuxiliarySpecialTableApiId, CollectionResponseConfig> = {
+  "appointment-reasons": {
+    collectionKey: "appointmentReasons",
+    itemKey: "appointmentReason",
+  },
+  "appointment-statuses": {
+    collectionKey: "appointmentStatuses",
+    itemKey: "appointmentStatus",
   },
 };
 
@@ -106,6 +194,37 @@ function normalizeAuxiliarySimpleRecord(record: AuxiliarySimpleApiRecord): Auxil
     codigo: record.codigo,
     nome: record.nome,
     descricao: record.descricao,
+    isActive: typeof record.isActive === "boolean" ? record.isActive : Boolean(record.ativo),
+    criadoEm: record.criadoEm,
+    atualizadoEm: record.atualizadoEm,
+  };
+}
+
+function normalizeAppointmentReasonRecord(record: AppointmentReasonApiRecord): AppointmentReasonRecord {
+  return {
+    id: record.id,
+    codigo: record.codigo,
+    nome: record.nome,
+    descricao: record.descricao,
+    tipo: record.tipo,
+    cor: record.cor,
+    compromissoProdutivo: record.compromissoProdutivo === true,
+    isActive: typeof record.isActive === "boolean" ? record.isActive : Boolean(record.ativo),
+    criadoEm: record.criadoEm,
+    atualizadoEm: record.atualizadoEm,
+  };
+}
+
+function normalizeAppointmentStatusRecord(record: AppointmentStatusApiRecord): AppointmentStatusRecord {
+  return {
+    id: record.id,
+    codigo: record.codigo,
+    nome: record.nome,
+    descricao: record.descricao,
+    historico: record.historico,
+    cor: record.cor,
+    ocultarAgendamento: record.ocultarAgendamento === true,
+    considerarFaltaCliente: record.considerarFaltaCliente === true,
     isActive: typeof record.isActive === "boolean" ? record.isActive : Boolean(record.ativo),
     criadoEm: record.criadoEm,
     atualizadoEm: record.atualizadoEm,
@@ -203,4 +322,100 @@ export async function updatePaymentMethodStatus(id: string, isActive: boolean) {
   return {
     paymentMethod: result.record,
   };
+}
+
+export async function fetchAppointmentReasons() {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/appointment-reasons`, {
+    headers: getAuthHeaders(),
+  });
+
+  const config = appointmentResponseConfigByTable["appointment-reasons"];
+  const payload = await parseResponse<Record<string, AppointmentReasonApiRecord[] | number>>(response);
+  const records = Array.isArray(payload[config.collectionKey]) ? payload[config.collectionKey] as AppointmentReasonApiRecord[] : [];
+
+  return {
+    total: typeof payload.total === "number" ? payload.total : records.length,
+    appointmentReasons: records.map(normalizeAppointmentReasonRecord),
+  };
+}
+
+export async function createAppointmentReason(payload: AppointmentReasonPayload) {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/appointment-reasons`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  const result = await parseResponse<{ appointmentReason: AppointmentReasonApiRecord }>(response);
+  return { appointmentReason: normalizeAppointmentReasonRecord(result.appointmentReason) };
+}
+
+export async function updateAppointmentReason(id: string, payload: AppointmentReasonPayload) {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/appointment-reasons/${id}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  const result = await parseResponse<{ appointmentReason: AppointmentReasonApiRecord }>(response);
+  return { appointmentReason: normalizeAppointmentReasonRecord(result.appointmentReason) };
+}
+
+export async function updateAppointmentReasonStatus(id: string, isActive: boolean) {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/appointment-reasons/${id}/status`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ isActive }),
+  });
+
+  const result = await parseResponse<{ appointmentReason: AppointmentReasonApiRecord }>(response);
+  return { appointmentReason: normalizeAppointmentReasonRecord(result.appointmentReason) };
+}
+
+export async function fetchAppointmentStatuses() {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/appointment-statuses`, {
+    headers: getAuthHeaders(),
+  });
+
+  const config = appointmentResponseConfigByTable["appointment-statuses"];
+  const payload = await parseResponse<Record<string, AppointmentStatusApiRecord[] | number>>(response);
+  const records = Array.isArray(payload[config.collectionKey]) ? payload[config.collectionKey] as AppointmentStatusApiRecord[] : [];
+
+  return {
+    total: typeof payload.total === "number" ? payload.total : records.length,
+    appointmentStatuses: records.map(normalizeAppointmentStatusRecord),
+  };
+}
+
+export async function createAppointmentStatus(payload: AppointmentStatusPayload) {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/appointment-statuses`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  const result = await parseResponse<{ appointmentStatus: AppointmentStatusApiRecord }>(response);
+  return { appointmentStatus: normalizeAppointmentStatusRecord(result.appointmentStatus) };
+}
+
+export async function updateAppointmentStatus(id: string, payload: AppointmentStatusPayload) {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/appointment-statuses/${id}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
+  });
+
+  const result = await parseResponse<{ appointmentStatus: AppointmentStatusApiRecord }>(response);
+  return { appointmentStatus: normalizeAppointmentStatusRecord(result.appointmentStatus) };
+}
+
+export async function updateAppointmentStatusStatus(id: string, isActive: boolean) {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/appointment-statuses/${id}/status`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ isActive }),
+  });
+
+  const result = await parseResponse<{ appointmentStatus: AppointmentStatusApiRecord }>(response);
+  return { appointmentStatus: normalizeAppointmentStatusRecord(result.appointmentStatus) };
 }

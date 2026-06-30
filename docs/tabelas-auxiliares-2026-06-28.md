@@ -295,3 +295,70 @@
 ## Pendencias
 
 - O browser plugin in-app ficou instavel durante a validacao automatizada desta rodada; a validacao visual foi concluida com Playwright local apontando para o mesmo `localhost`.
+
+## Tabelas especiais - comportamento validado no sistema modelo
+
+- `Motivos de agendamento`
+  - grade com `Codigo`, `Nome`, `Descricao`, `Cor`, `Bloqueio` e `Status`
+  - modal novo: `Codigo`, `Nome`, `Descricao`, `Tipo`, `Cor` e `Compromisso produtivo`
+  - `Tipo` possui `Agendamento` e `Compromisso`
+  - no modo novo, `Tipo` inicia em `Agendamento`
+  - com `Agendamento`, `Compromisso produtivo` fica desabilitado
+  - com `Compromisso`, `Compromisso produtivo` fica habilitado
+  - o modal de edicao adiciona `Motivo de agendamento ativo`
+- `Situacoes de agendamento`
+  - grade com `Codigo`, `Nome`, `Descricao`, `Cor`, `Bloqueio` e `Status`
+  - modal novo: `Codigo`, `Nome`, `Descricao`, `Historico`, `Cor`, `Ocultar agendamento` e `Considerar falta do paciente`
+  - o modal de edicao adiciona `Situacao ativa`
+
+## Diferencas entre simples e especiais
+
+- Tabelas simples
+  - `Codigo`, `Nome`, `Descricao`
+  - sem cor funcional
+  - apenas checkbox de ativo na edicao
+- `Motivos de agendamento`
+  - possui `Tipo`, `Cor` e `Compromisso produtivo`
+  - comportamento depende do `Tipo`
+- `Situacoes de agendamento`
+  - possui `Historico`, `Cor`, `Ocultar agendamento` e `Considerar falta do cliente`
+  - nao depende de `Tipo`
+
+## Persistencia real das tabelas especiais
+
+- Migration criada:
+  - `backend/src/db/migrations/006_create_appointment_auxiliary_tables.sql`
+- Tabelas criadas:
+  - `appointment_reasons`
+  - `appointment_statuses`
+- Backend criado:
+  - `backend/src/repositories/appointmentAuxiliaryTablesRepository.js`
+  - `backend/src/services/appointmentAuxiliaryTablesService.js`
+- Rotas criadas:
+  - `GET /admin/auxiliary-tables/appointment-reasons`
+  - `POST /admin/auxiliary-tables/appointment-reasons`
+  - `PUT /admin/auxiliary-tables/appointment-reasons/:id`
+  - `PATCH /admin/auxiliary-tables/appointment-reasons/:id/status`
+  - `GET /admin/auxiliary-tables/appointment-statuses`
+  - `POST /admin/auxiliary-tables/appointment-statuses`
+  - `PUT /admin/auxiliary-tables/appointment-statuses/:id`
+  - `PATCH /admin/auxiliary-tables/appointment-statuses/:id/status`
+
+## Como validar as tabelas especiais no navegador
+
+1. Abrir `Configuracoes -> Tabelas auxiliares`.
+2. Em `Motivos de agendamento`:
+   - abrir `Novo motivo`
+   - confirmar `Tipo` com `Agendamento` e `Compromisso`
+   - confirmar que `Compromisso produtivo` inicia desabilitado em `Agendamento`
+   - trocar para `Compromisso` e confirmar habilitacao
+   - criar, editar, inativar, recarregar e reativar
+3. Em `Situacoes de agendamento`:
+   - abrir `Nova situacao`
+   - confirmar `Historico`, `Cor`, `Ocultar agendamento` e `Considerar falta do cliente`
+   - criar, editar, inativar, recarregar e reativar
+
+## Pendencias finais
+
+- O sistema modelo ainda usa o texto legado `paciente` em partes da UI de `Situacoes de agendamento`.
+- No Terra Relva foi mantido `cliente` no contrato visivel sem alterar a logica funcional.

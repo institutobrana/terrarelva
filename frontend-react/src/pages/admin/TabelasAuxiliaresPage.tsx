@@ -13,12 +13,24 @@ import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } fro
 import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
 import {
+  type AppointmentReasonRecord,
+  type AppointmentReasonPayload,
+  type AppointmentStatusPayload,
+  type AppointmentStatusRecord,
   AuxiliaryTablesApiError,
+  createAppointmentReason,
+  createAppointmentStatus,
   createAuxiliarySimpleTableEntry,
   createPaymentMethod,
+  fetchAppointmentReasons,
+  fetchAppointmentStatuses,
   fetchAuxiliarySimpleTable,
   type AuxiliarySimpleRecord,
   type AuxiliarySimpleTableApiId,
+  updateAppointmentReason,
+  updateAppointmentReasonStatus,
+  updateAppointmentStatus,
+  updateAppointmentStatusStatus,
   updateAuxiliarySimpleTableEntry,
   updateAuxiliarySimpleTableEntryStatus,
   fetchPaymentMethods,
@@ -37,7 +49,7 @@ type AuxiliaryField =
   | "productiveCommitment"
   | "history"
   | "hideAppointment"
-  | "considerPatientNoShow";
+  | "considerClientNoShow";
 
 type AuxiliaryTableDefinition = {
   id: string;
@@ -57,6 +69,7 @@ type AuxiliaryTableRow = {
   name: string;
   description: string | null;
   isActive: boolean;
+  color?: string | null;
 };
 
 type AuxiliaryModalFormValues = {
@@ -69,15 +82,21 @@ type AuxiliaryModalFormValues = {
   productiveCommitment?: boolean;
   history?: string;
   hideAppointment?: boolean;
-  considerPatientNoShow?: boolean;
+  considerClientNoShow?: boolean;
 };
 
-type EditingAuxiliarySimpleSnapshot = {
+type EditingPersistedRecordSnapshot = {
   id: string;
   code: string;
   name: string;
   description: string;
   isActive: boolean;
+  color?: string | null;
+  type?: "agendamento" | "compromisso";
+  productiveCommitment?: boolean;
+  history?: string;
+  hideAppointment?: boolean;
+  considerClientNoShow?: boolean;
 };
 
 type PaymentMethodColumnKey = "code" | "name" | "description";
@@ -110,6 +129,11 @@ const simpleAuxiliaryTableApiIdByTableId: Partial<Record<AuxiliaryTableDefinitio
   "ocupacao-cliente": "occupations",
 };
 
+const appointmentSpecialTableIdByTableId: Partial<Record<AuxiliaryTableDefinition["id"], "appointment-reasons" | "appointment-statuses">> = {
+  "motivos-agendamento": "appointment-reasons",
+  "situacoes-agendamento": "appointment-statuses",
+};
+
 function readStoredSimpleAuxiliaryTablesShowInactive() {
   if (typeof window === "undefined") {
     return false;
@@ -138,7 +162,7 @@ const auxiliaryTables: AuxiliaryTableDefinition[] = [
     createTitle: "Nova situacao de agendamento",
     submitLabel: "Gravar situacao",
     formKind: "appointment-status",
-    fields: ["code", "name", "description", "history", "color", "hideAppointment", "considerPatientNoShow"],
+    fields: ["code", "name", "description", "history", "color", "hideAppointment", "considerClientNoShow"],
     hasColorColumn: true,
   },
   {
@@ -193,11 +217,7 @@ const auxiliaryTables: AuxiliaryTableDefinition[] = [
   },
 ];
 
-const preparedRowsByTable: Record<string, AuxiliaryTableRow[]> = {
-  "motivos-agendamento": [],
-  "segmentos-fornecedor": [],
-  especialidades: [],
-};
+const preparedRowsByTable: Record<string, AuxiliaryTableRow[]> = {};
 
 const reasonTypeOptions = [
   { label: "Agendamento", value: "agendamento" },
@@ -230,7 +250,7 @@ function buildDefaultValues(table: AuxiliaryTableDefinition): AuxiliaryModalForm
       history: "",
       color: undefined,
       hideAppointment: false,
-      considerPatientNoShow: false,
+      considerClientNoShow: false,
     };
   }
 
@@ -251,10 +271,12 @@ export function TabelasAuxiliaresPage() {
   const [isLoadingTable, setIsLoadingTable] = useState(false);
   const [tableError, setTableError] = useState<string | null>(null);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
-  const [editingAuxiliarySimpleRecord, setEditingAuxiliarySimpleRecord] = useState<EditingAuxiliarySimpleSnapshot | null>(null);
+  const [editingPersistedRecord, setEditingPersistedRecord] = useState<EditingPersistedRecordSnapshot | null>(null);
   const [editingAuxiliarySimpleIsActive, setEditingAuxiliarySimpleIsActive] = useState(false);
   const editingAuxiliarySimpleIsActiveRef = useRef(false);
   const [simpleAuxiliaryRecords, setSimpleAuxiliaryRecords] = useState<AuxiliarySimpleRecord[]>([]);
+  const [appointmentReasonRecords, setAppointmentReasonRecords] = useState<AppointmentReasonRecord[]>([]);
+  const [appointmentStatusRecords, setAppointmentStatusRecords] = useState<AppointmentStatusRecord[]>([]);
   const [openFilterColumn, setOpenFilterColumn] = useState<AuxiliaryColumnKey | null>(null);
   const [columnQueries, setColumnQueries] = useState<Record<PaymentMethodColumnKey, string>>({
     code: "",
@@ -277,6 +299,11 @@ export function TabelasAuxiliaresPage() {
   const isPaymentMethodsTable = activeTable.id === "formas-pagamento";
   const simpleAuxiliaryTableApiId = simpleAuxiliaryTableApiIdByTableId[activeTable.id] ?? null;
   const isSimpleAuxiliaryTable = simpleAuxiliaryTableApiId !== null;
+  const appointmentSpecialTableApiId = appointmentSpecialTableIdByTableId[activeTable.id] ?? null;
+  const isAppointmentReasonTable = appointmentSpecialTableApiId === "appointment-reasons";
+  const isAppointmentStatusTable = appointmentSpecialTableApiId === "appointment-statuses";
+  const isSpecialPersistedTable = appointmentSpecialTableApiId !== null;
+  const isPersistedAuxiliaryTable = isSimpleAuxiliaryTable || isSpecialPersistedTable;
   const tableRows = useMemo(() => {
     if (isSimpleAuxiliaryTable) {
       return simpleAuxiliaryRecords.map<AuxiliaryTableRow>((entry) => ({
@@ -288,15 +315,37 @@ export function TabelasAuxiliaresPage() {
       }));
     }
 
+    if (isAppointmentReasonTable) {
+      return appointmentReasonRecords.map<AuxiliaryTableRow>((entry) => ({
+        id: entry.id,
+        code: entry.codigo,
+        name: entry.nome,
+        description: entry.descricao,
+        isActive: entry.isActive,
+        color: entry.cor,
+      }));
+    }
+
+    if (isAppointmentStatusTable) {
+      return appointmentStatusRecords.map<AuxiliaryTableRow>((entry) => ({
+        id: entry.id,
+        code: entry.codigo,
+        name: entry.nome,
+        description: entry.descricao,
+        isActive: entry.isActive,
+        color: entry.cor,
+      }));
+    }
+
     return preparedRowsByTable[activeTable.id] ?? [];
-  }, [activeTable.id, isSimpleAuxiliaryTable, simpleAuxiliaryRecords]);
+  }, [activeTable.id, appointmentReasonRecords, appointmentStatusRecords, isAppointmentReasonTable, isAppointmentStatusTable, isSimpleAuxiliaryTable, simpleAuxiliaryRecords]);
   const filteredRows = useMemo(() => {
     const nextRows = tableRows.filter((row) => {
       if (!showInactive && !row.isActive) {
         return false;
       }
 
-      if (!isSimpleAuxiliaryTable) {
+      if (!isPersistedAuxiliaryTable) {
         return true;
       }
 
@@ -317,7 +366,7 @@ export function TabelasAuxiliaresPage() {
       });
     });
 
-    if (!isSimpleAuxiliaryTable || !sortState.key || !sortState.order) {
+    if (!isPersistedAuxiliaryTable || !sortState.key || !sortState.order) {
       return nextRows;
     }
 
@@ -337,7 +386,7 @@ export function TabelasAuxiliaresPage() {
       const comparison = getValue(left).localeCompare(getValue(right), "pt-BR", { sensitivity: "base" });
       return sortState.order === "asc" ? comparison : -comparison;
     });
-  }, [columnQueries, isSimpleAuxiliaryTable, showInactive, sortState, tableRows]);
+  }, [columnQueries, isPersistedAuxiliaryTable, showInactive, sortState, tableRows]);
 
   const setEditingPaymentMethodActiveState = useCallback((value: boolean) => {
     editingAuxiliarySimpleIsActiveRef.current = value;
@@ -463,7 +512,7 @@ export function TabelasAuxiliaresPage() {
         title: renderFilterTitle("name", "Nome"),
         dataIndex: "name",
         key: "name",
-        width: isSimpleAuxiliaryTable ? "30%" : "34%",
+        width: isPersistedAuxiliaryTable ? "30%" : "34%",
         render: (_, row) => (
           <div className="auxiliary-table-name-cell">
             <Typography.Text strong className="auxiliary-table-name-text">{row.name}</Typography.Text>
@@ -479,7 +528,7 @@ export function TabelasAuxiliaresPage() {
         key: "description",
         width: "100%",
         render: (value: string | null) => {
-          if (isSimpleAuxiliaryTable) {
+          if (isPersistedAuxiliaryTable) {
             return <span className="auxiliary-table-description">{value ?? ""}</span>;
           }
 
@@ -496,9 +545,13 @@ export function TabelasAuxiliaresPage() {
         width: 34,
         align: "center",
         className: "auxiliary-table-technical-column",
-        render: () => (
+        render: (_value, row) => (
           <span className="auxiliary-table-color-cell">
-            <span className="auxiliary-table-color-swatch is-empty" aria-hidden="true" />
+            <span
+              className={`auxiliary-table-color-swatch${row.color ? "" : " is-empty"}`}
+              aria-hidden="true"
+              style={row.color ? { backgroundColor: row.color } : undefined}
+            />
           </span>
         ),
       });
@@ -540,12 +593,12 @@ export function TabelasAuxiliaresPage() {
     }
 
     return nextColumns;
-  }, [isSimpleAuxiliaryTable, renderFilterTitle, visibleColumns]);
+  }, [isPersistedAuxiliaryTable, renderFilterTitle, visibleColumns]);
 
   const handleOpenModal = useCallback(() => {
     form.resetFields();
     setEditingRecordId(null);
-    setEditingAuxiliarySimpleRecord(null);
+    setEditingPersistedRecord(null);
     setEditingPaymentMethodActiveState(false);
     setOpenFilterColumn(null);
     setIsModalOpen(true);
@@ -554,14 +607,14 @@ export function TabelasAuxiliaresPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingRecordId(null);
-    setEditingAuxiliarySimpleRecord(null);
+    setEditingPersistedRecord(null);
     setEditingPaymentMethodActiveState(false);
     setOpenFilterColumn(null);
     form.resetFields();
   };
 
   const loadActiveTableRecords = useEffectEvent(async () => {
-    if (!simpleAuxiliaryTableApiId) {
+    if (!isPersistedAuxiliaryTable) {
       return;
     }
 
@@ -569,17 +622,62 @@ export function TabelasAuxiliaresPage() {
     setTableError(null);
 
     try {
-      let records: AuxiliarySimpleRecord[] = [];
+      let records: AuxiliaryTableRow[] = [];
       if (simpleAuxiliaryTableApiId === "payment-methods") {
         const payload = await fetchPaymentMethods();
-        records = payload.paymentMethods;
+        setSimpleAuxiliaryRecords(payload.paymentMethods);
+        setAppointmentReasonRecords([]);
+        setAppointmentStatusRecords([]);
+        records = payload.paymentMethods.map((entry) => ({
+          id: entry.id,
+          code: entry.codigo,
+          name: entry.nome,
+          description: entry.descricao,
+          isActive: entry.isActive,
+        }));
       } else {
-        const payload = await fetchAuxiliarySimpleTable(simpleAuxiliaryTableApiId);
-        records = payload.records;
+        if (simpleAuxiliaryTableApiId) {
+          const payload = await fetchAuxiliarySimpleTable(simpleAuxiliaryTableApiId);
+          setSimpleAuxiliaryRecords(payload.records);
+          setAppointmentReasonRecords([]);
+          setAppointmentStatusRecords([]);
+          records = payload.records.map((entry) => ({
+            id: entry.id,
+            code: entry.codigo,
+            name: entry.nome,
+            description: entry.descricao,
+            isActive: entry.isActive,
+          }));
+        } else if (appointmentSpecialTableApiId === "appointment-reasons") {
+          const payload = await fetchAppointmentReasons();
+          setSimpleAuxiliaryRecords([]);
+          setAppointmentReasonRecords(payload.appointmentReasons);
+          setAppointmentStatusRecords([]);
+          records = payload.appointmentReasons.map((entry) => ({
+            id: entry.id,
+            code: entry.codigo,
+            name: entry.nome,
+            description: entry.descricao,
+            isActive: entry.isActive,
+            color: entry.cor,
+          }));
+        } else if (appointmentSpecialTableApiId === "appointment-statuses") {
+          const payload = await fetchAppointmentStatuses();
+          setSimpleAuxiliaryRecords([]);
+          setAppointmentReasonRecords([]);
+          setAppointmentStatusRecords(payload.appointmentStatuses);
+          records = payload.appointmentStatuses.map((entry) => ({
+            id: entry.id,
+            code: entry.codigo,
+            name: entry.nome,
+            description: entry.descricao,
+            isActive: entry.isActive,
+            color: entry.cor,
+          }));
+        }
       }
-      setSimpleAuxiliaryRecords(records);
       setSelectedRowId((currentSelection) => (
-        records.some((entry: AuxiliarySimpleRecord) => entry.id === currentSelection) ? currentSelection : records[0]?.id ?? null
+        records.some((entry) => entry.id === currentSelection) ? currentSelection : records[0]?.id ?? null
       ));
     } catch (error) {
       const nextMessage = error instanceof AuxiliaryTablesApiError || error instanceof Error
@@ -625,7 +723,7 @@ export function TabelasAuxiliaresPage() {
           } else if (simpleAuxiliaryTableApiId) {
             await updateAuxiliarySimpleTableEntry(simpleAuxiliaryTableApiId, editingRecordId, payload);
           }
-          const statusChanged = editingAuxiliarySimpleRecord ? editingAuxiliarySimpleRecord.isActive !== nextIsActive : false;
+          const statusChanged = editingPersistedRecord ? editingPersistedRecord.isActive !== nextIsActive : false;
           if (statusChanged) {
             if (simpleAuxiliaryTableApiId === "payment-methods") {
               await updatePaymentMethodStatus(editingRecordId, nextIsActive);
@@ -651,10 +749,66 @@ export function TabelasAuxiliaresPage() {
         return;
       }
 
-      const values = await form.validateFields();
+      if (isSpecialPersistedTable) {
+        const values = await form.validateFields();
 
-      apiMessage.success(`${activeTable.label}: cadastro de "${values.name}" validado e preparado para a proxima etapa.`);
-      handleCloseModal();
+        if (isAppointmentReasonTable) {
+          const payload: AppointmentReasonPayload = {
+            codigo: typeof values.code === "string" ? values.code.trim() || undefined : undefined,
+            nome: values.name.trim(),
+            descricao: typeof values.description === "string" ? values.description.trim() || undefined : undefined,
+            tipo: values.type ?? "agendamento",
+            cor: typeof values.color === "string" ? values.color : undefined,
+            compromissoProdutivo: values.productiveCommitment === true,
+          };
+
+          if (editingRecordId) {
+            const nextIsActive = editingAuxiliarySimpleIsActiveRef.current;
+            await updateAppointmentReason(editingRecordId, payload);
+            const statusChanged = editingPersistedRecord ? editingPersistedRecord.isActive !== nextIsActive : false;
+            if (statusChanged) {
+              await updateAppointmentReasonStatus(editingRecordId, nextIsActive);
+              if (!nextIsActive && !showInactive) {
+                setShowInactive(true);
+              }
+            }
+            apiMessage.success("Motivo de agendamento atualizado com sucesso.");
+          } else {
+            await createAppointmentReason(payload);
+            apiMessage.success("Motivo de agendamento criado com sucesso.");
+          }
+        } else if (isAppointmentStatusTable) {
+          const payload: AppointmentStatusPayload = {
+            codigo: typeof values.code === "string" ? values.code.trim() || undefined : undefined,
+            nome: values.name.trim(),
+            descricao: typeof values.description === "string" ? values.description.trim() || undefined : undefined,
+            historico: typeof values.history === "string" ? values.history.trim() || undefined : undefined,
+            cor: typeof values.color === "string" ? values.color : undefined,
+            ocultarAgendamento: values.hideAppointment === true,
+            considerarFaltaCliente: values.considerClientNoShow === true,
+          };
+
+          if (editingRecordId) {
+            const nextIsActive = editingAuxiliarySimpleIsActiveRef.current;
+            await updateAppointmentStatus(editingRecordId, payload);
+            const statusChanged = editingPersistedRecord ? editingPersistedRecord.isActive !== nextIsActive : false;
+            if (statusChanged) {
+              await updateAppointmentStatusStatus(editingRecordId, nextIsActive);
+              if (!nextIsActive && !showInactive) {
+                setShowInactive(true);
+              }
+            }
+            apiMessage.success("Situacao de agendamento atualizada com sucesso.");
+          } else {
+            await createAppointmentStatus(payload);
+            apiMessage.success("Situacao de agendamento criada com sucesso.");
+          }
+        }
+
+        await loadActiveTableRecords();
+        handleCloseModal();
+        return;
+      }
     } catch (error) {
       if (error instanceof AuxiliaryTablesApiError) {
         apiMessage.error(error.message);
@@ -677,7 +831,7 @@ export function TabelasAuxiliaresPage() {
       return;
     }
 
-    if (!isSimpleAuxiliaryTable || !editingRecordId) {
+    if (!isPersistedAuxiliaryTable || !editingRecordId) {
       await handleCreateRecord();
       return;
     }
@@ -685,36 +839,7 @@ export function TabelasAuxiliaresPage() {
     try {
       setIsSubmitting(true);
 
-      await form.validateFields(["name"]);
-      const values = form.getFieldsValue(["code", "name", "description"]);
-      const payload = {
-        codigo: typeof values.code === "string" ? values.code.trim() || undefined : undefined,
-        nome: typeof values.name === "string" ? values.name.trim() : "",
-        descricao: typeof values.description === "string" ? values.description.trim() || undefined : undefined,
-      };
-      const nextIsActive = editingAuxiliarySimpleIsActiveRef.current;
-      const statusChanged = editingAuxiliarySimpleRecord ? editingAuxiliarySimpleRecord.isActive !== nextIsActive : false;
-
-      if (simpleAuxiliaryTableApiId === "payment-methods") {
-        await updatePaymentMethod(editingRecordId, payload);
-      } else if (simpleAuxiliaryTableApiId) {
-        await updateAuxiliarySimpleTableEntry(simpleAuxiliaryTableApiId, editingRecordId, payload);
-      }
-
-      if (statusChanged) {
-        if (simpleAuxiliaryTableApiId === "payment-methods") {
-          await updatePaymentMethodStatus(editingRecordId, nextIsActive);
-        } else if (simpleAuxiliaryTableApiId) {
-          await updateAuxiliarySimpleTableEntryStatus(simpleAuxiliaryTableApiId, editingRecordId, nextIsActive);
-        }
-        if (!nextIsActive && !showInactive) {
-          setShowInactive(true);
-        }
-      }
-
-      await loadActiveTableRecords();
-      apiMessage.success(`${activeTable.label}: cadastro atualizado com sucesso.`);
-      handleCloseModal();
+      await handleCreateRecord();
     } catch (error) {
       if (error instanceof AuxiliaryTablesApiError) {
         apiMessage.error(error.message);
@@ -753,20 +878,48 @@ export function TabelasAuxiliaresPage() {
     }
 
     setEditingRecordId(selectedRow.id);
-    setEditingAuxiliarySimpleRecord({
-      id: selectedRow.id,
-      code: selectedRow.code ?? "",
-      name: selectedRow.name,
-      description: selectedRow.description ?? "",
-      isActive: selectedRow.isActive,
-    });
+
+    if (isAppointmentReasonTable) {
+      const matchingRecord = appointmentReasonRecords.find((entry) => entry.id === selectedRow.id);
+      setEditingPersistedRecord({
+        id: selectedRow.id,
+        code: selectedRow.code ?? "",
+        name: selectedRow.name,
+        description: selectedRow.description ?? "",
+        isActive: selectedRow.isActive,
+        color: matchingRecord?.cor ?? null,
+        type: matchingRecord?.tipo,
+        productiveCommitment: matchingRecord?.compromissoProdutivo === true,
+      });
+    } else if (isAppointmentStatusTable) {
+      const matchingRecord = appointmentStatusRecords.find((entry) => entry.id === selectedRow.id);
+      setEditingPersistedRecord({
+        id: selectedRow.id,
+        code: selectedRow.code ?? "",
+        name: selectedRow.name,
+        description: selectedRow.description ?? "",
+        isActive: selectedRow.isActive,
+        color: matchingRecord?.cor ?? null,
+        history: matchingRecord?.historico ?? "",
+        hideAppointment: matchingRecord?.ocultarAgendamento === true,
+        considerClientNoShow: matchingRecord?.considerarFaltaCliente === true,
+      });
+    } else {
+      setEditingPersistedRecord({
+        id: selectedRow.id,
+        code: selectedRow.code ?? "",
+        name: selectedRow.name,
+        description: selectedRow.description ?? "",
+        isActive: selectedRow.isActive,
+      });
+    }
     setEditingPaymentMethodActiveState(Boolean(selectedRow.isActive));
     setOpenFilterColumn(null);
     setIsModalOpen(true);
   });
 
   useEffect(() => {
-    if (isSimpleAuxiliaryTable) {
+    if (isPersistedAuxiliaryTable) {
       void loadActiveTableRecords();
       return;
     }
@@ -774,10 +927,12 @@ export function TabelasAuxiliaresPage() {
     setTableError(null);
     setIsLoadingTable(false);
     setSimpleAuxiliaryRecords([]);
-  }, [isSimpleAuxiliaryTable, simpleAuxiliaryTableApiId]);
+    setAppointmentReasonRecords([]);
+    setAppointmentStatusRecords([]);
+  }, [appointmentSpecialTableApiId, isPersistedAuxiliaryTable, simpleAuxiliaryTableApiId]);
 
   useEffect(() => {
-    if (!isSimpleAuxiliaryTable || typeof window === "undefined") {
+    if (!isPersistedAuxiliaryTable || typeof window === "undefined") {
       return;
     }
 
@@ -785,7 +940,7 @@ export function TabelasAuxiliaresPage() {
       ? paymentMethodsShowInactiveStorageKey
       : simpleAuxiliaryTablesShowInactiveStorageKey;
     window.localStorage.setItem(storageKey, showInactive ? "true" : "false");
-  }, [isPaymentMethodsTable, isSimpleAuxiliaryTable, showInactive]);
+  }, [isPaymentMethodsTable, isPersistedAuxiliaryTable, showInactive]);
 
   useEffect(() => {
     setShellBandContent(
@@ -853,22 +1008,28 @@ export function TabelasAuxiliaresPage() {
       return;
     }
 
-    if (isSimpleAuxiliaryTable && editingRecordId) {
-      if (!editingAuxiliarySimpleRecord || editingAuxiliarySimpleRecord.id !== editingRecordId) {
+    if (isPersistedAuxiliaryTable && editingRecordId) {
+      if (!editingPersistedRecord || editingPersistedRecord.id !== editingRecordId) {
         return;
       }
 
       form.setFieldsValue({
-        code: editingAuxiliarySimpleRecord.code,
-        name: editingAuxiliarySimpleRecord.name,
-        description: editingAuxiliarySimpleRecord.description,
+        code: editingPersistedRecord.code,
+        name: editingPersistedRecord.name,
+        description: editingPersistedRecord.description,
+        type: editingPersistedRecord.type,
+        color: editingPersistedRecord.color ?? undefined,
+        productiveCommitment: editingPersistedRecord.productiveCommitment,
+        history: editingPersistedRecord.history,
+        hideAppointment: editingPersistedRecord.hideAppointment,
+        considerClientNoShow: editingPersistedRecord.considerClientNoShow,
       });
-      setEditingPaymentMethodActiveState(editingAuxiliarySimpleRecord.isActive);
+      setEditingPaymentMethodActiveState(editingPersistedRecord.isActive);
       return;
     }
 
     form.setFieldsValue(buildDefaultValues(activeTable));
-  }, [activeTable, editingAuxiliarySimpleRecord, editingRecordId, form, isModalOpen, isSimpleAuxiliaryTable, setEditingPaymentMethodActiveState]);
+  }, [activeTable, editingPersistedRecord, editingRecordId, form, isModalOpen, isPersistedAuxiliaryTable, setEditingPaymentMethodActiveState]);
 
   return (
     <div className="module-page-shell users-admin-page">
@@ -947,7 +1108,7 @@ export function TabelasAuxiliaresPage() {
 
       <Modal
         open={isModalOpen}
-        footer={isSimpleAuxiliaryTable ? [
+        footer={isPersistedAuxiliaryTable ? [
           <Button key="save-payment-method" type="primary" loading={isSubmitting} onClick={() => void handleSavePaymentMethodEdit()}>
             {activeTable.submitLabel}
           </Button>,
@@ -978,7 +1139,9 @@ export function TabelasAuxiliaresPage() {
           <Form.Item name="code" label="Codigo">
             <Input
               placeholder={
-                isAppointmentStatusForm
+                isAppointmentReasonForm
+                  ? "Codigo do motivo"
+                  : isAppointmentStatusForm
                   ? "Codigo da situacao"
                   : "Codigo interno"
               }
@@ -992,7 +1155,9 @@ export function TabelasAuxiliaresPage() {
           >
             <Input
               placeholder={
-                isAppointmentStatusForm
+                isAppointmentReasonForm
+                  ? "Nome do motivo"
+                  : isAppointmentStatusForm
                   ? "Nome da situacao"
                   : "Nome do cadastro"
               }
@@ -1003,20 +1168,26 @@ export function TabelasAuxiliaresPage() {
             <Input.TextArea
               rows={3}
               placeholder={
-                isAppointmentStatusForm
+                isAppointmentReasonForm
+                  ? "Descricao do motivo"
+                  : isAppointmentStatusForm
                   ? "Descricao da situacao"
                   : "Descricao operacional"
               }
             />
           </Form.Item>
 
-          {isSimpleAuxiliaryTable && isEditing ? (
+          {isPersistedAuxiliaryTable && isEditing ? (
             <Form.Item>
               <Checkbox
                 checked={editingAuxiliarySimpleIsActive}
                 onChange={(event) => setEditingPaymentMethodActiveState(event.target.checked)}
               >
-                {activeTable.label} ativo
+                {isAppointmentReasonTable
+                  ? "Motivo de agendamento ativo"
+                  : isAppointmentStatusTable
+                    ? "Situacao ativa"
+                    : `${activeTable.label} ativo`}
               </Checkbox>
             </Form.Item>
           ) : null}
@@ -1080,7 +1251,7 @@ export function TabelasAuxiliaresPage() {
           {isAppointmentStatusForm ? (
             <>
               <Form.Item name="history" label="Historico">
-                <Input.TextArea rows={3} placeholder="Texto para inclusao automatica no historico do paciente" />
+                <Input.TextArea rows={3} placeholder="Texto para inclusao automatica no historico do cliente" />
               </Form.Item>
 
               <Form.Item name="color" label="Cor">
@@ -1108,14 +1279,14 @@ export function TabelasAuxiliaresPage() {
                   <Checkbox>Ocultar agendamento</Checkbox>
                 </Form.Item>
 
-                <Form.Item name="considerPatientNoShow" valuePropName="checked">
+                <Form.Item name="considerClientNoShow" valuePropName="checked">
                   <Checkbox>Considerar falta do cliente</Checkbox>
                 </Form.Item>
               </div>
             </>
           ) : null}
 
-          {isSimpleAuxiliaryTable ? null : (
+          {isPersistedAuxiliaryTable ? null : (
             <div className={`terra-password-modal-actions client-modal-actions${isAppointmentStatusForm ? " auxiliary-status-actions" : ""}`}>
               <Button
                 type="primary"

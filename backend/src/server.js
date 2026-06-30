@@ -15,6 +15,12 @@ import {
 } from "./services/authService.js";
 import { listClients } from "./services/clientsService.js";
 import {
+  createAppointmentAuxiliaryTableEntry,
+  listAppointmentAuxiliaryTable,
+  setAppointmentAuxiliaryTableEntryStatus,
+  updateAppointmentAuxiliaryTableEntry,
+} from "./services/appointmentAuxiliaryTablesService.js";
+import {
   createPaymentMethodEntry,
   listPaymentMethods,
   setPaymentMethodStatus,
@@ -229,6 +235,56 @@ const server = http.createServer(async (request, response) => {
 
         const paymentMethod = await setPaymentMethodStatus(statusMatch[1], isActive);
         sendJson(response, 200, { paymentMethod });
+        return;
+      }
+    }
+
+    if (request.url?.startsWith("/admin/auxiliary-tables/")) {
+      const claims = await authenticate(request, response);
+      if (!claims) {
+        return;
+      }
+
+      const requestUrl = new URL(request.url, `http://${request.headers.host ?? `${env.host}:${env.port}`}`);
+      const collectionMatch = requestUrl.pathname.match(/^\/admin\/auxiliary-tables\/(appointment-reasons|appointment-statuses)$/);
+
+      if (request.method === "GET" && collectionMatch) {
+        const payload = await listAppointmentAuxiliaryTable(collectionMatch[1]);
+        sendJson(response, 200, payload);
+        return;
+      }
+
+      if (request.method === "POST" && collectionMatch) {
+        const body = await readJsonBody(request);
+        const payload = await createAppointmentAuxiliaryTableEntry(collectionMatch[1], body);
+        sendJson(response, 201, payload);
+        return;
+      }
+
+      const updateMatch = requestUrl.pathname.match(/^\/admin\/auxiliary-tables\/(appointment-reasons|appointment-statuses)\/([^/]+)$/);
+      if (request.method === "PUT" && updateMatch) {
+        const body = await readJsonBody(request);
+        const payload = await updateAppointmentAuxiliaryTableEntry(updateMatch[1], updateMatch[2], body);
+        sendJson(response, 200, payload);
+        return;
+      }
+
+      const statusMatch = requestUrl.pathname.match(/^\/admin\/auxiliary-tables\/(appointment-reasons|appointment-statuses)\/([^/]+)\/status$/);
+      if (request.method === "PATCH" && statusMatch) {
+        const body = await readJsonBody(request);
+        const isActive = typeof body.isActive === "boolean"
+          ? body.isActive
+          : typeof body.ativo === "boolean"
+            ? body.ativo
+            : null;
+
+        if (typeof isActive !== "boolean") {
+          sendJson(response, 400, { error: "Campo isActive obrigatorio." });
+          return;
+        }
+
+        const payload = await setAppointmentAuxiliaryTableEntryStatus(statusMatch[1], statusMatch[2], isActive);
+        sendJson(response, 200, payload);
         return;
       }
     }
