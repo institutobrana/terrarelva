@@ -401,14 +401,15 @@ export function TabelasAuxiliaresPage() {
     );
   }, [sortState, visibleColumns]);
 
-  const renderFilterTitle = useCallback((columnKey: AuxiliaryColumnKey, label: string) => {
+  const renderFilterTitle = useCallback((columnKey: AuxiliaryColumnKey, label: string, options?: { hideLabel?: boolean }) => {
     const isMainFilterColumn = columnKey === "code" || columnKey === "name" || columnKey === "description";
     const hasQuery = isMainFilterColumn && columnQueries[columnKey].trim().length > 0;
     const isSorted = isMainFilterColumn && sortState.key === columnKey && sortState.order;
+    const hideLabel = options?.hideLabel === true;
 
     return (
-      <div className="auxiliary-filter-header">
-        <span>{label}</span>
+      <div className={`auxiliary-filter-header${hideLabel ? " is-icon-only" : ""}`}>
+        {hideLabel ? null : <span>{label}</span>}
         <Dropdown
           trigger={["click"]}
           open={openFilterColumn === columnKey}
@@ -473,10 +474,10 @@ export function TabelasAuxiliaresPage() {
 
     if (visibleColumns.color) {
       nextColumns.push({
-        title: renderFilterTitle("color", "Cor"),
+        title: renderFilterTitle("color", "Cor", { hideLabel: true }),
         dataIndex: "color",
         key: "color",
-        width: 54,
+        width: 34,
         align: "center",
         className: "auxiliary-table-technical-column",
         render: () => (
@@ -489,10 +490,10 @@ export function TabelasAuxiliaresPage() {
 
     if (visibleColumns.lock) {
       nextColumns.push({
-        title: renderFilterTitle("lock", "Bloqueio"),
+        title: renderFilterTitle("lock", "Bloqueio", { hideLabel: true }),
         dataIndex: "lock",
         key: "lock",
-        width: 52,
+        width: 34,
         align: "center",
         className: "auxiliary-table-technical-column",
         render: () => (
@@ -505,10 +506,10 @@ export function TabelasAuxiliaresPage() {
 
     if (visibleColumns.status) {
       nextColumns.push({
-        title: renderFilterTitle("status", "Status"),
+        title: renderFilterTitle("status", "Status", { hideLabel: true }),
         dataIndex: "isActive",
         key: "status",
-        width: 46,
+        width: 34,
         align: "center",
         className: "auxiliary-table-status-column",
         render: (value: boolean) => (

@@ -1190,6 +1190,13 @@ a {
   gap: 6px;
 }
 
+.auxiliary-filter-header.is-icon-only {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  gap: 0;
+}
+
 .auxiliary-filter-trigger {
   width: 20px;
   height: 20px;
@@ -1348,7 +1355,13 @@ a {
 
 .auxiliary-compact-table .auxiliary-table-technical-column,
 .auxiliary-compact-table .auxiliary-table-status-column {
-  padding-inline: 4px !important;
+  padding-inline: 2px !important;
+}
+
+.auxiliary-compact-table .auxiliary-table-technical-column .ant-table-column-title,
+.auxiliary-compact-table .auxiliary-table-status-column .ant-table-column-title {
+  display: flex;
+  justify-content: center;
 }
 
 .cashflow-shell-toolbar {
