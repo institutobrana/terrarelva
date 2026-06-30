@@ -20,6 +20,12 @@ import {
   setPaymentMethodStatus,
   updatePaymentMethodEntry,
 } from "./services/paymentMethodsService.js";
+import {
+  createSimpleAuxiliaryEntry,
+  listSimpleAuxiliaryEntries,
+  setSimpleAuxiliaryEntryStatus,
+  updateSimpleAuxiliaryEntry,
+} from "./services/simpleAuxiliaryTablesService.js";
 import { listSuppliers } from "./services/suppliersService.js";
 import { readJsonBody, sendJson } from "./utils/http.js";
 
@@ -223,6 +229,66 @@ const server = http.createServer(async (request, response) => {
 
         const paymentMethod = await setPaymentMethodStatus(statusMatch[1], isActive);
         sendJson(response, 200, { paymentMethod });
+        return;
+      }
+    }
+
+    if (request.url?.startsWith("/admin/auxiliary-tables/")) {
+      const claims = await authenticate(request, response);
+      if (!claims) {
+        return;
+      }
+
+      const requestUrl = new URL(request.url, `http://${request.headers.host ?? `${env.host}:${env.port}`}`);
+      const collectionMatch = requestUrl.pathname.match(/^\/admin\/auxiliary-tables\/(indication-types|supplier-segments|material-groups|occupations)$/);
+
+      if (request.method === "GET" && collectionMatch) {
+        const payload = await listSimpleAuxiliaryEntries(collectionMatch[1]);
+        sendJson(response, 200, payload);
+        return;
+      }
+
+      if (request.method === "POST" && collectionMatch) {
+        const body = await readJsonBody(request);
+        const payload = await createSimpleAuxiliaryEntry(collectionMatch[1], {
+          codigo: typeof body.codigo === "string" ? body.codigo : "",
+          nome: typeof body.nome === "string" ? body.nome : "",
+          descricao: typeof body.descricao === "string" ? body.descricao : "",
+        });
+
+        sendJson(response, 201, payload);
+        return;
+      }
+
+      const updateMatch = requestUrl.pathname.match(/^\/admin\/auxiliary-tables\/(indication-types|supplier-segments|material-groups|occupations)\/([^/]+)$/);
+      if (request.method === "PUT" && updateMatch) {
+        const body = await readJsonBody(request);
+        const payload = await updateSimpleAuxiliaryEntry(updateMatch[1], updateMatch[2], {
+          codigo: typeof body.codigo === "string" ? body.codigo : "",
+          nome: typeof body.nome === "string" ? body.nome : "",
+          descricao: typeof body.descricao === "string" ? body.descricao : "",
+        });
+
+        sendJson(response, 200, payload);
+        return;
+      }
+
+      const statusMatch = requestUrl.pathname.match(/^\/admin\/auxiliary-tables\/(indication-types|supplier-segments|material-groups|occupations)\/([^/]+)\/status$/);
+      if (request.method === "PATCH" && statusMatch) {
+        const body = await readJsonBody(request);
+        const isActive = typeof body.isActive === "boolean"
+          ? body.isActive
+          : typeof body.ativo === "boolean"
+            ? body.ativo
+            : null;
+
+        if (typeof isActive !== "boolean") {
+          sendJson(response, 400, { error: "Campo isActive obrigatorio." });
+          return;
+        }
+
+        const payload = await setSimpleAuxiliaryEntryStatus(statusMatch[1], statusMatch[2], isActive);
+        sendJson(response, 200, payload);
         return;
       }
     }

@@ -1,7 +1,14 @@
 import { getStoredToken } from "@/services/auth/authStorage";
 import { getApiBaseUrl } from "@/services/auth/apiBase";
 
-export type PaymentMethodRecord = {
+export type AuxiliarySimpleTableApiId =
+  | "payment-methods"
+  | "indication-types"
+  | "supplier-segments"
+  | "material-groups"
+  | "occupations";
+
+export type AuxiliarySimpleRecord = {
   id: string;
   codigo: string;
   nome: string;
@@ -11,7 +18,7 @@ export type PaymentMethodRecord = {
   atualizadoEm: string;
 };
 
-type PaymentMethodApiRecord = {
+type AuxiliarySimpleApiRecord = {
   id: string;
   codigo: string;
   nome: string;
@@ -22,10 +29,42 @@ type PaymentMethodApiRecord = {
   atualizadoEm: string;
 };
 
-export type PaymentMethodPayload = {
+export type PaymentMethodRecord = AuxiliarySimpleRecord;
+
+export type AuxiliarySimplePayload = {
   codigo?: string;
   nome: string;
   descricao?: string;
+};
+
+export type PaymentMethodPayload = AuxiliarySimplePayload;
+
+type CollectionResponseConfig = {
+  collectionKey: string;
+  itemKey: string;
+};
+
+const responseConfigByTable: Record<AuxiliarySimpleTableApiId, CollectionResponseConfig> = {
+  "payment-methods": {
+    collectionKey: "paymentMethods",
+    itemKey: "paymentMethod",
+  },
+  "indication-types": {
+    collectionKey: "indicationTypes",
+    itemKey: "indicationType",
+  },
+  "supplier-segments": {
+    collectionKey: "supplierSegments",
+    itemKey: "supplierSegment",
+  },
+  "material-groups": {
+    collectionKey: "materialGroups",
+    itemKey: "materialGroup",
+  },
+  occupations: {
+    collectionKey: "occupations",
+    itemKey: "occupation",
+  },
 };
 
 export class AuxiliaryTablesApiError extends Error {
@@ -61,7 +100,7 @@ async function parseResponse<T>(response: Response): Promise<T> {
   return response.json();
 }
 
-function normalizePaymentMethod(record: PaymentMethodApiRecord): PaymentMethodRecord {
+function normalizeAuxiliarySimpleRecord(record: AuxiliarySimpleApiRecord): AuxiliarySimpleRecord {
   return {
     id: record.id,
     codigo: record.codigo,
@@ -73,57 +112,95 @@ function normalizePaymentMethod(record: PaymentMethodApiRecord): PaymentMethodRe
   };
 }
 
-export async function fetchPaymentMethods() {
-  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/payment-methods`, {
+export async function fetchAuxiliarySimpleTable(tableId: AuxiliarySimpleTableApiId) {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/${tableId}`, {
     headers: getAuthHeaders(),
   });
 
-  const payload = await parseResponse<{ paymentMethods: PaymentMethodApiRecord[]; total: number }>(response);
+  const config = responseConfigByTable[tableId];
+  const payload = await parseResponse<Record<string, AuxiliarySimpleApiRecord[] | number>>(response);
+  const records = Array.isArray(payload[config.collectionKey]) ? payload[config.collectionKey] as AuxiliarySimpleApiRecord[] : [];
 
   return {
-    total: payload.total,
-    paymentMethods: payload.paymentMethods.map(normalizePaymentMethod),
+    total: typeof payload.total === "number" ? payload.total : records.length,
+    records: records.map(normalizeAuxiliarySimpleRecord),
   };
 }
 
-export async function createPaymentMethod(payload: PaymentMethodPayload) {
-  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/payment-methods`, {
+export async function createAuxiliarySimpleTableEntry(tableId: AuxiliarySimpleTableApiId, payload: AuxiliarySimplePayload) {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/${tableId}`, {
     method: "POST",
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
   });
 
-  const result = await parseResponse<{ paymentMethod: PaymentMethodApiRecord }>(response);
+  const config = responseConfigByTable[tableId];
+  const result = await parseResponse<Record<string, AuxiliarySimpleApiRecord>>(response);
 
   return {
-    paymentMethod: normalizePaymentMethod(result.paymentMethod),
+    record: normalizeAuxiliarySimpleRecord(result[config.itemKey]),
   };
 }
 
-export async function updatePaymentMethod(id: string, payload: PaymentMethodPayload) {
-  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/payment-methods/${id}`, {
+export async function updateAuxiliarySimpleTableEntry(tableId: AuxiliarySimpleTableApiId, id: string, payload: AuxiliarySimplePayload) {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/${tableId}/${id}`, {
     method: "PUT",
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
   });
 
-  const result = await parseResponse<{ paymentMethod: PaymentMethodApiRecord }>(response);
+  const config = responseConfigByTable[tableId];
+  const result = await parseResponse<Record<string, AuxiliarySimpleApiRecord>>(response);
 
   return {
-    paymentMethod: normalizePaymentMethod(result.paymentMethod),
+    record: normalizeAuxiliarySimpleRecord(result[config.itemKey]),
   };
 }
 
-export async function updatePaymentMethodStatus(id: string, isActive: boolean) {
-  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/payment-methods/${id}/status`, {
+export async function updateAuxiliarySimpleTableEntryStatus(tableId: AuxiliarySimpleTableApiId, id: string, isActive: boolean) {
+  const response = await fetch(`${API_BASE_URL}/admin/auxiliary-tables/${tableId}/${id}/status`, {
     method: "PATCH",
     headers: getAuthHeaders(),
     body: JSON.stringify({ isActive }),
   });
 
-  const result = await parseResponse<{ paymentMethod: PaymentMethodApiRecord }>(response);
+  const config = responseConfigByTable[tableId];
+  const result = await parseResponse<Record<string, AuxiliarySimpleApiRecord>>(response);
 
   return {
-    paymentMethod: normalizePaymentMethod(result.paymentMethod),
+    record: normalizeAuxiliarySimpleRecord(result[config.itemKey]),
+  };
+}
+
+export async function fetchPaymentMethods() {
+  const result = await fetchAuxiliarySimpleTable("payment-methods");
+
+  return {
+    total: result.total,
+    paymentMethods: result.records,
+  };
+}
+
+export async function createPaymentMethod(payload: PaymentMethodPayload) {
+  const result = await createAuxiliarySimpleTableEntry("payment-methods", payload);
+
+  return {
+    paymentMethod: result.record,
+  };
+}
+
+export async function updatePaymentMethod(id: string, payload: PaymentMethodPayload) {
+  const result = await updateAuxiliarySimpleTableEntry("payment-methods", id, payload);
+
+  return {
+    paymentMethod: result.record,
+  };
+}
+
+export async function updatePaymentMethodStatus(id: string, isActive: boolean) {
+  const result = await updateAuxiliarySimpleTableEntryStatus("payment-methods", id, isActive);
+
+  return {
+    paymentMethod: result.record,
   };
 }

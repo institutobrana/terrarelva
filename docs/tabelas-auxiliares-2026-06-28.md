@@ -57,6 +57,7 @@
   - `Formas de pagamento` passou a usar banco de dados real
   - a lista agora pode ser carregada do backend
   - o modal pode criar e editar registros persistidos
+  - `Tipos de indicacao`, `Segmentos de fornecedor`, `Grupos de material` e `Ocupacao/profissao do cliente` agora seguem o mesmo padrao simples com persistencia real
 - Ajuste de entendimento aplicado:
   - o botao `Novo...` e o modal aberto dependem da tabela selecionada
   - o modal de `Motivos de agendamento` deixou de ser tratado como universal
@@ -70,6 +71,21 @@
   - abre `Novo segmento de fornecedor`
   - campos incluidos: `Codigo`, `Nome` e `Descricao`
   - nao exibe `Tipo`, `Cor` nem `Compromisso produtivo`
+- Tipos de indicacao:
+  - agora carrega lista real do backend
+  - permite criar, editar, ativar e inativar registros persistidos
+  - novo cadastro nasce ativo
+  - o checkbox de ativo aparece somente na edicao
+- Grupos de material:
+  - agora carrega lista real do backend
+  - permite criar, editar, ativar e inativar registros persistidos
+  - novo cadastro nasce ativo
+  - o checkbox de ativo aparece somente na edicao
+- Ocupacao/profissao do cliente:
+  - agora carrega lista real do backend
+  - permite criar, editar, ativar e inativar registros persistidos
+  - novo cadastro nasce ativo
+  - o checkbox de ativo aparece somente na edicao
 - Situacoes de agendamento:
   - abre `Nova situacao de agendamento`
   - campos incluidos: `Codigo`, `Nome`, `Descricao`, `Historico`, `Cor`, `Ocultar agendamento` e `Considerar falta do cliente`
@@ -104,7 +120,12 @@
 - Persistencia:
   - nao foi usado `localStorage`
   - o backend segue o padrao atual do projeto com `pg`, migrations SQL e camada `repository/service`
-  - nesta etapa foi implementada persistencia real apenas para `Formas de pagamento`
+  - nesta etapa foi implementada persistencia real para `Formas de pagamento`
+  - e tambem para as tabelas simples:
+    - `Tipos de indicacao`
+    - `Segmentos de fornecedor`
+    - `Grupos de material`
+    - `Ocupacao/profissao do cliente`
   - tabelas auxiliares simples devem seguir o padrao: `id`, `codigo`, `nome`, `descricao`, `ativo`, `criadoEm`, `atualizadoEm`
   - tabelas com campos especificos permanecem separadas:
     - `Motivos de agendamento`: `tipo`, `cor`, `compromissoProdutivo`
@@ -135,16 +156,39 @@
 
 - Migration criada:
   - `backend/src/db/migrations/004_create_payment_methods.sql`
+  - `backend/src/db/migrations/005_create_simple_auxiliary_tables.sql`
 - Tabela criada:
   - `payment_methods`
+  - `indication_types`
+  - `supplier_segments`
+  - `material_groups`
+  - `client_occupations`
 - Rotas/API criadas:
   - `GET /admin/auxiliary-tables/payment-methods`
   - `POST /admin/auxiliary-tables/payment-methods`
   - `PUT /admin/auxiliary-tables/payment-methods/:id`
   - `PATCH /admin/auxiliary-tables/payment-methods/:id/status`
+  - `GET /admin/auxiliary-tables/indication-types`
+  - `POST /admin/auxiliary-tables/indication-types`
+  - `PUT /admin/auxiliary-tables/indication-types/:id`
+  - `PATCH /admin/auxiliary-tables/indication-types/:id/status`
+  - `GET /admin/auxiliary-tables/supplier-segments`
+  - `POST /admin/auxiliary-tables/supplier-segments`
+  - `PUT /admin/auxiliary-tables/supplier-segments/:id`
+  - `PATCH /admin/auxiliary-tables/supplier-segments/:id/status`
+  - `GET /admin/auxiliary-tables/material-groups`
+  - `POST /admin/auxiliary-tables/material-groups`
+  - `PUT /admin/auxiliary-tables/material-groups/:id`
+  - `PATCH /admin/auxiliary-tables/material-groups/:id/status`
+  - `GET /admin/auxiliary-tables/occupations`
+  - `POST /admin/auxiliary-tables/occupations`
+  - `PUT /admin/auxiliary-tables/occupations/:id`
+  - `PATCH /admin/auxiliary-tables/occupations/:id/status`
 - Camadas adicionadas:
   - `backend/src/repositories/paymentMethodsRepository.js`
   - `backend/src/services/paymentMethodsService.js`
+  - `backend/src/repositories/simpleAuxiliaryTablesRepository.js`
+  - `backend/src/services/simpleAuxiliaryTablesService.js`
 - Seed adicionado:
   - `backend/src/scripts/seed-payment-methods.js`
   - comando: `npm run db:seed-payment-methods`
@@ -208,6 +252,14 @@
 16. Reexibir `Descricao` e confirmar que a coluna volta.
 17. Em `Formas de pagamento`, confirmar grade como `Codigo | Nome | Descricao | Bloqueio | Status`.
 18. Em `Motivos de agendamento` e `Situacoes de agendamento`, confirmar grade como `Codigo | Nome | Descricao | Cor | Bloqueio | Status`.
+19. Repetir o fluxo abaixo em `Tipos de indicacao`, `Segmentos de fornecedor`, `Grupos de material` e `Ocupacao/profissao do cliente`:
+   - criar um item
+   - confirmar que nasce ativo
+   - editar o item e confirmar modal preenchido
+   - inativar e gravar
+   - recarregar e confirmar persistencia do inativo
+   - reativar
+   - recarregar e confirmar persistencia do ativo
 
 ## Como validar no backend
 
@@ -215,3 +267,31 @@
 2. Rodar `npm run db:seed-payment-methods`.
 3. Rodar o mesmo seed novamente e confirmar que continua existindo apenas um registro por codigo.
 4. Validar a listagem de `Formas de pagamento` no banco ou pelo endpoint `GET /admin/auxiliary-tables/payment-methods`.
+5. Validar `GET`, `POST`, `PUT` e `PATCH /status` das 4 tabelas simples novas.
+
+## Levantamento das tabelas simples
+
+- `Tipos de indicacao`
+  - nao tinha tabela real no banco
+  - nao tinha repository/service/rotas
+  - nao tinha frontend integrado
+  - agora segue o mesmo padrao simples de `Formas de pagamento`
+- `Segmentos de fornecedor`
+  - nao tinha tabela real no banco
+  - nao tinha repository/service/rotas
+  - nao tinha frontend integrado
+  - agora segue o mesmo padrao simples de `Formas de pagamento`
+- `Grupos de material`
+  - nao tinha tabela real no banco
+  - nao tinha repository/service/rotas
+  - nao tinha frontend integrado
+  - agora segue o mesmo padrao simples de `Formas de pagamento`
+- `Ocupacao/profissao do cliente`
+  - nao tinha tabela real no banco
+  - nao tinha repository/service/rotas
+  - nao tinha frontend integrado
+  - agora segue o mesmo padrao simples de `Formas de pagamento`
+
+## Pendencias
+
+- O browser plugin in-app ficou instavel durante a validacao automatizada desta rodada; a validacao visual foi concluida com Playwright local apontando para o mesmo `localhost`.

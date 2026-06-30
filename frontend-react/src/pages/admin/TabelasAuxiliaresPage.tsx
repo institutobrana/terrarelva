@@ -14,9 +14,14 @@ import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
 import {
   AuxiliaryTablesApiError,
+  createAuxiliarySimpleTableEntry,
   createPaymentMethod,
+  fetchAuxiliarySimpleTable,
+  type AuxiliarySimpleRecord,
+  type AuxiliarySimpleTableApiId,
+  updateAuxiliarySimpleTableEntry,
+  updateAuxiliarySimpleTableEntryStatus,
   fetchPaymentMethods,
-  type PaymentMethodRecord,
   updatePaymentMethod,
   updatePaymentMethodStatus,
 } from "@/services/auxiliaryTables/auxiliaryTablesApi";
@@ -67,7 +72,7 @@ type AuxiliaryModalFormValues = {
   considerPatientNoShow?: boolean;
 };
 
-type EditingPaymentMethodSnapshot = {
+type EditingAuxiliarySimpleSnapshot = {
   id: string;
   code: string;
   name: string;
@@ -95,13 +100,22 @@ const auxiliaryColumnOptions: ReadonlyArray<{ key: AuxiliaryColumnKey; label: st
 ];
 
 const paymentMethodsShowInactiveStorageKey = "terra-relva-payment-methods-show-inactive";
+const simpleAuxiliaryTablesShowInactiveStorageKey = "terra-relva-simple-auxiliary-tables-show-inactive";
 
-function readStoredPaymentMethodsShowInactive() {
+const simpleAuxiliaryTableApiIdByTableId: Partial<Record<AuxiliaryTableDefinition["id"], AuxiliarySimpleTableApiId>> = {
+  "formas-pagamento": "payment-methods",
+  "tipos-indicacao": "indication-types",
+  "segmentos-fornecedor": "supplier-segments",
+  "grupos-material": "material-groups",
+  "ocupacao-cliente": "occupations",
+};
+
+function readStoredSimpleAuxiliaryTablesShowInactive() {
   if (typeof window === "undefined") {
     return false;
   }
 
-  return window.localStorage.getItem(paymentMethodsShowInactiveStorageKey) === "true";
+  return window.localStorage.getItem(simpleAuxiliaryTablesShowInactiveStorageKey) === "true";
 }
 
 const auxiliaryTables: AuxiliaryTableDefinition[] = [
@@ -229,7 +243,7 @@ function buildDefaultValues(table: AuxiliaryTableDefinition): AuxiliaryModalForm
 
 export function TabelasAuxiliaresPage() {
   const { setShellBandContent } = useAdminShellBand();
-  const [showInactive, setShowInactive] = useState(readStoredPaymentMethodsShowInactive);
+  const [showInactive, setShowInactive] = useState(readStoredSimpleAuxiliaryTablesShowInactive);
   const [selectedTableId, setSelectedTableId] = useState("motivos-agendamento");
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -237,10 +251,10 @@ export function TabelasAuxiliaresPage() {
   const [isLoadingTable, setIsLoadingTable] = useState(false);
   const [tableError, setTableError] = useState<string | null>(null);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
-  const [editingPaymentMethod, setEditingPaymentMethod] = useState<EditingPaymentMethodSnapshot | null>(null);
-  const [editingPaymentMethodIsActive, setEditingPaymentMethodIsActive] = useState(false);
-  const editingPaymentMethodIsActiveRef = useRef(false);
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodRecord[]>([]);
+  const [editingAuxiliarySimpleRecord, setEditingAuxiliarySimpleRecord] = useState<EditingAuxiliarySimpleSnapshot | null>(null);
+  const [editingAuxiliarySimpleIsActive, setEditingAuxiliarySimpleIsActive] = useState(false);
+  const editingAuxiliarySimpleIsActiveRef = useRef(false);
+  const [simpleAuxiliaryRecords, setSimpleAuxiliaryRecords] = useState<AuxiliarySimpleRecord[]>([]);
   const [openFilterColumn, setOpenFilterColumn] = useState<AuxiliaryColumnKey | null>(null);
   const [columnQueries, setColumnQueries] = useState<Record<PaymentMethodColumnKey, string>>({
     code: "",
@@ -261,9 +275,11 @@ export function TabelasAuxiliaresPage() {
 
   const activeTable = auxiliaryTables.find((item) => item.id === selectedTableId) ?? auxiliaryTables[0];
   const isPaymentMethodsTable = activeTable.id === "formas-pagamento";
+  const simpleAuxiliaryTableApiId = simpleAuxiliaryTableApiIdByTableId[activeTable.id] ?? null;
+  const isSimpleAuxiliaryTable = simpleAuxiliaryTableApiId !== null;
   const tableRows = useMemo(() => {
-    if (isPaymentMethodsTable) {
-      return paymentMethods.map<AuxiliaryTableRow>((entry) => ({
+    if (isSimpleAuxiliaryTable) {
+      return simpleAuxiliaryRecords.map<AuxiliaryTableRow>((entry) => ({
         id: entry.id,
         code: entry.codigo,
         name: entry.nome,
@@ -273,14 +289,14 @@ export function TabelasAuxiliaresPage() {
     }
 
     return preparedRowsByTable[activeTable.id] ?? [];
-  }, [activeTable.id, isPaymentMethodsTable, paymentMethods]);
+  }, [activeTable.id, isSimpleAuxiliaryTable, simpleAuxiliaryRecords]);
   const filteredRows = useMemo(() => {
     const nextRows = tableRows.filter((row) => {
       if (!showInactive && !row.isActive) {
         return false;
       }
 
-      if (!isPaymentMethodsTable) {
+      if (!isSimpleAuxiliaryTable) {
         return true;
       }
 
@@ -301,7 +317,7 @@ export function TabelasAuxiliaresPage() {
       });
     });
 
-    if (!isPaymentMethodsTable || !sortState.key || !sortState.order) {
+    if (!isSimpleAuxiliaryTable || !sortState.key || !sortState.order) {
       return nextRows;
     }
 
@@ -321,11 +337,11 @@ export function TabelasAuxiliaresPage() {
       const comparison = getValue(left).localeCompare(getValue(right), "pt-BR", { sensitivity: "base" });
       return sortState.order === "asc" ? comparison : -comparison;
     });
-  }, [columnQueries, isPaymentMethodsTable, showInactive, sortState, tableRows]);
+  }, [columnQueries, isSimpleAuxiliaryTable, showInactive, sortState, tableRows]);
 
   const setEditingPaymentMethodActiveState = useCallback((value: boolean) => {
-    editingPaymentMethodIsActiveRef.current = value;
-    setEditingPaymentMethodIsActive(value);
+    editingAuxiliarySimpleIsActiveRef.current = value;
+    setEditingAuxiliarySimpleIsActive(value);
   }, []);
   const selectedRow = filteredRows.find((row) => row.id === selectedRowId) ?? null;
   const selectedReasonType = Form.useWatch("type", form);
@@ -447,7 +463,7 @@ export function TabelasAuxiliaresPage() {
         title: renderFilterTitle("name", "Nome"),
         dataIndex: "name",
         key: "name",
-        width: isPaymentMethodsTable ? "30%" : "34%",
+        width: isSimpleAuxiliaryTable ? "30%" : "34%",
         render: (_, row) => (
           <div className="auxiliary-table-name-cell">
             <Typography.Text strong className="auxiliary-table-name-text">{row.name}</Typography.Text>
@@ -463,7 +479,7 @@ export function TabelasAuxiliaresPage() {
         key: "description",
         width: "100%",
         render: (value: string | null) => {
-          if (isPaymentMethodsTable) {
+          if (isSimpleAuxiliaryTable) {
             return <span className="auxiliary-table-description">{value ?? ""}</span>;
           }
 
@@ -524,12 +540,12 @@ export function TabelasAuxiliaresPage() {
     }
 
     return nextColumns;
-  }, [isPaymentMethodsTable, renderFilterTitle, visibleColumns]);
+  }, [isSimpleAuxiliaryTable, renderFilterTitle, visibleColumns]);
 
   const handleOpenModal = useCallback(() => {
     form.resetFields();
     setEditingRecordId(null);
-    setEditingPaymentMethod(null);
+    setEditingAuxiliarySimpleRecord(null);
     setEditingPaymentMethodActiveState(false);
     setOpenFilterColumn(null);
     setIsModalOpen(true);
@@ -538,26 +554,37 @@ export function TabelasAuxiliaresPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingRecordId(null);
-    setEditingPaymentMethod(null);
+    setEditingAuxiliarySimpleRecord(null);
     setEditingPaymentMethodActiveState(false);
     setOpenFilterColumn(null);
     form.resetFields();
   };
 
-  const loadPaymentMethods = useEffectEvent(async () => {
+  const loadActiveTableRecords = useEffectEvent(async () => {
+    if (!simpleAuxiliaryTableApiId) {
+      return;
+    }
+
     setIsLoadingTable(true);
     setTableError(null);
 
     try {
-      const payload = await fetchPaymentMethods();
-      setPaymentMethods(payload.paymentMethods);
+      let records: AuxiliarySimpleRecord[] = [];
+      if (simpleAuxiliaryTableApiId === "payment-methods") {
+        const payload = await fetchPaymentMethods();
+        records = payload.paymentMethods;
+      } else {
+        const payload = await fetchAuxiliarySimpleTable(simpleAuxiliaryTableApiId);
+        records = payload.records;
+      }
+      setSimpleAuxiliaryRecords(records);
       setSelectedRowId((currentSelection) => (
-        payload.paymentMethods.some((entry) => entry.id === currentSelection) ? currentSelection : payload.paymentMethods[0]?.id ?? null
+        records.some((entry: AuxiliarySimpleRecord) => entry.id === currentSelection) ? currentSelection : records[0]?.id ?? null
       ));
     } catch (error) {
       const nextMessage = error instanceof AuxiliaryTablesApiError || error instanceof Error
         ? error.message
-        : "Nao foi possivel carregar as formas de pagamento.";
+        : `Nao foi possivel carregar ${activeTable.label.toLowerCase()}.`;
       setTableError(nextMessage);
     } finally {
       setIsLoadingTable(false);
@@ -572,7 +599,7 @@ export function TabelasAuxiliaresPage() {
     try {
       setIsSubmitting(true);
 
-      if (isPaymentMethodsTable) {
+      if (isSimpleAuxiliaryTable) {
         const values = form.getFieldsValue(["code", "name", "description"]);
         const normalizedName = typeof values.name === "string" ? values.name.trim() : "";
         if (!normalizedName) {
@@ -592,22 +619,34 @@ export function TabelasAuxiliaresPage() {
         };
 
         if (editingRecordId) {
-          const nextIsActive = editingPaymentMethodIsActiveRef.current;
-          await updatePaymentMethod(editingRecordId, payload);
-          const statusChanged = editingPaymentMethod ? editingPaymentMethod.isActive !== nextIsActive : false;
+          const nextIsActive = editingAuxiliarySimpleIsActiveRef.current;
+          if (simpleAuxiliaryTableApiId === "payment-methods") {
+            await updatePaymentMethod(editingRecordId, payload);
+          } else if (simpleAuxiliaryTableApiId) {
+            await updateAuxiliarySimpleTableEntry(simpleAuxiliaryTableApiId, editingRecordId, payload);
+          }
+          const statusChanged = editingAuxiliarySimpleRecord ? editingAuxiliarySimpleRecord.isActive !== nextIsActive : false;
           if (statusChanged) {
-            await updatePaymentMethodStatus(editingRecordId, nextIsActive);
+            if (simpleAuxiliaryTableApiId === "payment-methods") {
+              await updatePaymentMethodStatus(editingRecordId, nextIsActive);
+            } else if (simpleAuxiliaryTableApiId) {
+              await updateAuxiliarySimpleTableEntryStatus(simpleAuxiliaryTableApiId, editingRecordId, nextIsActive);
+            }
             if (!nextIsActive && !showInactive) {
               setShowInactive(true);
             }
           }
-          apiMessage.success("Forma de pagamento atualizada com sucesso.");
+          apiMessage.success(`${activeTable.label}: cadastro atualizado com sucesso.`);
         } else {
-          await createPaymentMethod(payload);
-          apiMessage.success("Forma de pagamento criada com sucesso.");
+          if (simpleAuxiliaryTableApiId === "payment-methods") {
+            await createPaymentMethod(payload);
+          } else if (simpleAuxiliaryTableApiId) {
+            await createAuxiliarySimpleTableEntry(simpleAuxiliaryTableApiId, payload);
+          }
+          apiMessage.success(`${activeTable.label}: cadastro criado com sucesso.`);
         }
 
-        await loadPaymentMethods();
+        await loadActiveTableRecords();
         handleCloseModal();
         return;
       }
@@ -638,7 +677,7 @@ export function TabelasAuxiliaresPage() {
       return;
     }
 
-    if (!isPaymentMethodsTable || !editingRecordId) {
+    if (!isSimpleAuxiliaryTable || !editingRecordId) {
       await handleCreateRecord();
       return;
     }
@@ -653,20 +692,28 @@ export function TabelasAuxiliaresPage() {
         nome: typeof values.name === "string" ? values.name.trim() : "",
         descricao: typeof values.description === "string" ? values.description.trim() || undefined : undefined,
       };
-      const nextIsActive = editingPaymentMethodIsActiveRef.current;
-      const statusChanged = editingPaymentMethod ? editingPaymentMethod.isActive !== nextIsActive : false;
+      const nextIsActive = editingAuxiliarySimpleIsActiveRef.current;
+      const statusChanged = editingAuxiliarySimpleRecord ? editingAuxiliarySimpleRecord.isActive !== nextIsActive : false;
 
-      await updatePaymentMethod(editingRecordId, payload);
+      if (simpleAuxiliaryTableApiId === "payment-methods") {
+        await updatePaymentMethod(editingRecordId, payload);
+      } else if (simpleAuxiliaryTableApiId) {
+        await updateAuxiliarySimpleTableEntry(simpleAuxiliaryTableApiId, editingRecordId, payload);
+      }
 
       if (statusChanged) {
-        await updatePaymentMethodStatus(editingRecordId, nextIsActive);
+        if (simpleAuxiliaryTableApiId === "payment-methods") {
+          await updatePaymentMethodStatus(editingRecordId, nextIsActive);
+        } else if (simpleAuxiliaryTableApiId) {
+          await updateAuxiliarySimpleTableEntryStatus(simpleAuxiliaryTableApiId, editingRecordId, nextIsActive);
+        }
         if (!nextIsActive && !showInactive) {
           setShowInactive(true);
         }
       }
 
-      await loadPaymentMethods();
-      apiMessage.success("Forma de pagamento atualizada com sucesso.");
+      await loadActiveTableRecords();
+      apiMessage.success(`${activeTable.label}: cadastro atualizado com sucesso.`);
       handleCloseModal();
     } catch (error) {
       if (error instanceof AuxiliaryTablesApiError) {
@@ -700,18 +747,13 @@ export function TabelasAuxiliaresPage() {
       return;
     }
 
-    if (!isPaymentMethodsTable) {
-      apiMessage.info("Edicao preparada para quando houver persistencia real nesta tabela auxiliar.");
-      return;
-    }
-
     if (!selectedRow) {
-      apiMessage.error("Forma de pagamento selecionada nao encontrada.");
+      apiMessage.error(`${activeTable.label}: registro selecionado nao encontrado.`);
       return;
     }
 
     setEditingRecordId(selectedRow.id);
-    setEditingPaymentMethod({
+    setEditingAuxiliarySimpleRecord({
       id: selectedRow.id,
       code: selectedRow.code ?? "",
       name: selectedRow.name,
@@ -724,23 +766,26 @@ export function TabelasAuxiliaresPage() {
   });
 
   useEffect(() => {
-    if (isPaymentMethodsTable) {
-      void loadPaymentMethods();
+    if (isSimpleAuxiliaryTable) {
+      void loadActiveTableRecords();
       return;
     }
 
     setTableError(null);
     setIsLoadingTable(false);
-    setPaymentMethods([]);
-  }, [isPaymentMethodsTable]);
+    setSimpleAuxiliaryRecords([]);
+  }, [isSimpleAuxiliaryTable, simpleAuxiliaryTableApiId]);
 
   useEffect(() => {
-    if (!isPaymentMethodsTable || typeof window === "undefined") {
+    if (!isSimpleAuxiliaryTable || typeof window === "undefined") {
       return;
     }
 
-    window.localStorage.setItem(paymentMethodsShowInactiveStorageKey, showInactive ? "true" : "false");
-  }, [isPaymentMethodsTable, showInactive]);
+    const storageKey = isPaymentMethodsTable
+      ? paymentMethodsShowInactiveStorageKey
+      : simpleAuxiliaryTablesShowInactiveStorageKey;
+    window.localStorage.setItem(storageKey, showInactive ? "true" : "false");
+  }, [isPaymentMethodsTable, isSimpleAuxiliaryTable, showInactive]);
 
   useEffect(() => {
     setShellBandContent(
@@ -770,6 +815,11 @@ export function TabelasAuxiliaresPage() {
     setOpenFilterColumn(null);
     setColumnQueries({ code: "", name: "", description: "" });
     setSortState({ key: null, order: null });
+    setShowInactive(
+      isPaymentMethodsTable
+        ? (typeof window !== "undefined" && window.localStorage.getItem(paymentMethodsShowInactiveStorageKey) === "true")
+        : readStoredSimpleAuxiliaryTablesShowInactive(),
+    );
     setVisibleColumns({
       code: true,
       name: true,
@@ -778,7 +828,7 @@ export function TabelasAuxiliaresPage() {
       lock: true,
       status: true,
     });
-  }, [selectedTableId]);
+  }, [isPaymentMethodsTable, selectedTableId]);
 
   useEffect(() => {
     if (activeTable.formKind !== "appointment-reason") {
@@ -803,22 +853,22 @@ export function TabelasAuxiliaresPage() {
       return;
     }
 
-    if (isPaymentMethodsTable && editingRecordId) {
-      if (!editingPaymentMethod || editingPaymentMethod.id !== editingRecordId) {
+    if (isSimpleAuxiliaryTable && editingRecordId) {
+      if (!editingAuxiliarySimpleRecord || editingAuxiliarySimpleRecord.id !== editingRecordId) {
         return;
       }
 
       form.setFieldsValue({
-        code: editingPaymentMethod.code,
-        name: editingPaymentMethod.name,
-        description: editingPaymentMethod.description,
+        code: editingAuxiliarySimpleRecord.code,
+        name: editingAuxiliarySimpleRecord.name,
+        description: editingAuxiliarySimpleRecord.description,
       });
-      setEditingPaymentMethodActiveState(editingPaymentMethod.isActive);
+      setEditingPaymentMethodActiveState(editingAuxiliarySimpleRecord.isActive);
       return;
     }
 
     form.setFieldsValue(buildDefaultValues(activeTable));
-  }, [activeTable, editingPaymentMethod, editingRecordId, form, isModalOpen, isPaymentMethodsTable, setEditingPaymentMethodActiveState]);
+  }, [activeTable, editingAuxiliarySimpleRecord, editingRecordId, form, isModalOpen, isSimpleAuxiliaryTable, setEditingPaymentMethodActiveState]);
 
   return (
     <div className="module-page-shell users-admin-page">
@@ -897,7 +947,7 @@ export function TabelasAuxiliaresPage() {
 
       <Modal
         open={isModalOpen}
-        footer={isPaymentMethodsTable ? [
+        footer={isSimpleAuxiliaryTable ? [
           <Button key="save-payment-method" type="primary" loading={isSubmitting} onClick={() => void handleSavePaymentMethodEdit()}>
             {activeTable.submitLabel}
           </Button>,
@@ -915,7 +965,7 @@ export function TabelasAuxiliaresPage() {
       >
         <div className="terra-password-modal-header">
           <Typography.Title level={3} className="terra-password-modal-title">
-            {isEditing && isPaymentMethodsTable ? "Alterar forma de pagamento" : activeTable.createTitle}
+            {isEditing ? `Alterar ${activeTable.label.toLowerCase()}` : activeTable.createTitle}
           </Typography.Title>
         </div>
 
@@ -960,13 +1010,13 @@ export function TabelasAuxiliaresPage() {
             />
           </Form.Item>
 
-          {isPaymentMethodsTable && isEditing ? (
+          {isSimpleAuxiliaryTable && isEditing ? (
             <Form.Item>
               <Checkbox
-                checked={editingPaymentMethodIsActive}
+                checked={editingAuxiliarySimpleIsActive}
                 onChange={(event) => setEditingPaymentMethodActiveState(event.target.checked)}
               >
-                Forma de pagamento ativa
+                {activeTable.label} ativo
               </Checkbox>
             </Form.Item>
           ) : null}
@@ -1065,7 +1115,7 @@ export function TabelasAuxiliaresPage() {
             </>
           ) : null}
 
-          {isPaymentMethodsTable ? null : (
+          {isSimpleAuxiliaryTable ? null : (
             <div className={`terra-password-modal-actions client-modal-actions${isAppointmentStatusForm ? " auxiliary-status-actions" : ""}`}>
               <Button
                 type="primary"
