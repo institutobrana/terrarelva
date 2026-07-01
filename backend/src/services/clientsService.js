@@ -1,4 +1,4 @@
-import { listClients as listClientsFromRepository } from "../repositories/clientsRepository.js";
+import { createClient as createClientInRepository, getClientById as getClientByIdFromRepository, listClients as listClientsFromRepository } from "../repositories/clientsRepository.js";
 
 function formatPhone(row) {
   if (!row.primary_phone_number) {
@@ -35,5 +35,59 @@ export async function listClients() {
       primaryEmail: row.primary_email,
     })),
     total: rows.length,
+  };
+}
+
+export async function getClientDetails(clientId) {
+  const client = await getClientByIdFromRepository(clientId);
+  if (!client) {
+    const error = new Error("Cliente nao encontrado.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return {
+    client: {
+      id: client.id,
+      fullName: client.full_name,
+      gender: client.gender,
+      birthDate: client.birth_date,
+      internalCode: client.internal_code,
+      cpf: client.cpf,
+      documentTypeText: client.document_type_text,
+      documentNumber: client.document_number,
+      responsibleName: client.responsible_name,
+      responsibleCpf: client.responsible_cpf,
+      statusText: client.status_text,
+      notes: client.notes,
+      isActive: client.is_active,
+      createdAt: client.created_at,
+      updatedAt: client.updated_at,
+    },
+  };
+}
+
+export async function createClient(payload) {
+  const client = await createClientInRepository(payload);
+  return {
+    client: {
+      id: client.id,
+      fullName: client.full_name,
+      gender: client.gender,
+      birthDate: client.birth_date,
+      internalCode: client.internal_code,
+      cpf: client.cpf,
+      documentTypeText: client.document_type_text,
+      documentNumber: client.document_number,
+      responsibleName: client.responsible_name,
+      responsibleCpf: client.responsible_cpf,
+      statusText: client.status_text,
+      notes: client.notes,
+      isActive: client.is_active,
+      createdAt: client.created_at,
+      updatedAt: client.updated_at,
+      primaryPhone: null,
+      primaryEmail: null,
+    },
   };
 }

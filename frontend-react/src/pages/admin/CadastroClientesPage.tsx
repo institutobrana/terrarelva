@@ -15,7 +15,7 @@ import { useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
-import { fetchClients, RegistryApiError, type ClientRecord } from "@/services/registry/registryApi";
+import { createClient, fetchClients, RegistryApiError, type ClientRecord } from "@/services/registry/registryApi";
 
 const clientSearchCriteria = [
   { key: "nome-cliente", label: "Nome do cliente" },
@@ -216,7 +216,24 @@ export function CadastroClientesPage() {
     try {
       const values = await form.validateFields();
       setIsSubmitting(true);
-      apiMessage.success(`Cliente "${values.name}" validado e preparado para gravacao na proxima etapa.`);
+      const birthDate = values.birthDate && typeof values.birthDate === "object" && "format" in values.birthDate
+        ? (values.birthDate as { format: (fmt: string) => string }).format("YYYY-MM-DD")
+        : null;
+
+      const payload = await createClient({
+        fullName: values.name,
+        gender: values.sex ?? null,
+        birthDate,
+        cpf: values.cpf ?? null,
+        documentTypeText: values.documentType ?? null,
+        documentNumber: values.documentNumber ?? null,
+        responsibleName: values.responsibleName ?? null,
+        statusText: "Ativo",
+      });
+
+      await loadClients();
+      setSelectedRowId(payload.client.id);
+      apiMessage.success(`Cliente "${values.name}" gravado com sucesso.`);
       handleCloseModal();
     } finally {
       setIsSubmitting(false);
@@ -519,93 +536,7 @@ export function CadastroClientesPage() {
             <Input placeholder="Nome do responsavel" />
           </Form.Item>
 
-          <div className="client-modal-communication-row">
-            <Typography.Text className="client-modal-group-label">Telefone 1</Typography.Text>
-            <div className="client-modal-communication-grid">
-              <Form.Item name="phonePrimaryType" className="client-modal-phone-type">
-                <Select allowClear placeholder="Tipo" options={phoneTypeOptions} />
-              </Form.Item>
-              <Form.Item name="phonePrimaryDdd" className="client-modal-phone-ddd">
-                <Input placeholder="DDD" />
-              </Form.Item>
-              <Form.Item
-                name="phonePrimaryNumber"
-                className="client-modal-phone-number"
-                rules={[
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      const email = getFieldValue("emailPrimaryAddress");
-                      const secondaryNumber = getFieldValue("phoneSecondaryNumber");
-
-                      if (value || email || secondaryNumber) {
-                        return Promise.resolve();
-                      }
-
-                      return Promise.reject(new Error("Informe pelo menos um contato principal."));
-                    },
-                  }),
-                ]}
-              >
-                <Input placeholder="Numero" />
-              </Form.Item>
-              <Form.Item name="phonePrimaryExtension" className="client-modal-phone-extension">
-                <Input placeholder="Ramal" />
-              </Form.Item>
-            </div>
-          </div>
-
-          <div className="client-modal-communication-row">
-            <Typography.Text className="client-modal-group-label">Telefone 2</Typography.Text>
-            <div className="client-modal-communication-grid">
-              <Form.Item name="phoneSecondaryType" className="client-modal-phone-type">
-                <Select allowClear placeholder="Tipo" options={phoneTypeOptions} />
-              </Form.Item>
-              <Form.Item name="phoneSecondaryDdd" className="client-modal-phone-ddd">
-                <Input placeholder="DDD" />
-              </Form.Item>
-              <Form.Item name="phoneSecondaryNumber" className="client-modal-phone-number">
-                <Input placeholder="Numero" />
-              </Form.Item>
-              <Form.Item name="phoneSecondaryExtension" className="client-modal-phone-extension">
-                <Input placeholder="Ramal" />
-              </Form.Item>
-            </div>
-          </div>
-
-          <div className="client-modal-communication-row">
-            <Typography.Text className="client-modal-group-label">E-mail 1</Typography.Text>
-            <div className="client-modal-email-grid">
-              <Form.Item name="emailPrimaryType" className="client-modal-email-type">
-                <Select allowClear placeholder="Tipo" options={emailTypeOptions} />
-              </Form.Item>
-              <Form.Item
-                name="emailPrimaryAddress"
-                className="client-modal-email-address"
-                rules={[
-                  { type: "email", message: "Informe um e-mail valido." },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      const phonePrimary = getFieldValue("phonePrimaryNumber");
-                      const phoneSecondary = getFieldValue("phoneSecondaryNumber");
-
-                      if (value || phonePrimary || phoneSecondary) {
-                        return Promise.resolve();
-                      }
-
-                      return Promise.reject(new Error("Informe pelo menos um contato principal."));
-                    },
-                  }),
-                ]}
-              >
-                <Input placeholder="email@cliente.com" />
-              </Form.Item>
-            </div>
-          </div>
-
           <div className="terra-password-modal-actions client-modal-actions">
-            <Button onClick={() => apiMessage.info("Importacao de cliente preparada para a proxima etapa.")}>
-              Importar
-            </Button>
             <Button type="primary" htmlType="submit" loading={isSubmitting}>
               Gravar cliente
             </Button>
