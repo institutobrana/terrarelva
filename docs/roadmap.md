@@ -16,6 +16,28 @@
 - Base de loja pública em `/loja`
 - Legado com `localStorage`, exportação e sincronização via Apps Script
 
+## Fase crítica
+
+Esta fase precisa acontecer antes de novas expansões de domínio.
+
+- Unificação de dados no PostgreSQL
+- Migração do legado
+- Desligamento gradual do `localStorage` como banco operacional
+
+### Dependências desta fase
+
+- Modelo de dados mínimo consolidado
+- Contrato de persistência e sincronização
+- Mapeamento das entidades principais
+- Validação dos dados já existentes
+
+### O que não deve ser desenvolvido antes disso
+
+- Novas telas que dependam de dados ainda presos ao legado
+- Nova lógica de negócio que assuma duas fontes de verdade ao mesmo tempo
+- Expansão de sincronização sem contrato claro
+- Rotinas automáticas de escrita em múltiplas bases sem migração definida
+
 ## Em auditoria
 
 - Produtos completos
@@ -35,6 +57,7 @@
 - Guia de deploy e execução consolidado
 - Checklist de qualidade
 - Padrões de commit
+- Modelagem física final do banco para todos os módulos
 
 ## Risco técnico
 
@@ -43,6 +66,7 @@
 - Convivência entre legado e nova base sem contrato único
 - Falta de documentação consolidada para orientar mudanças seguras
 - Possível fragmentação de dados entre navegador, backend e planilhas
+- Usuário operar o legado e o React em paralelo sem regra de corte
 
 ## Próxima etapa recomendada
 
@@ -51,4 +75,3 @@
 3. Definir a estratégia de persistência principal
 4. Mapear o modelo de dados de produção, estoque, vendas e caixa
 5. Depois disso, seguir para modularização segura
-
