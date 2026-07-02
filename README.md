@@ -32,6 +32,7 @@ O projeto está em fase de organização documental e consolidação da arquitet
 
 ## Documentos principais
 
+- [Índice da documentação](docs/README.md)
 - [Auditoria do estado atual](docs/auditoria_estado_atual_terra_relva.md)
 - [Plano documental](docs/plano_documentacao_terra_relva.md)
 - [Roadmap](docs/roadmap.md)
