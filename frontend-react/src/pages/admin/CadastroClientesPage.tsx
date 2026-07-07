@@ -11,11 +11,12 @@ import {
 } from "@ant-design/icons";
 import { Alert, Button, Checkbox, DatePicker, Dropdown, Form, Input, Modal, Select, Space, Table, Tabs, Typography, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useEffect, useEffectEvent, useMemo, useState } from "react";
+import dayjs from "dayjs";
+import { useCallback, useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { useAdminShellBand } from "@/components/admin/AdminShellBandContext";
 import { ModuleSectionCard } from "@/components/admin/ModuleSectionCard";
-import { createClient, fetchClients, RegistryApiError, type ClientRecord } from "@/services/registry/registryApi";
+import { createClient, fetchClientById, fetchClients, RegistryApiError, updateClient, type ClientDetailsRecord, type ClientRecord } from "@/services/registry/registryApi";
 
 const clientSearchCriteria = [
   { key: "nome-cliente", label: "Nome do cliente" },
@@ -123,6 +124,160 @@ type ContactPlaceholderRow = {
 
 const preparedContactRows: ContactPlaceholderRow[] = [];
 
+type ClientEditSnapshot = {
+  name: string;
+  sex: string;
+  birthDate: unknown;
+  code: string | undefined;
+  cpf: string | undefined;
+  documentType: string | undefined;
+  documentNumber: string | undefined;
+  responsibleName: string | undefined;
+  status: string | undefined;
+  benefitPrimary: string | undefined;
+  beneficiaryCode: string | undefined;
+  benefitValidUntil: unknown;
+  phonePrimaryType: string | undefined;
+  phonePrimaryDdd: string | undefined;
+  phonePrimaryNumber: string | undefined;
+  phonePrimaryExtension: string | undefined;
+  phoneSecondaryType: string | undefined;
+  phoneSecondaryDdd: string | undefined;
+  phoneSecondaryNumber: string | undefined;
+  phoneSecondaryExtension: string | undefined;
+  emailPrimaryType: string | undefined;
+  emailPrimaryAddress: string | undefined;
+  fatherName: string | undefined;
+  motherName: string | undefined;
+  socialName: string | undefined;
+  nickname: string | undefined;
+  occupation: string | undefined;
+  recordNumber: string | undefined;
+  maritalStatus: string | undefined;
+  spouseName: string | undefined;
+  indicationType: string | undefined;
+  provider: string | undefined;
+  publicVisibility: boolean;
+  notes: string | undefined;
+};
+
+function mapClientToFormValues(client: ClientDetailsRecord): ClientEditSnapshot {
+  const primaryBenefit = client.benefits?.[0];
+
+  return {
+    name: client.fullName,
+    sex: client.gender ?? "selecionar",
+    birthDate: client.birthDate ? dayjs(client.birthDate) : undefined,
+    code: client.internalCode ?? undefined,
+    cpf: client.cpf ?? undefined,
+    documentType: client.documentTypeText ?? undefined,
+    documentNumber: client.documentNumber ?? undefined,
+    responsibleName: client.responsibleName ?? undefined,
+    status: client.statusText ?? "ativo",
+    benefitPrimary: primaryBenefit?.benefitTypeText ?? "sem-beneficio",
+    beneficiaryCode: primaryBenefit?.beneficiaryCode ?? undefined,
+    benefitValidUntil: primaryBenefit?.validUntil ? dayjs(primaryBenefit.validUntil) : undefined,
+    phonePrimaryType: client.phones?.[0]?.phoneTypeText ?? undefined,
+    phonePrimaryDdd: client.phones?.[0]?.ddd ?? undefined,
+    phonePrimaryNumber: client.phones?.[0]?.phoneNumber ?? undefined,
+    phonePrimaryExtension: client.phones?.[0]?.extension ?? undefined,
+    phoneSecondaryType: client.phones?.[1]?.phoneTypeText ?? undefined,
+    phoneSecondaryDdd: client.phones?.[1]?.ddd ?? undefined,
+    phoneSecondaryNumber: client.phones?.[1]?.phoneNumber ?? undefined,
+    phoneSecondaryExtension: client.phones?.[1]?.extension ?? undefined,
+    emailPrimaryType: client.emails?.[0]?.emailTypeText ?? undefined,
+    emailPrimaryAddress: client.emails?.[0]?.email ?? undefined,
+    fatherName: client.fatherName ?? undefined,
+    motherName: client.motherName ?? undefined,
+    socialName: client.socialName ?? undefined,
+    nickname: client.nickname ?? undefined,
+    occupation: client.occupation ?? undefined,
+    recordNumber: client.recordNumber ?? undefined,
+    maritalStatus: client.maritalStatus ?? undefined,
+    spouseName: client.spouseName ?? undefined,
+    indicationType: client.indicationTypeText ?? undefined,
+    provider: client.providerText ?? undefined,
+    publicVisibility: client.publicVisibility,
+    notes: client.notes ?? undefined,
+  };
+}
+
+function toIsoDate(value: unknown) {
+  if (!value || typeof value !== "object" || !("format" in value)) {
+    return null;
+  }
+
+  return (value as { format: (fmt: string) => string }).format("YYYY-MM-DD");
+}
+
+function buildClientPayload(values: ClientFormValues) {
+  const benefitPrimary = values.benefitPrimary && values.benefitPrimary !== "sem-beneficio"
+    ? {
+        benefitTypeText: values.benefitPrimary,
+        beneficiaryCode: values.beneficiaryCode ?? null,
+        validUntil: toIsoDate(values.benefitValidUntil),
+        isPrimary: true,
+      }
+    : null;
+
+  return {
+    name: values.name,
+    gender: values.sex ?? null,
+    birth_date: toIsoDate(values.birthDate),
+    cpf: values.cpf ?? null,
+    document_type: values.documentType ?? null,
+    document_number: values.documentNumber ?? null,
+    responsible: values.responsibleName ?? null,
+    fatherName: values.fatherName ?? null,
+    motherName: values.motherName ?? null,
+    socialName: values.socialName ?? null,
+    nickname: values.nickname ?? null,
+    occupation: values.occupation ?? null,
+    recordNumber: values.recordNumber ?? null,
+    maritalStatus: values.maritalStatus ?? null,
+    spouseName: values.spouseName ?? null,
+    indicationType: values.indicationType ?? null,
+    provider: values.provider ?? null,
+    publicVisibility: values.publicVisibility ?? false,
+    notes: values.notes ?? null,
+    benefits: benefitPrimary ? [benefitPrimary] : [],
+    phones: [
+      values.phonePrimaryNumber
+        ? {
+            phoneTypeText: values.phonePrimaryType ?? null,
+            ddd: values.phonePrimaryDdd ?? null,
+            phoneNumber: values.phonePrimaryNumber,
+            extension: values.phonePrimaryExtension ?? null,
+            isPrimary: true,
+          }
+        : null,
+      values.phoneSecondaryNumber
+        ? {
+            phoneTypeText: values.phoneSecondaryType ?? null,
+            ddd: values.phoneSecondaryDdd ?? null,
+            phoneNumber: values.phoneSecondaryNumber,
+            extension: values.phoneSecondaryExtension ?? null,
+            isPrimary: false,
+          }
+        : null,
+    ].filter(Boolean) as Array<{
+      phoneTypeText: string | null;
+      ddd: string | null;
+      phoneNumber: string;
+      extension: string | null;
+      isPrimary: boolean;
+    }>,
+    emails: values.emailPrimaryAddress
+      ? [{
+          emailTypeText: values.emailPrimaryType ?? null,
+          email: values.emailPrimaryAddress,
+          isPrimary: true,
+        }]
+      : [],
+    addresses: [],
+  };
+}
+
 function getSearchCriterionLabel(value: string) {
   return clientSearchCriteria.find((item) => item.key === value)?.label ?? "Nome do cliente";
 }
@@ -141,6 +296,7 @@ export function CadastroClientesPage() {
   const [clients, setClients] = useState<ClientRecord[]>([]);
   const [showInactive, setShowInactive] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const [editingClient, setEditingClient] = useState<ClientDetailsRecord | null>(null);
   const [searchCriterion, setSearchCriterion] = useState("nome-cliente");
   const [search, setSearch] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -209,6 +365,7 @@ export function CadastroClientesPage() {
   function handleCloseModal() {
     setIsCreateModalOpen(false);
     setIsEditModalOpen(false);
+    setEditingClient(null);
     form.resetFields();
   }
 
@@ -216,20 +373,7 @@ export function CadastroClientesPage() {
     try {
       const values = await form.validateFields();
       setIsSubmitting(true);
-      const birthDate = values.birthDate && typeof values.birthDate === "object" && "format" in values.birthDate
-        ? (values.birthDate as { format: (fmt: string) => string }).format("YYYY-MM-DD")
-        : null;
-
-      const payload = await createClient({
-        fullName: values.name,
-        gender: values.sex ?? null,
-        birthDate,
-        cpf: values.cpf ?? null,
-        documentTypeText: values.documentType ?? null,
-        documentNumber: values.documentNumber ?? null,
-        responsibleName: values.responsibleName ?? null,
-        statusText: "Ativo",
-      });
+      const payload = await createClient(buildClientPayload(values));
 
       await loadClients();
       setSelectedRowId(payload.client.id);
@@ -244,12 +388,47 @@ export function CadastroClientesPage() {
     try {
       const values = await form.validateFields();
       setIsSubmitting(true);
-      apiMessage.success(`Cliente "${values.name}" validado para alteracao na proxima etapa.`);
+      if (!selectedRowId) {
+        apiMessage.warning("Selecione um cliente para alterar.");
+        return;
+      }
+
+      await updateClient(selectedRowId, buildClientPayload(values));
+      await loadClients();
+      const refreshed = await fetchClientById(selectedRowId);
+      setEditingClient(refreshed.client);
+      apiMessage.success(`Cliente "${values.name}" atualizado com sucesso.`);
       handleCloseModal();
     } finally {
       setIsSubmitting(false);
     }
   }
+
+  const handleEditClick = useCallback(async () => {
+    if (!selectedRow?.id) {
+      apiMessage.warning("Selecione um cliente para alterar.");
+      return;
+    }
+
+    try {
+      const payload = await fetchClientById(selectedRow.id);
+      setEditingClient(payload.client);
+      setIsEditModalOpen(true);
+    } catch (error) {
+      const nextMessage = error instanceof RegistryApiError || error instanceof Error
+        ? error.message
+        : "Nao foi possivel carregar os dados do cliente.";
+      apiMessage.error(nextMessage);
+    }
+  }, [apiMessage, selectedRow]);
+
+  useEffect(() => {
+    if (!isEditModalOpen || !editingClient) {
+      return;
+    }
+
+    form.setFieldsValue(mapClientToFormValues(editingClient));
+  }, [editingClient, form, isEditModalOpen]);
 
   const columns: ColumnsType<ClientRecord> = [
     {
@@ -312,56 +491,13 @@ export function CadastroClientesPage() {
             >
               Novo cliente
             </Button>
-            <Button
-              icon={<FileTextOutlined />}
-              disabled={disableSelectionActions}
-              onClick={() => {
-                if (!selectedRow) {
-                  apiMessage.warning("Selecione um cliente para alterar.");
-                  return;
-                }
-
-                form.setFieldsValue({
-                  name: selectedRow.fullName,
-                  sex: "selecionar",
-                  birthDate: undefined,
-                  code: selectedRow.internalCode ?? undefined,
-                  cpf: selectedRow.cpf ?? undefined,
-                  documentType: selectedRow.documentTypeText ?? undefined,
-                  documentNumber: selectedRow.documentNumber ?? undefined,
-                  responsibleName: selectedRow.responsibleName ?? undefined,
-                  status: selectedRow.statusText ?? "ativo",
-                  benefitPrimary: "sem-beneficio",
-                  beneficiaryCode: undefined,
-                  benefitValidUntil: undefined,
-                  phonePrimaryType: undefined,
-                  phonePrimaryDdd: undefined,
-                  phonePrimaryNumber: undefined,
-                  phonePrimaryExtension: undefined,
-                  phoneSecondaryType: undefined,
-                  phoneSecondaryDdd: undefined,
-                  phoneSecondaryNumber: undefined,
-                  phoneSecondaryExtension: undefined,
-                  emailPrimaryType: undefined,
-                  emailPrimaryAddress: undefined,
-                  fatherName: undefined,
-                  motherName: undefined,
-                  socialName: undefined,
-                  nickname: undefined,
-                  occupation: undefined,
-                  recordNumber: undefined,
-                  maritalStatus: undefined,
-                  spouseName: undefined,
-                  indicationType: undefined,
-                  provider: undefined,
-                  publicVisibility: false,
-                  notes: selectedRow.notes ?? undefined,
-                });
-                setIsEditModalOpen(true);
-              }}
-            >
-              Alterar
-            </Button>
+              <Button
+                icon={<FileTextOutlined />}
+                disabled={disableSelectionActions}
+                onClick={() => { void handleEditClick(); }}
+              >
+                Alterar
+              </Button>
             <Button
               icon={<InfoCircleOutlined />}
               disabled={disableSelectionActions}
@@ -470,80 +606,140 @@ export function CadastroClientesPage() {
         onCancel={handleCloseModal}
         closeIcon={<CloseOutlined />}
         centered
-        width={820}
+        width={688}
         destroyOnHidden
-        className="terra-password-modal client-modal"
-      >
-        <div className="terra-password-modal-header">
-          <Typography.Title level={3} className="terra-password-modal-title">
-            Novo cliente - Dados principais
-          </Typography.Title>
-        </div>
-
-        <Form<ClientFormValues>
-          form={form}
-          layout="vertical"
-          preserve={false}
-          className="terra-password-form client-modal-form"
-          onFinish={() => void handleCreateClient()}
+        className="terra-password-modal client-modal client-create-modal"
         >
-          <Form.Item name="name" label="Nome" rules={[{ required: true, message: "Informe o nome do cliente." }]}>
-            <Input placeholder="Nome completo do cliente" />
-          </Form.Item>
+          <div className="terra-password-modal-header">
+            <Typography.Title level={3} className="terra-password-modal-title">
+              Novo cliente - Dados principais
+            </Typography.Title>
+          </div>
 
-          <Form.Item name="sex" label="Sexo">
-            <Select placeholder="Selecionar sexo" options={sexOptions} />
-          </Form.Item>
-
-          <Form.Item name="birthDate" label="Data de nascimento">
-            <DatePicker format="DD/MM/YYYY" placeholder="DD/MM/AAAA" className="client-modal-date" />
-          </Form.Item>
-
-          <Form.Item
-            name="cpf"
-            label="CPF"
-            rules={[
-              {
-                validator(_, value) {
-                  if (!value) {
-                    return Promise.resolve();
-                  }
-
-                  const digits = String(value).replace(/\D/g, "");
-                  if (digits.length === 11) {
-                    return Promise.resolve();
-                  }
-
-                  return Promise.reject(new Error("Informe um CPF com 11 digitos."));
-                },
-              },
-            ]}
+          <Form<ClientFormValues>
+            form={form}
+            layout="vertical"
+            preserve={false}
+            className="terra-password-form client-modal-form client-create-modal-form"
+            onFinish={() => void handleCreateClient()}
           >
-            <Input placeholder="CPF do cliente" />
-          </Form.Item>
+            <div className="client-create-modal__form client-create-modal__form-linear">
+              <div className="client-create-modal__row client-create-modal__row--single">
+                <Typography.Text className="client-create-modal__label client-create-modal__label--required">Nome:</Typography.Text>
+                <Form.Item
+                  name="name"
+                  className="client-create-form-item client-create-field client-create-field--name"
+                  rules={[{ required: true, message: "Informe o nome do cliente." }]}
+                >
+                  <Input placeholder="Nome completo do cliente" />
+                </Form.Item>
+              </div>
 
-          <div className="client-modal-document-row">
-            <Form.Item name="documentType" label="Documento" className="client-modal-document-type">
-              <Select allowClear placeholder="Tipo" options={documentTypeOptions} />
-            </Form.Item>
+              <div className="client-create-modal__row client-create-modal__row--double">
+                <Typography.Text className="client-create-modal__label">Sexo:</Typography.Text>
+                <Form.Item name="sex" className="client-create-form-item client-create-field client-create-field--sex">
+                  <Select placeholder="Sexo do cliente" options={sexOptions} />
+                </Form.Item>
+                <Typography.Text className="client-create-modal__label">Data de nascimento:</Typography.Text>
+                <Form.Item name="birthDate" className="client-create-form-item client-create-field client-create-field--birth">
+                  <DatePicker format="DD/MM/YYYY" placeholder="Data de nascimento em formato DD/MM/AAAA" className="client-modal-date" />
+                </Form.Item>
+              </div>
 
-            <Form.Item name="documentNumber" label="Numero do documento" className="client-modal-document-number">
-              <Input placeholder="Numero do documento" />
-            </Form.Item>
-          </div>
+              <div className="client-create-modal__row client-create-modal__row--single">
+                <Typography.Text className="client-create-modal__label">CPF:</Typography.Text>
+                <Form.Item
+                  name="cpf"
+                  className="client-create-form-item client-create-field client-create-field--cpf"
+                  rules={[
+                    {
+                      validator(_, value) {
+                        if (!value) {
+                          return Promise.resolve();
+                        }
 
-          <Form.Item name="responsibleName" label="Responsavel principal">
-            <Input placeholder="Nome do responsavel" />
-          </Form.Item>
+                        const digits = String(value).replace(/\D/g, "");
+                        if (digits.length === 11) {
+                          return Promise.resolve();
+                        }
 
-          <div className="terra-password-modal-actions client-modal-actions">
-            <Button type="primary" htmlType="submit" loading={isSubmitting}>
-              Gravar cliente
-            </Button>
-            <Button onClick={handleCloseModal}>Cancelar</Button>
-          </div>
-        </Form>
-      </Modal>
+                        return Promise.reject(new Error("Informe um CPF com 11 digitos."));
+                      },
+                    },
+                  ]}
+                >
+                  <Input placeholder="CPF do cliente" />
+                </Form.Item>
+              </div>
+
+              <div className="client-create-modal__row client-create-modal__row--document">
+                <Typography.Text className="client-create-modal__label">Documento:</Typography.Text>
+                <Form.Item name="documentType" className="client-create-form-item client-create-field client-create-field--document-type">
+                  <Select allowClear placeholder="RG" options={documentTypeOptions} />
+                </Form.Item>
+                <Form.Item name="documentNumber" className="client-create-form-item client-create-field client-create-field--document-number">
+                  <Input placeholder="Número do documento" />
+                </Form.Item>
+              </div>
+
+              <div className="client-create-modal__row client-create-modal__row--single">
+                <Typography.Text className="client-create-modal__label">Prestador responsável:</Typography.Text>
+                <Form.Item name="responsibleName" className="client-create-form-item client-create-field client-create-field--responsible">
+                  <Input placeholder="Gleisson Tel" suffix={<SearchOutlined className="client-create-suffix-icon" />} />
+                </Form.Item>
+              </div>
+
+              <div className="client-create-modal__row client-create-modal__row--phone">
+                <Typography.Text className="client-create-modal__label">Telefone 1:</Typography.Text>
+                <Form.Item name="phonePrimaryType" className="client-create-form-item client-create-field client-create-field--phone-type">
+                  <Select allowClear placeholder="Celular" options={phoneTypeOptions} />
+                </Form.Item>
+                <Form.Item name="phonePrimaryDdd" className="client-create-form-item client-create-field client-create-field--phone-ddd">
+                  <Input placeholder="DDD" />
+                </Form.Item>
+                <Form.Item name="phonePrimaryNumber" className="client-create-form-item client-create-field client-create-field--phone-number">
+                  <Input placeholder="Número" />
+                </Form.Item>
+                <Form.Item name="phonePrimaryExtension" className="client-create-form-item client-create-field client-create-field--phone-extension">
+                  <Input placeholder="Ramal" />
+                </Form.Item>
+              </div>
+
+              <div className="client-create-modal__row client-create-modal__row--phone">
+                <Typography.Text className="client-create-modal__label">Telefone 2:</Typography.Text>
+                <Form.Item name="phoneSecondaryType" className="client-create-form-item client-create-field client-create-field--phone-type">
+                  <Select allowClear placeholder="Residencial" options={phoneTypeOptions} />
+                </Form.Item>
+                <Form.Item name="phoneSecondaryDdd" className="client-create-form-item client-create-field client-create-field--phone-ddd">
+                  <Input placeholder="DDD" />
+                </Form.Item>
+                <Form.Item name="phoneSecondaryNumber" className="client-create-form-item client-create-field client-create-field--phone-number">
+                  <Input placeholder="Número" />
+                </Form.Item>
+                <Form.Item name="phoneSecondaryExtension" className="client-create-form-item client-create-field client-create-field--phone-extension">
+                  <Input placeholder="Ramal" />
+                </Form.Item>
+              </div>
+              <div className="client-create-modal__row client-create-modal__row--email">
+                <Typography.Text className="client-create-modal__label">E-mail 1:</Typography.Text>
+                <Form.Item name="emailPrimaryType" className="client-create-form-item client-create-field client-create-field--email-type">
+                  <Select allowClear placeholder="Pessoal" options={emailTypeOptions} />
+                </Form.Item>
+                <Form.Item name="emailPrimaryAddress" className="client-create-form-item client-create-field client-create-field--email-address">
+                  <Input placeholder="Endereço de e-mail" />
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="terra-password-modal-actions client-modal-actions">
+              <Button onClick={() => apiMessage.info("Importação preparada para a próxima etapa.")}>Importar</Button>
+              <Button type="primary" htmlType="submit" loading={isSubmitting}>
+                Gravar cliente
+              </Button>
+              <Button onClick={handleCloseModal}>Cancelar</Button>
+            </div>
+          </Form>
+        </Modal>
 
       <Modal
         open={isEditModalOpen}
