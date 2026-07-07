@@ -31,7 +31,54 @@ Representa os itens vendidos pela loja, incluindo produtos prontos, kits, combos
 - Pode se relacionar com vendas
 - Pode se relacionar com pedidos
 
-## 2. Estoque
+## 2. Tabelas de insumos
+
+### Descrição
+
+Base operacional de insumos usada em tabelas classificadas por grupo.
+
+### Entidades principais
+
+#### `insumo_tables`
+
+- id
+- code
+- name
+- description
+- is_active
+- created_at
+- updated_at
+
+#### `insumo_table_items`
+
+- id
+- table_id
+- classification
+- internal_code
+- material_name
+- purchase_unit
+- consumption_unit
+- relation_quantity
+- price
+- unit_cost
+- average_shelf_life_days
+- is_favorite
+- manufacturer
+- presentation
+- notes
+- is_active
+- created_at
+- updated_at
+
+### Relacionamentos
+
+- `insumo_table_items.table_id -> insumo_tables.id`
+- `internal_code` é único por tabela
+- `classification` vem de `material_groups`
+- `purchase_unit` e `consumption_unit` vêm de `measurement_units`
+- `manufacturer` vem de `manufacturers`
+
+## 3. Estoque
 
 ### Descrição
 
@@ -58,7 +105,7 @@ Controla matéria-prima, produto pronto, entradas, saídas, perdas, vencimentos 
 - Relaciona-se com vendas
 - Relaciona-se com pedidos
 
-## 3. Produção
+## 4. Produção
 
 ### Descrição
 
@@ -83,7 +130,7 @@ Registra a transformação de matéria-prima em produto acabado.
 - Alimenta estoque de produto pronto
 - Pode refletir custo de produção do produto
 
-## 4. Vendas
+## 5. Vendas
 
 ### Descrição
 
@@ -109,7 +156,7 @@ Registra vendas presenciais e online, incluindo forma de pagamento e valores rec
 - Pode alimentar fluxo de caixa
 - Pode baixar estoque
 
-## 5. Clientes
+## 6. Clientes
 
 ### Descrição
 
@@ -132,7 +179,7 @@ Cadastro de pessoas que compram na Terra Relva, com histórico e dados de contat
 - Relaciona-se com pedidos
 - Pode ser usado em relatórios de recorrência
 
-## 6. Pedidos
+## 7. Pedidos
 
 ### Descrição
 
@@ -156,7 +203,7 @@ Controla pedidos recebidos por WhatsApp, Instagram, loja online ou venda presenc
 - Relaciona-se com vendas
 - Pode gerar separação de estoque e produção
 
-## 7. Fluxo de Caixa
+## 8. Fluxo de Caixa
 
 ### Descrição
 
@@ -180,7 +227,7 @@ Registra entradas, saídas, despesas, lucro, pró-labore e saldo.
 - Pode registrar despesas fixas e variáveis
 - Pode se relacionar com contas bancárias
 
-## 8. Usuários
+## 9. Usuários
 
 ### Descrição
 
@@ -200,4 +247,3 @@ Define quem acessa o sistema e com qual perfil.
 
 - Acesso ao backend e ao painel administrativo
 - Pode controlar permissões futuras
-

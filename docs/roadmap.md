@@ -49,6 +49,21 @@ Esta fase precisa acontecer antes de novas expansões de domínio.
 - Relatórios consolidados
 - Persistência e sincronização
 
+## Concluído
+
+- Tabelas > Tabela de insumos
+  - backend real com PostgreSQL
+  - frontend operacional
+  - modais de tabela
+  - modais de insumo
+  - combos reais com tabelas auxiliares
+  - código interno numérico com menor livre
+  - cálculo de custo unitário por `Preço / Relação`
+  - filtro por `Grupos de material`
+  - pesquisa por nome
+  - exclusão de tabela e item
+  - validação manual pelo usuário
+
 ## Pendente
 
 - Banco central único para todos os módulos
@@ -75,3 +90,8 @@ Esta fase precisa acontecer antes de novas expansões de domínio.
 3. Definir a estratégia de persistência principal
 4. Mapear o modelo de dados de produção, estoque, vendas e caixa
 5. Depois disso, seguir para modularização segura
+6. Integrar a Tabela de insumos com ficha técnica / produção
+7. Integrar baixa automática de insumos
+8. Integrar entrada de produto acabado
+9. Integrar precificação
+10. Integrar estoque mínimo e alertas
