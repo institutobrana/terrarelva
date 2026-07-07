@@ -64,6 +64,13 @@ Esta fase precisa acontecer antes de novas expansões de domínio.
   - exclusão de tabela e item
   - validação manual pelo usuário
 
+- Tabelas auxiliares
+  - rota protegida em `/admin/configuracoes/tabelas-auxiliares`
+  - persistencia real para formas de pagamento, tipos de indicacao, segmentos de fornecedor, grupos de material, fabricantes, unidades de medida e ocupacoes
+  - regras especiais para motivos e situacoes de agendamento
+  - menu lateral e grade principal operacionais
+  - exclusao com checagem previa onde existe vinculacao real
+
  - Fornecedores
   - cadastro
   - listagem
