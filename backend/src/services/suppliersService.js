@@ -1,4 +1,5 @@
 import { listSuppliers as listSuppliersFromRepository } from "../repositories/suppliersRepository.js";
+import { toPublicUrl } from "../utils/publicUrl.js";
 
 function formatPhone(row) {
   if (!row.primary_phone_number) {
@@ -26,6 +27,7 @@ export async function listSuppliers() {
       paymentDetails: row.payment_details,
       notes: row.notes,
       isActive: row.is_active,
+      imageUrl: row.image_path ? toPublicUrl(`/uploads/fornecedores/${row.image_path}`) : null,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       primaryPhone: formatPhone(row),

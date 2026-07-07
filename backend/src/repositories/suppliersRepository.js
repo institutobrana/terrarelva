@@ -13,6 +13,7 @@ export async function listSuppliers() {
       s.payment_details,
       s.notes,
       s.is_active,
+      s.image_path,
       s.created_at,
       s.updated_at,
       sp.phone_type_text AS primary_phone_type_text,

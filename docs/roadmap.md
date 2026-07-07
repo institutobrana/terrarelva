@@ -64,6 +64,17 @@ Esta fase precisa acontecer antes de novas expansões de domínio.
   - exclusão de tabela e item
   - validação manual pelo usuário
 
+ - Fornecedores
+  - cadastro
+  - listagem
+  - detalhe
+  - ediÃ§Ã£o
+  - contatos
+  - upload e exibicao de imagem
+  - URL publica da imagem
+  - exclusao com checagem previa
+  - pendencia operacional conhecida: imagem fisica orfa na exclusao
+
 ## Pendente
 
 - Banco central único para todos os módulos
